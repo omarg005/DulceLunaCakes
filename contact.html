@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - Dulce Luna Cakes</title>
+    <meta name="description" content="Get in touch with Dulce Luna Cakes. We'd love to hear from you and help create your perfect custom cake.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-container">
+                <div class="logo">
+                    <a href="index.html">
+                        <i class="fas fa-moon"></i>
+                        <span>Dulce Luna Cakes</span>
+                    </a>
+                </div>
+                
+                <div class="nav-menu" id="nav-menu">
+                    <a href="index.html" class="nav-link">Home</a>
+                    <a href="gallery.html" class="nav-link">Gallery</a>
+                    <a href="request.html" class="nav-link">Request a Cake</a>
+                    <a href="about.html" class="nav-link">About</a>
+                    <a href="contact.html" class="nav-link active">Contact</a>
+                </div>
+                
+                <div class="nav-toggle" id="nav-toggle">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Get in Touch</h1>
+            <p>We'd love to hear from you! Reach out to start creating your perfect custom cake.</p>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section">
+        <div class="container">
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h2>Contact Information</h2>
+                    <p>Ready to start your cake journey? Here's how to reach us:</p>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h3>Phone</h3>
+                            <p><a href="tel:+15551234567">(555) 123-4567</a></p>
+                            <small>Available Monday - Friday, 9 AM - 6 PM</small>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h3>Email</h3>
+                            <p><a href="mailto:hello@dulcelunacakes.com">hello@dulcelunacakes.com</a></p>
+                            <small>We typically respond within 24 hours</small>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h3>Service Area</h3>
+                            <p>Serving South Florida</p>
+                            <small>Miami, Fort Lauderdale, Boca Raton, and surrounding areas</small>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h3>Business Hours</h3>
+                            <p>Monday - Friday: 9 AM - 6 PM</p>
+                            <p>Saturday: 10 AM - 4 PM</p>
+                            <small>Sunday: Closed (Available for consultations by appointment)</small>
+                        </div>
+                    </div>
+                    
+                    <div class="social-contact">
+                        <h3>Follow Us</h3>
+                        <div class="social-links">
+                            <a href="https://instagram.com/dulcelunacakes" target="_blank" rel="noopener noreferrer" class="social-link">
+                                <i class="fab fa-instagram"></i>
+                                <span>@dulcelunacakes</span>
+                            </a>
+                            <a href="https://facebook.com/dulcelunacakes" target="_blank" rel="noopener noreferrer" class="social-link">
+                                <i class="fab fa-facebook"></i>
+                                <span>Dulce Luna Cakes</span>
+                            </a>
+                            <a href="https://tiktok.com/@dulcelunacakes" target="_blank" rel="noopener noreferrer" class="social-link">
+                                <i class="fab fa-tiktok"></i>
+                                <span>@dulcelunacakes</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="contact-form-container">
+                    <h2>Send Us a Message</h2>
+                    <form class="contact-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="contact-name">Full Name *</label>
+                                <input type="text" id="contact-name" name="contact-name" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="contact-email">Email Address *</label>
+                                <input type="email" id="contact-email" name="contact-email" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="contact-subject">Subject</label>
+                            <select id="contact-subject" name="contact-subject">
+                                <option value="">Select a subject</option>
+                                <option value="general">General Inquiry</option>
+                                <option value="custom-cake">Custom Cake Request</option>
+                                <option value="pricing">Pricing Information</option>
+                                <option value="availability">Availability Check</option>
+                                <option value="feedback">Feedback</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="contact-message">Message *</label>
+                            <textarea id="contact-message" name="contact-message" rows="6" placeholder="Tell us about your cake vision, ask questions, or share any details about your upcoming celebration..." required></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="contact-phone">Phone Number (Optional)</label>
+                            <input type="tel" id="contact-phone" name="contact-phone" placeholder="If you prefer a phone call">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="preferred-contact">Preferred Contact Method</label>
+                            <select id="preferred-contact" name="preferred-contact">
+                                <option value="email">Email</option>
+                                <option value="phone">Phone</option>
+                                <option value="text">Text Message</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="submit-button">
+                            <i class="fas fa-paper-plane"></i>
+                            Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section">
+        <div class="container">
+            <h2>Frequently Asked Questions</h2>
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <h3>How far in advance should I order my cake?</h3>
+                    <p>For custom cakes, we recommend ordering at least 2-3 weeks in advance. For wedding cakes or large orders, 4-6 weeks notice is preferred to ensure we can accommodate your vision.</p>
+                </div>
+                
+                <div class="faq-item">
+                    <h3>Do you offer delivery?</h3>
+                    <p>Yes! We offer delivery throughout South Florida. Delivery fees vary based on location and cake size. We also offer pickup from our kitchen for your convenience.</p>
+                </div>
+                
+                <div class="faq-item">
+                    <h3>Can you accommodate dietary restrictions?</h3>
+                    <p>Absolutely! We can create cakes that are gluten-free, dairy-free, nut-free, and accommodate other dietary restrictions. Just let us know during your consultation.</p>
+                </div>
+                
+                <div class="faq-item">
+                    <h3>What's your pricing structure?</h3>
+                    <p>Our pricing varies based on size, complexity, and ingredients. Simple cakes start around $50, while elaborate custom designs can range from $200-500+. We'll provide a detailed quote after our consultation.</p>
+                </div>
+                
+                <div class="faq-item">
+                    <h3>Do you make wedding cakes?</h3>
+                    <p>Yes! Wedding cakes are one of our specialties. We create elegant, custom wedding cakes that match your theme and serve your guest count. Wedding consultations are complimentary.</p>
+                </div>
+                
+                <div class="faq-item">
+                    <h3>How do I get started?</h3>
+                    <p>Simply fill out our cake request form or contact us directly. We'll schedule a consultation to discuss your vision, provide a quote, and start planning your perfect cake!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Dulce Luna Cakes</h3>
+                    <p>Custom cakes crafted with love, detail, and delicious flavor.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="gallery.html">Gallery</a></li>
+                        <li><a href="request.html">Request a Cake</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Connect With Us</h4>
+                    <div class="footer-social">
+                        <a href="https://instagram.com/dulcelunacakes" target="_blank" rel="noopener noreferrer">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://facebook.com/dulcelunacakes" target="_blank" rel="noopener noreferrer">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                        <a href="https://tiktok.com/@dulcelunacakes" target="_blank" rel="noopener noreferrer">
+                            <i class="fab fa-tiktok"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 Dulce Luna Cakes. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll to Top Button -->
+    <button class="scroll-top" id="scroll-top">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html> 

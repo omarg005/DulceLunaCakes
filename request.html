@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request a Cake - Dulce Luna Cakes</title>
+    <meta name="description" content="Request your custom cake from Dulce Luna Cakes. Fill out our detailed form to start creating your perfect celebration cake.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-container">
+                <div class="logo">
+                    <a href="index.html">
+                        <i class="fas fa-moon"></i>
+                        <span>Dulce Luna Cakes</span>
+                    </a>
+                </div>
+                
+                <div class="nav-menu" id="nav-menu">
+                    <a href="index.html" class="nav-link">Home</a>
+                    <a href="gallery.html" class="nav-link">Gallery</a>
+                    <a href="request.html" class="nav-link active">Request a Cake</a>
+                    <a href="about.html" class="nav-link">About</a>
+                    <a href="contact.html" class="nav-link">Contact</a>
+                </div>
+                
+                <div class="nav-toggle" id="nav-toggle">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Request Your Custom Cake</h1>
+            <p>Let's create something magical together! Fill out the form below to start your custom cake journey.</p>
+        </div>
+    </section>
+
+    <!-- Request Form Section -->
+    <section class="request-form">
+        <div class="container">
+            <div class="form-container">
+                <form class="cake-request-form">
+                    <div class="form-section">
+                        <h3><i class="fas fa-user"></i> Contact Information</h3>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="name">Full Name *</label>
+                                <input type="text" id="name" name="name" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email">Email Address *</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="phone">Phone Number *</label>
+                            <input type="tel" id="phone" name="phone" required>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3><i class="fas fa-calendar"></i> Event Details</h3>
+                        
+                        <div class="form-group">
+                            <label for="date-needed">Date Needed *</label>
+                            <input type="date" id="date-needed" name="date-needed" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="event-type">Event Type</label>
+                            <select id="event-type" name="event-type">
+                                <option value="">Select an event type</option>
+                                <option value="birthday">Birthday</option>
+                                <option value="wedding">Wedding</option>
+                                <option value="anniversary">Anniversary</option>
+                                <option value="graduation">Graduation</option>
+                                <option value="baby-shower">Baby Shower</option>
+                                <option value="corporate">Corporate Event</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="event-address">Event Address</label>
+                            <input type="text" id="event-address" name="event-address" placeholder="Street address">
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="event-city">City</label>
+                                <input type="text" id="event-city" name="event-city" placeholder="City">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="event-zip">Zip Code</label>
+                                <input type="text" id="event-zip" name="event-zip" placeholder="Zip code">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3><i class="fas fa-cake"></i> Cake Specifications</h3>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="cake-size">Cake Size *</label>
+                                <select id="cake-size" name="cake-size" required>
+                                    <option value="">Select cake size</option>
+                                    <option value="6-inch">6" Round (6-8 servings)</option>
+                                    <option value="8-inch">8" Round (12-15 servings)</option>
+                                    <option value="10-inch">10" Round (20-25 servings)</option>
+                                    <option value="full-sheet">Full Sheet (48-60 servings)</option>
+                                    <option value="custom">Custom Size</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="cake-flavor">Cake Flavor *</label>
+                                <select id="cake-flavor" name="cake-flavor" required>
+                                    <option value="">Select cake flavor</option>
+                                    <option value="vanilla">Vanilla</option>
+                                    <option value="chocolate">Chocolate</option>
+                                    <option value="red-velvet">Red Velvet</option>
+                                    <option value="lemon">Lemon</option>
+                                    <option value="marble">Marble</option>
+                                    <option value="carrot">Carrot</option>
+                                    <option value="custom">Custom Flavor</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="frosting-type">Frosting Type</label>
+                            <select id="frosting-type" name="frosting-type">
+                                <option value="">Select frosting type</option>
+                                <option value="buttercream">Buttercream</option>
+                                <option value="cream-cheese">Cream Cheese</option>
+                                <option value="fondant">Fondant</option>
+                                <option value="ganache">Ganache</option>
+                                <option value="whipped-cream">Whipped Cream</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3><i class="fas fa-palette"></i> Design Details</h3>
+                        
+                        <div class="form-group">
+                            <label for="design-description">Design Description *</label>
+                            <textarea id="design-description" name="design-description" rows="5" placeholder="Please describe your vision for the cake design, including colors, themes, decorations, and any specific details you'd like to include..." required></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="color-scheme">Preferred Color Scheme</label>
+                            <input type="text" id="color-scheme" name="color-scheme" placeholder="e.g., Pink and gold, Blue and silver, etc.">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="special-requests">Special Requests or Dietary Restrictions</label>
+                            <textarea id="special-requests" name="special-requests" rows="3" placeholder="Any allergies, dietary restrictions, or special requests..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3><i class="fas fa-image"></i> Reference Images</h3>
+                        
+                        <div class="form-group">
+                            <label for="reference-image">Upload Reference Image (Optional)</label>
+                            <input type="file" id="reference-image" name="reference-image" accept="image/*">
+                            <small>Upload a photo or image that inspires your cake design</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="inspiration-links">Inspiration Links (Optional)</label>
+                            <input type="url" id="inspiration-links" name="inspiration-links" placeholder="Pinterest, Instagram, or website links">
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3><i class="fas fa-dollar-sign"></i> Budget & Timeline</h3>
+                        
+                        <div class="form-group">
+                            <label for="budget-range">Budget Range</label>
+                            <select id="budget-range" name="budget-range">
+                                <option value="">Select budget range</option>
+                                <option value="50-100">$50 - $100</option>
+                                <option value="100-200">$100 - $200</option>
+                                <option value="200-300">$200 - $300</option>
+                                <option value="300-500">$300 - $500</option>
+                                <option value="500+">$500+</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="additional-notes">Additional Notes</label>
+                            <textarea id="additional-notes" name="additional-notes" rows="3" placeholder="Any other information you'd like to share..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-submit">
+                        <button type="submit" class="submit-button">
+                            <i class="fas fa-paper-plane"></i>
+                            Submit Request
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section class="process-section">
+        <div class="container">
+            <h2>How It Works</h2>
+            <div class="process-steps">
+                <div class="process-step">
+                    <div class="step-icon">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                    <h3>1. Submit Request</h3>
+                    <p>Fill out our detailed form with your vision and requirements</p>
+                </div>
+                
+                <div class="process-step">
+                    <div class="step-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3>2. Consultation</h3>
+                    <p>We'll review your request and schedule a consultation call</p>
+                </div>
+                
+                <div class="process-step">
+                    <div class="step-icon">
+                        <i class="fas fa-magic"></i>
+                    </div>
+                    <h3>3. Design & Create</h3>
+                    <p>We'll design and craft your perfect custom cake</p>
+                </div>
+                
+                <div class="process-step">
+                    <div class="step-icon">
+                        <i class="fas fa-gift"></i>
+                    </div>
+                    <h3>4. Delivery</h3>
+                    <p>Your beautiful cake is delivered to your celebration</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Dulce Luna Cakes</h3>
+                    <p>Custom cakes crafted with love, detail, and delicious flavor.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="gallery.html">Gallery</a></li>
+                        <li><a href="request.html">Request a Cake</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Connect With Us</h4>
+                    <div class="footer-social">
+                        <a href="https://instagram.com/dulcelunacakes" target="_blank" rel="noopener noreferrer">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://facebook.com/dulcelunacakes" target="_blank" rel="noopener noreferrer">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                        <a href="https://tiktok.com/@dulcelunacakes" target="_blank" rel="noopener noreferrer">
+                            <i class="fab fa-tiktok"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 Dulce Luna Cakes. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll to Top Button -->
+    <button class="scroll-top" id="scroll-top">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html> 
