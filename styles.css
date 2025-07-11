@@ -161,7 +161,7 @@ p {
     left: 0;
     right: 0;
     bottom: 0;
-    background: url('https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80') center/cover;
+    background: url('images/index/Hero.avif') center/cover;
     opacity: 0.3;
     z-index: 1;
 }
@@ -1186,4 +1186,45 @@ p {
 .mb-2 { margin-bottom: 2rem; }
 .mt-2 { margin-top: 2rem; }
 .hidden { display: none; }
-.visible { display: block; } 
+.visible { display: block; }
+
+/* Instagram Integration Styles */
+.loading {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-light);
+}
+
+.loading i {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: var(--primary-pink);
+}
+
+.instagram-link {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(255, 255, 255, 0.9);
+    color: #e4405f;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    opacity: 0;
+    transition: var(--transition);
+    z-index: 3;
+}
+
+.gallery-item:hover .instagram-link {
+    opacity: 1;
+}
+
+.instagram-link:hover {
+    background: #e4405f;
+    color: white;
+    transform: scale(1.1);
+} 

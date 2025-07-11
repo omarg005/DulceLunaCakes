@@ -57,105 +57,76 @@
     <!-- Gallery Section -->
     <section class="gallery">
         <div class="container">
-            <div class="gallery-grid">
-                <div class="gallery-item">
-                    <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Chocolate Floral Tier">
-                    <div class="gallery-caption">
-                        <h3>Chocolate Floral Tier</h3>
-                        <p>Elegant three-tier chocolate cake with delicate sugar flowers</p>
-                    </div>
-                </div>
-                
-                <div class="gallery-item">
-                    <img src="https://images.unsplash.com/photo-1565958011703-44f9829ba187?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Unicorn Birthday Magic">
-                    <div class="gallery-caption">
-                        <h3>Unicorn Birthday Magic</h3>
-                        <p>Colorful layers with rainbow frosting and magical decorations</p>
-                    </div>
-                </div>
-                
-                <div class="gallery-item">
-                    <img src="https://images.unsplash.com/photo-1517686469429-8bdb88b9f907?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Rustic Wedding Cake">
-                    <div class="gallery-caption">
-                        <h3>Rustic Wedding Cake</h3>
-                        <p>Naked cake with fresh flowers and rustic charm</p>
-                    </div>
-                </div>
-                
-                <div class="gallery-item">
-                    <img src="https://images.unsplash.com/photo-1551024506-0bccd828d307?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Vanilla Buttercream Dream">
-                    <div class="gallery-caption">
-                        <h3>Vanilla Buttercream Dream</h3>
-                        <p>Classic vanilla cake with smooth buttercream frosting</p>
-                    </div>
-                </div>
-                
-                <div class="gallery-item">
-                    <img src="https://images.unsplash.com/photo-1562440499-64c9a111f713?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Red Velvet Elegance">
-                    <div class="gallery-caption">
-                        <h3>Red Velvet Elegance</h3>
-                        <p>Rich red velvet with cream cheese frosting and gold accents</p>
-                    </div>
-                </div>
-                
-                <div class="gallery-item">
-                    <img src="https://images.unsplash.com/photo-1571115764595-644a1f56a55c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Lemon Zest Delight">
-                    <div class="gallery-caption">
-                        <h3>Lemon Zest Delight</h3>
-                        <p>Fresh lemon cake with citrus glaze and edible flowers</p>
-                    </div>
-                </div>
-                
-                <div class="gallery-item">
-                    <img src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Marble Masterpiece">
-                    <div class="gallery-caption">
-                        <h3>Marble Masterpiece</h3>
-                        <p>Swirled chocolate and vanilla with ganache drizzle</p>
-                    </div>
-                </div>
-                
-                <div class="gallery-item">
-                    <img src="https://images.unsplash.com/photo-1565958011703-44f9829ba187?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Princess Birthday Cake">
-                    <div class="gallery-caption">
-                        <h3>Princess Birthday Cake</h3>
-                        <p>Pink ombre layers with crown and sparkle decorations</p>
-                    </div>
-                </div>
-                
-                <div class="gallery-item">
-                    <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Garden Party Cake">
-                    <div class="gallery-caption">
-                        <h3>Garden Party Cake</h3>
-                        <p>Spring-inspired cake with edible flowers and pastel colors</p>
-                    </div>
-                </div>
-                
-                <div class="gallery-item">
-                    <img src="https://images.unsplash.com/photo-1517686469429-8bdb88b9f907?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Modern Geometric Cake">
-                    <div class="gallery-caption">
-                        <h3>Modern Geometric Cake</h3>
-                        <p>Clean lines and geometric patterns in fondant</p>
-                    </div>
-                </div>
-                
-                <div class="gallery-item">
-                    <img src="https://images.unsplash.com/photo-1551024506-0bccd828d307?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Carrot Cake Comfort">
-                    <div class="gallery-caption">
-                        <h3>Carrot Cake Comfort</h3>
-                        <p>Spiced carrot cake with cream cheese frosting and walnuts</p>
-                    </div>
-                </div>
-                
-                <div class="gallery-item">
-                    <img src="https://images.unsplash.com/photo-1562440499-64c9a111f713?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Chocolate Lovers Dream">
-                    <div class="gallery-caption">
-                        <h3>Chocolate Lovers Dream</h3>
-                        <p>Triple chocolate layers with chocolate ganache and shavings</p>
-                    </div>
+            <div class="gallery-grid" id="instagram-gallery">
+                <!-- Instagram photos will be loaded here dynamically -->
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading Instagram photos...</p>
                 </div>
             </div>
         </div>
     </section>
+
+    <!-- Instagram API Script -->
+    <script>
+        // Instagram Basic Display API Configuration
+        const INSTAGRAM_ACCESS_TOKEN = 'YOUR_INSTAGRAM_ACCESS_TOKEN'; // You'll need to get this
+        const INSTAGRAM_USER_ID = 'YOUR_INSTAGRAM_USER_ID'; // Your Instagram user ID
+        
+        async function loadInstagramPhotos() {
+            const galleryContainer = document.getElementById('instagram-gallery');
+            
+            try {
+                // Fetch recent media from Instagram
+                const response = await fetch(`https://graph.instagram.com/me/media?fields=id,caption,media_type,media_url,thumbnail_url,permalink&access_token=${INSTAGRAM_ACCESS_TOKEN}&limit=12`);
+                const data = await response.json();
+                
+                if (data.data && data.data.length > 0) {
+                    // Clear loading message
+                    galleryContainer.innerHTML = '';
+                    
+                    // Create gallery items for each Instagram post
+                    data.data.forEach(post => {
+                        if (post.media_type === 'IMAGE' || post.media_type === 'CAROUSEL_ALBUM') {
+                            const imageUrl = post.media_url || post.thumbnail_url;
+                            const caption = post.caption ? post.caption.split('\n')[0] : 'Instagram Post';
+                            
+                            const galleryItem = document.createElement('div');
+                            galleryItem.className = 'gallery-item';
+                            galleryItem.innerHTML = `
+                                <img src="${imageUrl}" alt="${caption}" loading="lazy">
+                                <div class="gallery-caption">
+                                    <h3>${caption.substring(0, 30)}${caption.length > 30 ? '...' : ''}</h3>
+                                    <p>From Instagram</p>
+                                </div>
+                                <a href="${post.permalink}" target="_blank" rel="noopener noreferrer" class="instagram-link">
+                                    <i class="fab fa-instagram"></i>
+                                </a>
+                            `;
+                            
+                            galleryContainer.appendChild(galleryItem);
+                        }
+                    });
+                } else {
+                    galleryContainer.innerHTML = '<p>No Instagram photos found. Please check your access token.</p>';
+                }
+            } catch (error) {
+                console.error('Error loading Instagram photos:', error);
+                galleryContainer.innerHTML = '<p>Unable to load Instagram photos. Please try again later.</p>';
+            }
+        }
+        
+        // Load Instagram photos when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Only load if access token is configured
+            if (INSTAGRAM_ACCESS_TOKEN !== 'YOUR_INSTAGRAM_ACCESS_TOKEN') {
+                loadInstagramPhotos();
+            } else {
+                document.getElementById('instagram-gallery').innerHTML = 
+                    '<p>Instagram integration not configured. Please add your Instagram access token.</p>';
+            }
+        });
+    </script>
 
     <!-- CTA Section -->
     <section class="cta-section">
