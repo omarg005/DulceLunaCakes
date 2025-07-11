@@ -145,38 +145,79 @@ const messageContainer = document.getElementById('message-container');
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Admin panel loaded');
+    
+    // Debug: Check if elements exist
+    console.log('Login form:', loginForm);
+    console.log('Admin dashboard:', adminDashboard);
+    console.log('Image grid:', imageGrid);
+    
     // Check if already logged in
     if (localStorage.getItem('adminLoggedIn') === 'true') {
+        console.log('User already logged in');
         showDashboard();
     }
     
     // Login form
-    loginForm.addEventListener('submit', handleLogin);
+    if (loginForm) {
+        loginForm.addEventListener('submit', handleLogin);
+    } else {
+        console.error('Login form not found');
+    }
     
     // Logout
-    logoutBtn.addEventListener('click', handleLogout);
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', handleLogout);
+    } else {
+        console.error('Logout button not found');
+    }
     
     // Page tabs
-    pageTabs.forEach(tab => {
-        tab.addEventListener('click', () => switchPage(tab.dataset.page));
-    });
+    if (pageTabs.length > 0) {
+        pageTabs.forEach(tab => {
+            tab.addEventListener('click', () => switchPage(tab.dataset.page));
+        });
+    } else {
+        console.error('Page tabs not found');
+    }
     
     // Modal controls
-    closeModal.addEventListener('click', closeImageModal);
-    cancelEdit.addEventListener('click', closeImageModal);
+    if (closeModal) {
+        closeModal.addEventListener('click', closeImageModal);
+    } else {
+        console.error('Close modal button not found');
+    }
+    
+    if (cancelEdit) {
+        cancelEdit.addEventListener('click', closeImageModal);
+    } else {
+        console.error('Cancel edit button not found');
+    }
     
     // Image edit form
-    imageEditForm.addEventListener('submit', handleImageEdit);
+    if (imageEditForm) {
+        imageEditForm.addEventListener('submit', handleImageEdit);
+    } else {
+        console.error('Image edit form not found');
+    }
     
     // Save all changes
-    saveAllBtn.addEventListener('click', saveAllChanges);
+    if (saveAllBtn) {
+        saveAllBtn.addEventListener('click', saveAllChanges);
+    } else {
+        console.error('Save all button not found');
+    }
     
     // Close modal on outside click
-    imageModal.addEventListener('click', (e) => {
-        if (e.target === imageModal) {
-            closeImageModal();
-        }
-    });
+    if (imageModal) {
+        imageModal.addEventListener('click', (e) => {
+            if (e.target === imageModal) {
+                closeImageModal();
+            }
+        });
+    } else {
+        console.error('Image modal not found');
+    }
 });
 
 // Authentication Functions
@@ -395,6 +436,9 @@ function updateImageCardPreview(imageId, title, description, imageFile) {
 
 // Save Functions
 async function saveAllChanges() {
+    console.log('Save all changes called');
+    console.log('Current changes:', changes);
+    
     if (Object.keys(changes).length === 0) {
         showMessage('No changes to save', 'error');
         return;
@@ -417,6 +461,8 @@ async function saveAllChanges() {
             };
         });
         
+        console.log('Sending changes to server:', changesArray);
+        
         // Send changes to server
         const response = await fetch('/api/batch-update', {
             method: 'POST',
@@ -426,7 +472,14 @@ async function saveAllChanges() {
             body: JSON.stringify({ changes: changesArray })
         });
         
+        console.log('Server response status:', response.status);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const result = await response.json();
+        console.log('Server response:', result);
         
         if (result.success) {
             changes = {};
@@ -438,6 +491,11 @@ async function saveAllChanges() {
         
     } catch (error) {
         console.error('Error saving changes:', error);
+        console.error('Error details:', {
+            message: error.message,
+            stack: error.stack,
+            type: error.constructor.name
+        });
         showMessage('Error saving changes. Please try again.', 'error');
     }
 }
