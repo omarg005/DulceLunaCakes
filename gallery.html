@@ -59,76 +59,15 @@
     <!-- Gallery Section -->
     <section class="gallery">
         <div class="container">
-            <div class="gallery-grid" id="instagram-gallery">
-                <!-- Instagram photos will be loaded here dynamically -->
+            <div class="gallery-grid" id="gallery-container">
+                <!-- Gallery images will be loaded dynamically from local files -->
                 <div class="loading">
                     <i class="fas fa-spinner fa-spin"></i>
-                    <p>Loading Instagram photos...</p>
+                    <p>Loading gallery...</p>
                 </div>
             </div>
         </div>
     </section>
-
-    <!-- Instagram API Script -->
-    <script>
-        // Instagram Basic Display API Configuration
-        const INSTAGRAM_ACCESS_TOKEN = 'IGQVJ...'; // Replace with your actual access token
-        const INSTAGRAM_USER_ID = 'your-instagram-user-id'; // Replace with your Instagram user ID
-        
-        async function loadInstagramPhotos() {
-            const galleryContainer = document.getElementById('instagram-gallery');
-            
-            try {
-                // Fetch recent media from Instagram
-                const response = await fetch(`https://graph.instagram.com/me/media?fields=id,caption,media_type,media_url,thumbnail_url,permalink&access_token=${INSTAGRAM_ACCESS_TOKEN}&limit=12`);
-                const data = await response.json();
-                
-                if (data.data && data.data.length > 0) {
-                    // Clear loading message
-                    galleryContainer.innerHTML = '';
-                    
-                    // Create gallery items for each Instagram post
-                    data.data.forEach(post => {
-                        if (post.media_type === 'IMAGE' || post.media_type === 'CAROUSEL_ALBUM') {
-                            const imageUrl = post.media_url || post.thumbnail_url;
-                            const caption = post.caption ? post.caption.split('\n')[0] : 'Instagram Post';
-                            
-                            const galleryItem = document.createElement('div');
-                            galleryItem.className = 'gallery-item';
-                            galleryItem.innerHTML = `
-                                <img src="${imageUrl}" alt="${caption}" loading="lazy">
-                                <div class="gallery-caption">
-                                    <h3>${caption.substring(0, 30)}${caption.length > 30 ? '...' : ''}</h3>
-                                    <p>From Instagram</p>
-                                </div>
-                                <a href="${post.permalink}" target="_blank" rel="noopener noreferrer" class="instagram-link">
-                                    <i class="fab fa-instagram"></i>
-                                </a>
-                            `;
-                            
-                            galleryContainer.appendChild(galleryItem);
-                        }
-                    });
-                } else {
-                    galleryContainer.innerHTML = '<p>No Instagram photos found. Please check your access token.</p>';
-                }
-            } catch (error) {
-                console.error('Error loading Instagram photos:', error);
-                galleryContainer.innerHTML = '<p>Unable to load Instagram photos. Please try again later.</p>';
-            }
-        }
-        
-        // Load Instagram photos when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            // Only load if access token is configured
-            if (INSTAGRAM_ACCESS_TOKEN !== 'YOUR_INSTAGRAM_ACCESS_TOKEN') {
-                loadInstagramPhotos();
-            } else {
-                document.getElementById('instagram-gallery').innerHTML = 
-                    '<p>Instagram integration not configured. Please add your Instagram access token.</p>';
-            }
-        });
-    </script>
 
     <!-- CTA Section -->
     <section class="cta-section">
@@ -186,6 +125,50 @@
     <button class="scroll-top" id="scroll-top">
         <i class="fas fa-chevron-up"></i>
     </button>
+
+    <!-- Gallery Loading Script -->
+    <script>
+        // Load gallery images from local files
+        async function loadGalleryImages() {
+            const galleryContainer = document.getElementById('gallery-container');
+            
+            try {
+                // Load gallery data from JSON file
+                const response = await fetch('images/gallery/gallery_data.json');
+                const galleryData = await response.json();
+                
+                // Clear loading message
+                galleryContainer.innerHTML = '';
+                
+                // Create gallery items for each image
+                galleryData.forEach(item => {
+                    const galleryItem = document.createElement('div');
+                    galleryItem.className = 'gallery-item';
+                    galleryItem.innerHTML = `
+                        <img src="${item.path}" alt="${item.title}" loading="lazy">
+                        <div class="gallery-caption">
+                            <h3>${item.title}</h3>
+                            <p>${item.description}</p>
+                        </div>
+                    `;
+                    
+                    galleryContainer.appendChild(galleryItem);
+                });
+                
+                // Reinitialize lightbox for new images
+                if (window.initializeLightbox) {
+                    window.initializeLightbox();
+                }
+                
+            } catch (error) {
+                console.error('Error loading gallery images:', error);
+                galleryContainer.innerHTML = '<p>Unable to load gallery images. Please try again later.</p>';
+            }
+        }
+        
+        // Load gallery when page loads
+        document.addEventListener('DOMContentLoaded', loadGalleryImages);
+    </script>
 
     <!-- JavaScript -->
     <script src="script.js"></script>

@@ -1,0 +1,74 @@
+[
+  {
+    "filename": "ChocolateFloralTier.jpg",
+    "title": "Chocolate Floral Tier",
+    "description": "A stunning three-tier chocolate cake adorned with delicate sugar flowers and gold accents",
+    "path": "images/gallery/ChocolateFloralTier.jpg"
+  },
+  {
+    "filename": "UnicornBirthdayMagic.jpg",
+    "title": "Unicorn Birthday Magic",
+    "description": "Colorful layers with rainbow frosting and magical unicorn decorations",
+    "path": "images/gallery/UnicornBirthdayMagic.jpg"
+  },
+  {
+    "filename": "RusticWeddingCake.jpg",
+    "title": "Rustic Wedding Cake",
+    "description": "Elegant naked cake with fresh flowers and rustic charm",
+    "path": "images/gallery/RusticWeddingCake.jpg"
+  },
+  {
+    "filename": "VanillaButtercreamDream.jpg",
+    "title": "Vanilla Buttercream Dream",
+    "description": "Classic vanilla cake with smooth buttercream frosting",
+    "path": "images/gallery/VanillaButtercreamDream.jpg"
+  },
+  {
+    "filename": "RedVelvetElegance.jpg",
+    "title": "Red Velvet Elegance",
+    "description": "Rich red velvet with cream cheese frosting and gold accents",
+    "path": "images/gallery/RedVelvetElegance.jpg"
+  },
+  {
+    "filename": "LemonZestDelight.jpg",
+    "title": "Lemon Zest Delight",
+    "description": "Fresh lemon cake with citrus glaze and edible flowers",
+    "path": "images/gallery/LemonZestDelight.jpg"
+  },
+  {
+    "filename": "MarbleMasterpiece.jpg",
+    "title": "Marble Masterpiece",
+    "description": "Swirled chocolate and vanilla with ganache drizzle",
+    "path": "images/gallery/MarbleMasterpiece.jpg"
+  },
+  {
+    "filename": "PrincessBirthdayCake.jpg",
+    "title": "Princess Birthday Cake",
+    "description": "Pink ombre layers with crown and sparkle decorations",
+    "path": "images/gallery/PrincessBirthdayCake.jpg"
+  },
+  {
+    "filename": "GardenPartyCake.jpg",
+    "title": "Garden Party Cake",
+    "description": "Spring-inspired cake with edible flowers and pastel colors",
+    "path": "images/gallery/GardenPartyCake.jpg"
+  },
+  {
+    "filename": "ModernGeometricCake.jpg",
+    "title": "Modern Geometric Cake",
+    "description": "Clean lines and geometric patterns in fondant",
+    "path": "images/gallery/ModernGeometricCake.jpg"
+  },
+  {
+    "filename": "CarrotCakeComfort.jpg",
+    "title": "Carrot Cake Comfort",
+    "description": "Spiced carrot cake with cream cheese frosting and walnuts",
+    "path": "images/gallery/CarrotCakeComfort.jpg"
+  },
+  {
+    "filename": "ChocolateLoversDream.jpg",
+    "title": "Chocolate Lovers Dream",
+    "description": "Triple chocolate layers with chocolate ganache and shavings",
+    "path": "images/gallery/ChocolateLoversDream.jpg"
+  }
+]

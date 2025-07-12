@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Dulce Luna Cakes</title>
-    <meta name="description" content="Admin panel for managing website content and images">
-    
-
+    <meta name="description" content="Admin panel for managing Dulce Luna Cakes website content and images.">
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,14 +20,14 @@
 </head>
 <body>
     <!-- Login Screen -->
-    <div id="login-screen" class="login-screen">
+    <div class="login-screen" id="login-screen">
         <div class="login-container">
             <div class="login-header">
                 <i class="fas fa-moon"></i>
                 <h1>Dulce Luna Cakes</h1>
                 <h2>Admin Panel</h2>
             </div>
-            <form id="login-form" class="login-form">
+            <form class="login-form" id="login-form">
                 <div class="form-group">
                     <label for="username">Username</label>
                     <input type="text" id="username" name="username" required>
@@ -43,55 +41,69 @@
                     Login
                 </button>
             </form>
-            <div id="login-error" class="login-error hidden"></div>
+            <div class="login-error" id="login-error" style="display: none;"></div>
         </div>
     </div>
 
     <!-- Admin Dashboard -->
-    <div id="admin-dashboard" class="admin-dashboard hidden">
-        <!-- Header -->
+    <div class="admin-dashboard hidden" id="admin-dashboard">
+        <!-- Admin Header -->
         <header class="admin-header">
             <div class="admin-header-content">
                 <div class="admin-logo">
                     <i class="fas fa-moon"></i>
-                    <span>Dulce Luna Cakes - Admin</span>
+                    Dulce Luna Cakes - Admin
                 </div>
-                <div class="admin-actions">
-                    <button id="logout-btn" class="logout-button">
-                        <i class="fas fa-sign-out-alt"></i>
-                        Logout
-                    </button>
+                <button class="logout-button" id="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+                <div class="nav-toggle" id="nav-toggle">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
                 </div>
             </div>
         </header>
 
-        <!-- Main Content -->
+        <!-- Admin Main Content -->
         <main class="admin-main">
             <div class="admin-container">
-                <!-- Page Selection -->
+                <!-- Page Selector -->
                 <div class="page-selector">
                     <h2>Select Page to Manage</h2>
                     <div class="page-tabs">
-                        <button class="page-tab active" data-page="index">Home Page</button>
-                        <button class="page-tab" data-page="gallery">Gallery</button>
-                        <button class="page-tab" data-page="about">About</button>
-                        <button class="page-tab" data-page="requests">Review Requests</button>
+                        <button class="page-tab active" data-page="index">
+                            <i class="fas fa-home"></i>
+                            Home Page
+                        </button>
+                        <button class="page-tab" data-page="gallery">
+                            <i class="fas fa-images"></i>
+                            Gallery
+                        </button>
+                        <button class="page-tab" data-page="about">
+                            <i class="fas fa-user"></i>
+                            About Page
+                        </button>
+                        <button class="page-tab" data-page="requests">
+                            <i class="fas fa-clipboard-list"></i>
+                            Cake Requests
+                        </button>
                     </div>
                 </div>
 
-                <!-- Content Management -->
+                <!-- Content Manager -->
                 <div class="content-manager">
                     <div class="content-header">
                         <h3 id="page-title">Home Page Content</h3>
-                        <button id="save-all-btn" class="save-button">
+                        <button class="save-button" id="save-all-btn">
                             <i class="fas fa-save"></i>
                             Save All Changes
                         </button>
                     </div>
-
-                    <!-- Image Management Grid -->
-                    <div id="image-grid" class="image-grid">
-                        <!-- Images will be loaded here dynamically -->
+                    
+                    <div class="image-grid" id="image-grid">
+                        <!-- Images will be loaded here -->
                     </div>
                 </div>
             </div>
@@ -99,98 +111,69 @@
     </div>
 
     <!-- Image Edit Modal -->
-    <div id="image-modal" class="modal hidden">
+    <div class="modal hidden" id="image-modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Edit Image & Content</h3>
-                <button id="close-modal" class="close-button">
-                    <i class="fas fa-times"></i>
-                </button>
+                <h3>Edit Image</h3>
+                <button class="close-button" id="close-modal">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="image-preview">
-                    <img id="current-image" src="" alt="Current Image">
-                </div>
-                <form id="image-edit-form" class="image-edit-form">
+                <form class="image-edit-form" id="image-edit-form">
+                    <div class="form-group">
+                        <label for="current-image">Current Image</label>
+                        <img id="current-image" src="" alt="Current image" style="max-width: 100%; height: 200px; object-fit: cover; border-radius: var(--border-radius);">
+                    </div>
                     <div class="form-group">
                         <label for="new-image">Upload New Image</label>
-                        <input type="file" id="new-image" name="new-image" accept="image/*">
+                        <input type="file" id="new-image" name="image" accept="image/*">
                         <small>Recommended: 1000x1000px, max 5MB</small>
                     </div>
                     <div class="form-group">
-                        <label for="image-title">Image Title</label>
-                        <input type="text" id="image-title" name="image-title" required>
+                        <label for="image-title">Title</label>
+                        <input type="text" id="image-title" name="title" required>
                     </div>
                     <div class="form-group">
                         <label for="image-description">Description</label>
-                        <textarea id="image-description" name="image-description" rows="3" required></textarea>
+                        <textarea id="image-description" name="description" rows="3" required></textarea>
                     </div>
                     <div class="form-actions">
-                        <button type="button" id="cancel-edit" class="cancel-button">Cancel</button>
-                        <button type="submit" class="save-button">
-                            <i class="fas fa-save"></i>
-                            Save Changes
-                        </button>
+                        <button type="button" class="cancel-button" id="cancel-edit">Cancel</button>
+                        <button type="submit" class="save-button">Save Changes</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- Status Update Modal -->
-    <div id="status-modal" class="modal hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Update Status</h3>
-                <button id="close-status-modal" class="close-button">
-                    <i class="fas fa-times"></i>
-                </button>
+    <!-- Message Container -->
+    <div class="message-container" id="message-container"></div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Dulce Luna Cakes - Admin</h3>
+                    <p>Website content management system</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Quick Actions</h4>
+                    <ul class="footer-links">
+                        <li><a href="index.html">View Website</a></li>
+                        <li><a href="gallery.html">View Gallery</a></li>
+                        <li><a href="request.html">View Request Form</a></li>
+                    </ul>
+                </div>
             </div>
-            <div class="modal-body">
-                <form id="status-update-form" class="status-update-form">
-                    <div class="form-group">
-                        <label for="status-select">New Status</label>
-                        <select id="status-select" name="status-select" required>
-                            <option value="pending">Pending</option>
-                            <option value="reviewed">Reviewed</option>
-                            <option value="approved">Approved</option>
-                            <option value="in-progress">In Progress</option>
-                            <option value="completed">Completed</option>
-                            <option value="cancelled">Cancelled</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="status-notes">Admin Notes (optional)</label>
-                        <textarea id="status-notes" name="status-notes" rows="2"></textarea>
-                    </div>
-                    <div class="form-actions">
-                        <button type="button" id="cancel-status-update" class="cancel-button">Cancel</button>
-                        <button type="submit" class="save-button">Update Status</button>
-                    </div>
-                </form>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 Dulce Luna Cakes. Admin Panel.</p>
             </div>
         </div>
-    </div>
-    
-    <!-- Request Details Modal -->
-    <div id="details-modal" class="modal hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Request Details</h3>
-                <button id="close-details-modal" class="close-button">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body" id="details-modal-body">
-                <!-- Details will be populated dynamically -->
-            </div>
-        </div>
-    </div>
+    </footer>
 
-    <!-- Success/Error Messages -->
-    <div id="message-container" class="message-container"></div>
-
-    <!-- JavaScript -->
+    <!-- Admin JavaScript -->
     <script src="admin.js"></script>
 </body>
 </html> 

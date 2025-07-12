@@ -86,7 +86,7 @@ const PAGE_CONTENT = {
                 id: 'hi-im-luna',
                 name: 'Hi, I\'m Luna',
                 currentImage: 'images/about/HiImLuna.avif',
-                currentTitle: 'Hi, I\'m Luna!',
+                currentTitle: 'Hi, I\'m Nomi!',
                 currentDescription: 'Baking has always been my love language. From the moment I first mixed flour and sugar in my grandmother\'s kitchen, I knew that creating sweet moments through cake was my calling.',
                 targetFile: 'images/about/HiImLuna.avif',
                 targetElements: {
@@ -102,18 +102,160 @@ const PAGE_CONTENT = {
         images: [
             {
                 id: 'gallery-1',
-                name: 'Gallery Image 1',
-                currentImage: 'images/gallery/gallery1.avif',
-                currentTitle: 'Gallery Image 1',
-                currentDescription: 'Beautiful cake creation',
-                targetFile: 'images/gallery/gallery1.avif',
+                name: 'Chocolate Floral Tier',
+                currentImage: 'images/gallery/ChocolateFloralTier.jpg',
+                currentTitle: 'Chocolate Floral Tier',
+                currentDescription: 'A stunning three-tier chocolate cake adorned with delicate sugar flowers and gold accents',
+                targetFile: 'images/gallery/ChocolateFloralTier.jpg',
                 targetElements: {
                     image: '.gallery-item:nth-child(1) img',
                     title: '.gallery-item:nth-child(1) h3',
                     description: '.gallery-item:nth-child(1) p'
                 }
+            },
+            {
+                id: 'gallery-2',
+                name: 'Unicorn Birthday Magic',
+                currentImage: 'images/gallery/UnicornBirthdayMagic.jpg',
+                currentTitle: 'Unicorn Birthday Magic',
+                currentDescription: 'Colorful layers with rainbow frosting and magical unicorn decorations',
+                targetFile: 'images/gallery/UnicornBirthdayMagic.jpg',
+                targetElements: {
+                    image: '.gallery-item:nth-child(2) img',
+                    title: '.gallery-item:nth-child(2) h3',
+                    description: '.gallery-item:nth-child(2) p'
+                }
+            },
+            {
+                id: 'gallery-3',
+                name: 'Rustic Wedding Cake',
+                currentImage: 'images/gallery/RusticWeddingCake.jpg',
+                currentTitle: 'Rustic Wedding Cake',
+                currentDescription: 'Elegant naked cake with fresh flowers and rustic charm',
+                targetFile: 'images/gallery/RusticWeddingCake.jpg',
+                targetElements: {
+                    image: '.gallery-item:nth-child(3) img',
+                    title: '.gallery-item:nth-child(3) h3',
+                    description: '.gallery-item:nth-child(3) p'
+                }
+            },
+            {
+                id: 'gallery-4',
+                name: 'Vanilla Buttercream Dream',
+                currentImage: 'images/gallery/VanillaButtercreamDream.jpg',
+                currentTitle: 'Vanilla Buttercream Dream',
+                currentDescription: 'Classic vanilla cake with smooth buttercream frosting',
+                targetFile: 'images/gallery/VanillaButtercreamDream.jpg',
+                targetElements: {
+                    image: '.gallery-item:nth-child(4) img',
+                    title: '.gallery-item:nth-child(4) h3',
+                    description: '.gallery-item:nth-child(4) p'
+                }
+            },
+            {
+                id: 'gallery-5',
+                name: 'Red Velvet Elegance',
+                currentImage: 'images/gallery/RedVelvetElegance.jpg',
+                currentTitle: 'Red Velvet Elegance',
+                currentDescription: 'Rich red velvet with cream cheese frosting and gold accents',
+                targetFile: 'images/gallery/RedVelvetElegance.jpg',
+                targetElements: {
+                    image: '.gallery-item:nth-child(5) img',
+                    title: '.gallery-item:nth-child(5) h3',
+                    description: '.gallery-item:nth-child(5) p'
+                }
+            },
+            {
+                id: 'gallery-6',
+                name: 'Lemon Zest Delight',
+                currentImage: 'images/gallery/LemonZestDelight.jpg',
+                currentTitle: 'Lemon Zest Delight',
+                currentDescription: 'Fresh lemon cake with citrus glaze and edible flowers',
+                targetFile: 'images/gallery/LemonZestDelight.jpg',
+                targetElements: {
+                    image: '.gallery-item:nth-child(6) img',
+                    title: '.gallery-item:nth-child(6) h3',
+                    description: '.gallery-item:nth-child(6) p'
+                }
+            },
+            {
+                id: 'gallery-7',
+                name: 'Marble Masterpiece',
+                currentImage: 'images/gallery/MarbleMasterpiece.jpg',
+                currentTitle: 'Marble Masterpiece',
+                currentDescription: 'Swirled chocolate and vanilla with ganache drizzle',
+                targetFile: 'images/gallery/MarbleMasterpiece.jpg',
+                targetElements: {
+                    image: '.gallery-item:nth-child(7) img',
+                    title: '.gallery-item:nth-child(7) h3',
+                    description: '.gallery-item:nth-child(7) p'
+                }
+            },
+            {
+                id: 'gallery-8',
+                name: 'Princess Birthday Cake',
+                currentImage: 'images/gallery/PrincessBirthdayCake.jpg',
+                currentTitle: 'Princess Birthday Cake',
+                currentDescription: 'Pink ombre layers with crown and sparkle decorations',
+                targetFile: 'images/gallery/PrincessBirthdayCake.jpg',
+                targetElements: {
+                    image: '.gallery-item:nth-child(8) img',
+                    title: '.gallery-item:nth-child(8) h3',
+                    description: '.gallery-item:nth-child(8) p'
+                }
+            },
+            {
+                id: 'gallery-9',
+                name: 'Garden Party Cake',
+                currentImage: 'images/gallery/GardenPartyCake.jpg',
+                currentTitle: 'Garden Party Cake',
+                currentDescription: 'Spring-inspired cake with edible flowers and pastel colors',
+                targetFile: 'images/gallery/GardenPartyCake.jpg',
+                targetElements: {
+                    image: '.gallery-item:nth-child(9) img',
+                    title: '.gallery-item:nth-child(9) h3',
+                    description: '.gallery-item:nth-child(9) p'
+                }
+            },
+            {
+                id: 'gallery-10',
+                name: 'Modern Geometric Cake',
+                currentImage: 'images/gallery/ModernGeometricCake.jpg',
+                currentTitle: 'Modern Geometric Cake',
+                currentDescription: 'Clean lines and geometric patterns in fondant',
+                targetFile: 'images/gallery/ModernGeometricCake.jpg',
+                targetElements: {
+                    image: '.gallery-item:nth-child(10) img',
+                    title: '.gallery-item:nth-child(10) h3',
+                    description: '.gallery-item:nth-child(10) p'
+                }
+            },
+            {
+                id: 'gallery-11',
+                name: 'Carrot Cake Comfort',
+                currentImage: 'images/gallery/CarrotCakeComfort.jpg',
+                currentTitle: 'Carrot Cake Comfort',
+                currentDescription: 'Spiced carrot cake with cream cheese frosting and walnuts',
+                targetFile: 'images/gallery/CarrotCakeComfort.jpg',
+                targetElements: {
+                    image: '.gallery-item:nth-child(11) img',
+                    title: '.gallery-item:nth-child(11) h3',
+                    description: '.gallery-item:nth-child(11) p'
+                }
+            },
+            {
+                id: 'gallery-12',
+                name: 'Chocolate Lovers Dream',
+                currentImage: 'images/gallery/ChocolateLoversDream.jpg',
+                currentTitle: 'Chocolate Lovers Dream',
+                currentDescription: 'Triple chocolate layers with chocolate ganache and shavings',
+                targetFile: 'images/gallery/ChocolateLoversDream.jpg',
+                targetElements: {
+                    image: '.gallery-item:nth-child(12) img',
+                    title: '.gallery-item:nth-child(12) h3',
+                    description: '.gallery-item:nth-child(12) p'
+                }
             }
-            // Add more gallery images as needed
         ]
     },
     requests: {
@@ -127,135 +269,27 @@ let currentPage = 'index';
 let currentEditingImage = null;
 let changes = {};
 
-// DOM Elements
-const loginScreen = document.getElementById('login-screen');
-const adminDashboard = document.getElementById('admin-dashboard');
-const loginForm = document.getElementById('login-form');
-const loginError = document.getElementById('login-error');
-const logoutBtn = document.getElementById('logout-btn');
-const pageTabs = document.querySelectorAll('.page-tab');
-const pageTitle = document.getElementById('page-title');
-const imageGrid = document.getElementById('image-grid');
-const saveAllBtn = document.getElementById('save-all-btn');
-const imageModal = document.getElementById('image-modal');
-const closeModal = document.getElementById('close-modal');
-const cancelEdit = document.getElementById('cancel-edit');
-const imageEditForm = document.getElementById('image-edit-form');
-const currentImage = document.getElementById('current-image');
-const newImageInput = document.getElementById('new-image');
-const imageTitleInput = document.getElementById('image-title');
-const imageDescriptionInput = document.getElementById('image-description');
-const messageContainer = document.getElementById('message-container');
-
-// Modal elements for status update
-const statusModal = document.getElementById('status-modal');
-const closeStatusModalBtn = document.getElementById('close-status-modal');
-const statusUpdateForm = document.getElementById('status-update-form');
-const statusSelect = document.getElementById('status-select');
-const statusNotes = document.getElementById('status-notes');
-const cancelStatusUpdateBtn = document.getElementById('cancel-status-update');
-let currentStatusSubmissionId = null;
-
-function openStatusModal(submissionId, currentStatus = 'pending', currentNotes = '') {
-    currentStatusSubmissionId = submissionId;
-    statusSelect.value = currentStatus;
-    statusNotes.value = currentNotes || '';
-    statusModal.classList.remove('hidden');
-}
-
-function closeStatusModal() {
-    currentStatusSubmissionId = null;
-    statusModal.classList.add('hidden');
-}
-
-closeStatusModalBtn.addEventListener('click', closeStatusModal);
-cancelStatusUpdateBtn.addEventListener('click', closeStatusModal);
-
-statusUpdateForm.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const status = statusSelect.value;
-    const notes = statusNotes.value;
-    if (!currentStatusSubmissionId) return;
-    try {
-        const response = await fetch(`http://localhost:3002/api/submissions/${currentStatusSubmissionId}/status`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ status, notes })
-        });
-        const result = await response.json();
-        if (result.success) {
-            showMessage('Request status updated successfully!', 'success');
-            loadRequests();
-        } else {
-            showMessage('Error updating status: ' + result.message, 'error');
-        }
-    } catch (error) {
-        console.error('Error updating status:', error);
-        showMessage('Error updating status. Please try again.', 'error');
-    }
-    closeStatusModal();
-});
-
-// Modal elements for request details
-const detailsModal = document.getElementById('details-modal');
-const closeDetailsModalBtn = document.getElementById('close-details-modal');
-const detailsModalBody = document.getElementById('details-modal-body');
-
-function openDetailsModal(submission) {
-    // Build the details HTML
-    detailsModalBody.innerHTML = `
-        <div class="details-section">
-            <h4>Contact Information</h4>
-            <p><strong>Name:</strong> ${submission.name}</p>
-            <p><strong>Email:</strong> ${submission.email}</p>
-            <p><strong>Phone:</strong> ${submission.phone}</p>
-        </div>
-        <div class="details-section">
-            <h4>Event Details</h4>
-            <p><strong>Date Needed:</strong> ${submission['date-needed']}</p>
-            <p><strong>Event Type:</strong> ${submission['event-type'] || 'Not specified'}</p>
-            <p><strong>Event Address:</strong> ${submission['event-address'] || 'Not specified'}</p>
-            <p><strong>City:</strong> ${submission['event-city'] || 'Not specified'}</p>
-            <p><strong>Zip Code:</strong> ${submission['event-zip'] || 'Not specified'}</p>
-        </div>
-        <div class="details-section">
-            <h4>Cake Specifications</h4>
-            <p><strong>Size:</strong> ${submission['cake-size']}</p>
-            <p><strong>Flavor:</strong> ${submission['cake-flavor']}</p>
-            <p><strong>Frosting:</strong> ${submission['frosting-type'] || 'Not specified'}</p>
-        </div>
-        <div class="details-section">
-            <h4>Design Details</h4>
-            <p><strong>Description:</strong> ${submission['design-description']}</p>
-            <p><strong>Color Scheme:</strong> ${submission['color-scheme'] || 'Not specified'}</p>
-            <p><strong>Special Requests:</strong> ${submission['special-requests'] || 'None'}</p>
-            <p><strong>Inspiration Links:</strong> ${submission['inspiration-links'] || 'None'}</p>
-        </div>
-        <div class="details-section">
-            <h4>Status & Notes</h4>
-            <p><strong>Status:</strong> ${getStatusText(submission.status)}</p>
-            <p><strong>Admin Notes:</strong> ${submission.adminNotes || 'None'}</p>
-        </div>
-        <div class="details-section">
-            <h4>Submitted</h4>
-            <p>${new Date(submission.timestamp).toLocaleString()}</p>
-        </div>
-        ${submission.referenceImage ? `<div class="details-section"><h4>Reference Image</h4><img src="${submission.referenceImage}" alt="Reference" class="reference-image"></div>` : ''}
-    `;
-    detailsModal.classList.remove('hidden');
-}
-
-function closeDetailsModal() {
-    detailsModal.classList.add('hidden');
-    detailsModalBody.innerHTML = '';
-}
-
-closeDetailsModalBtn.addEventListener('click', closeDetailsModal);
-
 // Event Listeners
 document.addEventListener('DOMContentLoaded', function() {
+    // DOM Elements - moved inside DOMContentLoaded
+    const loginScreen = document.getElementById('login-screen');
+    const adminDashboard = document.getElementById('admin-dashboard');
+    const loginForm = document.getElementById('login-form');
+    const loginError = document.getElementById('login-error');
+    const logoutBtn = document.getElementById('logout-btn');
+    const pageTabs = document.querySelectorAll('.page-tab');
+    const pageTitle = document.getElementById('page-title');
+    const imageGrid = document.getElementById('image-grid');
+    const saveAllBtn = document.getElementById('save-all-btn');
+    const imageModal = document.getElementById('image-modal');
+    const closeModal = document.getElementById('close-modal');
+    const cancelEdit = document.getElementById('cancel-edit');
+    const imageEditForm = document.getElementById('image-edit-form');
+    const currentImage = document.getElementById('current-image');
+    const newImageInput = document.getElementById('new-image');
+    const imageTitleInput = document.getElementById('image-title');
+    const imageDescriptionInput = document.getElementById('image-description');
+    const messageContainer = document.getElementById('message-container');
     console.log('Admin panel loaded');
     
     // Debug: Check if elements exist
@@ -284,7 +318,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Page tabs
-    if (pageTabs.length > 0) {
+    if (pageTabs && pageTabs.length > 0) {
         pageTabs.forEach(tab => {
             tab.addEventListener('click', () => switchPage(tab.dataset.page));
         });
@@ -329,6 +363,15 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         console.error('Image modal not found');
     }
+    
+    // Mobile navigation toggle
+    const navToggle = document.getElementById('nav-toggle');
+    if (navToggle) {
+        navToggle.addEventListener('click', function() {
+            this.classList.toggle('active');
+            // Add any mobile menu functionality here if needed
+        });
+    }
 });
 
 // Authentication Functions
@@ -337,6 +380,8 @@ function handleLogin(e) {
     
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
+    
+    console.log('Login attempt:', { username, password });
     
     if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
         localStorage.setItem('adminLoggedIn', 'true');
@@ -354,21 +399,39 @@ function handleLogout() {
 }
 
 function showLoginScreen() {
+    const loginScreen = document.getElementById('login-screen');
+    const adminDashboard = document.getElementById('admin-dashboard');
+    const loginForm = document.getElementById('login-form');
+    const loginError = document.getElementById('login-error');
+    
     loginScreen.classList.remove('hidden');
     adminDashboard.classList.add('hidden');
     loginForm.reset();
-    loginError.classList.add('hidden');
+    loginError.style.display = 'none';
 }
 
 function showDashboard() {
-    loginScreen.classList.add('hidden');
-    adminDashboard.classList.remove('hidden');
-    loadPageContent(currentPage);
+    console.log('showDashboard called');
+    const loginScreen = document.getElementById('login-screen');
+    const adminDashboard = document.getElementById('admin-dashboard');
+    
+    console.log('loginScreen:', loginScreen);
+    console.log('adminDashboard:', adminDashboard);
+    
+    if (loginScreen && adminDashboard) {
+        loginScreen.classList.add('hidden');
+        adminDashboard.classList.remove('hidden');
+        console.log('Dashboard should now be visible');
+        loadPageContent(currentPage);
+    } else {
+        console.error('Login screen or admin dashboard not found');
+    }
 }
 
 function showLoginError(message) {
+    const loginError = document.getElementById('login-error');
     loginError.textContent = message;
-    loginError.classList.remove('hidden');
+    loginError.style.display = 'block';
 }
 
 // Page Management Functions
@@ -376,6 +439,7 @@ function switchPage(page) {
     currentPage = page;
     
     // Update active tab
+    const pageTabs = document.querySelectorAll('.page-tab');
     pageTabs.forEach(tab => {
         tab.classList.toggle('active', tab.dataset.page === page);
     });
@@ -388,6 +452,7 @@ function loadPageContent(page) {
     const content = PAGE_CONTENT[page];
     if (!content) return;
     
+    const pageTitle = document.getElementById('page-title');
     pageTitle.textContent = content.title;
     
     if (content.isRequestsPage) {
@@ -398,11 +463,20 @@ function loadPageContent(page) {
 }
 
 function renderImageGrid(images) {
+    const imageGrid = document.getElementById('image-grid');
     imageGrid.innerHTML = '';
     
     images.forEach(image => {
         const imageCard = createImageCard(image);
         imageGrid.appendChild(imageCard);
+    });
+    
+    // Add error handling for images
+    const imageElements = imageGrid.querySelectorAll('.image-preview img');
+    imageElements.forEach(img => {
+        img.addEventListener('error', function() {
+            this.parentElement.innerHTML = '<div class="placeholder">Image not found</div>';
+        });
     });
 }
 
@@ -418,7 +492,7 @@ function createImageCard(image) {
         </div>
         <div class="image-card-content">
             <div class="image-preview">
-                <img src="${image.currentImage}" alt="${image.currentTitle}" onerror="this.parentElement.innerHTML='<div class=\'placeholder\'>Image not found</div>'">
+                <img src="${image.currentImage}" alt="${image.currentTitle}">
             </div>
             <div class="image-info">
                 <p><strong>Title:</strong> ${image.currentTitle}</p>
@@ -446,6 +520,11 @@ function editImage(imageId) {
     currentEditingImage = image;
     
     // Populate modal
+    const currentImage = document.getElementById('current-image');
+    const imageTitleInput = document.getElementById('image-title');
+    const imageDescriptionInput = document.getElementById('image-description');
+    const imageModal = document.getElementById('image-modal');
+    
     currentImage.src = image.currentImage;
     imageTitleInput.value = image.currentTitle;
     imageDescriptionInput.value = image.currentDescription;
@@ -455,15 +534,22 @@ function editImage(imageId) {
 }
 
 function closeImageModal() {
+    const imageModal = document.getElementById('image-modal');
+    const imageEditForm = document.getElementById('image-edit-form');
+    
     imageModal.classList.add('hidden');
     currentEditingImage = null;
     imageEditForm.reset();
 }
 
-async function handleImageEdit(e) {
+function handleImageEdit(e) {
     e.preventDefault();
     
     if (!currentEditingImage) return;
+    
+    const newImageInput = document.getElementById('new-image');
+    const imageTitleInput = document.getElementById('image-title');
+    const imageDescriptionInput = document.getElementById('image-description');
     
     const newImageFile = newImageInput.files[0];
     const newTitle = imageTitleInput.value.trim();
@@ -485,45 +571,9 @@ async function handleImageEdit(e) {
         description: newDescription
     };
     
-            if (newImageFile) {
-            changes[currentEditingImage.id].newImage = newImageFile;
-            
-            // Upload image immediately
-            try {
-                const formData = new FormData();
-                formData.append('image', newImageFile);
-                formData.append('page', currentPage);
-                formData.append('imageId', currentEditingImage.id);
-                formData.append('title', newTitle);
-                formData.append('description', newDescription);
-                formData.append('targetFile', currentEditingImage.targetFile);
-                formData.append('folder', currentEditingImage.targetFile.split('/').slice(0, -1).join('/'));
-                formData.append('filename', currentEditingImage.targetFile.split('/').pop());
-                
-                const response = await fetch('/api/update-content', {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    showMessage('Image uploaded successfully!', 'success');
-                    
-                    // If this is the hero background, refresh the page to show the new background
-                    if (currentEditingImage.isHero) {
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 1000);
-                    }
-                } else {
-                    showMessage('Error uploading image: ' + result.message, 'error');
-                }
-            } catch (error) {
-                console.error('Error uploading image:', error);
-                showMessage('Error uploading image. Please try again.', 'error');
-            }
-        }
+    if (newImageFile) {
+        changes[currentEditingImage.id].newImage = newImageFile;
+    }
     
     // Update the image card preview
     updateImageCardPreview(currentEditingImage.id, newTitle, newDescription, newImageFile);
@@ -533,6 +583,7 @@ async function handleImageEdit(e) {
 }
 
 function updateImageCardPreview(imageId, title, description, imageFile) {
+    const imageGrid = document.getElementById('image-grid');
     const card = imageGrid.querySelector(`[onclick="editImage('${imageId}')"]`).closest('.image-card');
     const titleElement = card.querySelector('.image-info p:first-child');
     const descriptionElement = card.querySelector('.image-info p:last-child');
@@ -551,7 +602,7 @@ function updateImageCardPreview(imageId, title, description, imageFile) {
 }
 
 // Save Functions
-async function saveAllChanges() {
+function saveAllChanges() {
     console.log('Save all changes called');
     console.log('Current changes:', changes);
     
@@ -562,243 +613,255 @@ async function saveAllChanges() {
     
     showMessage('Saving changes...', 'success');
     
-    try {
-        const changesArray = Object.keys(changes).map(imageId => {
-            const change = changes[imageId];
-            const content = PAGE_CONTENT[currentPage];
-            const image = content.images.find(img => img.id === imageId);
-            
-            return {
-                page: currentPage,
-                imageId: imageId,
-                title: change.title || image.currentTitle,
-                description: change.description || image.currentDescription,
-                targetFile: image.targetFile
-            };
-        });
-        
-        console.log('Sending changes to server:', changesArray);
-        
-        // Send changes to server
-        const response = await fetch('/api/batch-update', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ changes: changesArray })
-        });
-        
-        console.log('Server response status:', response.status);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const result = await response.json();
-        console.log('Server response:', result);
-        
-        if (result.success) {
-            changes = {};
-            showMessage('All changes saved successfully!', 'success');
-            loadPageContent(currentPage);
-        } else {
-            showMessage('Error saving changes: ' + result.message, 'error');
-        }
-        
-    } catch (error) {
-        console.error('Error saving changes:', error);
-        console.error('Error details:', {
-            message: error.message,
-            stack: error.stack,
-            type: error.constructor.name
-        });
-        showMessage('Error saving changes. Please try again.', 'error');
-    }
-}
-
-function applyChangesToWebsite() {
-    // This function would apply changes to the actual website files
-    // In a real implementation, this would involve server-side processing
-    
+    // Apply changes to the current page content
     Object.keys(changes).forEach(imageId => {
         const change = changes[imageId];
         const content = PAGE_CONTENT[currentPage];
         const image = content.images.find(img => img.id === imageId);
         
         if (image) {
-            // Update the image data
             if (change.title) image.currentTitle = change.title;
             if (change.description) image.currentDescription = change.description;
-            
-            // In a real implementation, you would:
-            // 1. Upload the new image file to the server
-            // 2. Update the HTML files with new content
-            // 3. Update any database or configuration files
         }
     });
+    
+    // Generate comprehensive changes data for Python script
+    generateChangesData();
+    
+    changes = {};
+    showMessage('Changes data generated! Download the changes file and run the Python script to apply changes.', 'success');
+    loadPageContent(currentPage);
+}
+
+function generateChangesData() {
+    const content = PAGE_CONTENT[currentPage];
+    const changesData = {
+        timestamp: new Date().toISOString(),
+        page: currentPage,
+        changes: {},
+        newImages: [],
+        updatedGalleryData: null
+    };
+    
+    // Process all changes
+    Object.keys(changes).forEach(imageId => {
+        const change = changes[imageId];
+        const image = content.images.find(img => img.id === imageId);
+        
+        if (image) {
+            changesData.changes[imageId] = {
+                originalImage: image.currentImage,
+                originalTitle: image.currentTitle,
+                originalDescription: image.currentDescription,
+                newTitle: change.title || image.currentTitle,
+                newDescription: change.description || image.currentDescription,
+                targetFile: image.targetFile,
+                targetElements: image.targetElements
+            };
+            
+            // Handle new image uploads
+            if (change.newImage) {
+                const fileName = image.currentImage.split('/').pop();
+                changesData.newImages.push({
+                    imageId: imageId,
+                    fileName: fileName,
+                    originalPath: image.currentImage,
+                    targetPath: image.targetFile,
+                    fileData: null // Will be filled by Python script
+                });
+            }
+        }
+    });
+    
+    // If this is the gallery page, include updated gallery data
+    if (currentPage === 'gallery') {
+        changesData.updatedGalleryData = content.images.map(image => {
+            const change = changes[image.id];
+            return {
+                filename: image.currentImage.split('/').pop(),
+                title: change && change.title ? change.title : image.currentTitle,
+                description: change && change.description ? change.description : image.currentDescription,
+                path: image.currentImage
+            };
+        });
+    }
+    
+    // Create downloadable changes file
+    const changesBlob = new Blob([JSON.stringify(changesData, null, 2)], { type: 'application/json' });
+    const changesUrl = URL.createObjectURL(changesBlob);
+    
+    const downloadLink = document.createElement('a');
+    downloadLink.href = changesUrl;
+    downloadLink.download = 'website_changes.json';
+    downloadLink.textContent = 'Download Changes File';
+    downloadLink.className = 'download-link';
+    downloadLink.style.cssText = 'display: block; margin: 10px 0; padding: 10px; background: #4CAF50; color: white; text-decoration: none; border-radius: 5px; text-align: center;';
+    
+    // Add download link to message container
+    const messageContainer = document.getElementById('message-container');
+    if (messageContainer) {
+        messageContainer.appendChild(downloadLink);
+        
+        // Remove download link after 30 seconds
+        setTimeout(() => {
+            if (downloadLink.parentNode) {
+                downloadLink.parentNode.removeChild(downloadLink);
+            }
+            URL.revokeObjectURL(changesUrl);
+        }, 30000);
+    }
+    
+    // Also generate individual image downloads if any
+    handleImageUploads();
+    
+    // Generate instructions
+    generateInstructions();
+}
+
+function handleImageUploads() {
+    const content = PAGE_CONTENT[currentPage];
+    const uploadedFiles = [];
+    
+    Object.keys(changes).forEach(imageId => {
+        const change = changes[imageId];
+        const image = content.images.find(img => img.id === imageId);
+        
+        if (change.newImage && image) {
+            const fileName = image.currentImage.split('/').pop();
+            uploadedFiles.push({
+                file: change.newImage,
+                fileName: fileName,
+                originalPath: image.currentImage
+            });
+        }
+    });
+    
+    if (uploadedFiles.length > 0) {
+        // Create a zip file with all uploaded images
+        createImageDownloadZip(uploadedFiles);
+    }
+}
+
+function createImageDownloadZip(uploadedFiles) {
+    // For simplicity, we'll create individual download links for each image
+    // In a real implementation, you'd use a library like JSZip
+    
+    uploadedFiles.forEach(fileData => {
+        const imageUrl = URL.createObjectURL(fileData.file);
+        
+        const downloadLink = document.createElement('a');
+        downloadLink.href = imageUrl;
+        downloadLink.download = fileData.fileName;
+        downloadLink.textContent = `Download ${fileData.fileName}`;
+        downloadLink.className = 'download-link';
+        downloadLink.style.cssText = 'display: block; margin: 5px 0; padding: 8px; background: #2196F3; color: white; text-decoration: none; border-radius: 5px; text-align: center;';
+        
+        // Add download link to message container
+        const messageContainer = document.getElementById('message-container');
+        if (messageContainer) {
+            messageContainer.appendChild(downloadLink);
+            
+            // Remove download link after 30 seconds
+            setTimeout(() => {
+                if (downloadLink.parentNode) {
+                    downloadLink.parentNode.removeChild(downloadLink);
+                }
+                URL.revokeObjectURL(imageUrl);
+            }, 30000);
+        }
+    });
+}
+
+function generateInstructions() {
+    const instructions = `# Instructions for Applying Website Changes
+
+## New Automated Process:
+
+### 1. Download the Changes File
+- Click the "Download Changes File" button (green)
+- Save the 'website_changes.json' file to your website folder
+
+### 2. Run the Python Script
+- Open a terminal/command prompt in your website folder
+- Run: python apply_changes.py
+- The script will automatically apply all your changes
+
+### 3. Verify Changes
+- Open your website in a browser
+- Check that titles and descriptions are updated
+- Verify that new images are in place
+
+## What the Script Does:
+- Updates gallery_data.json with new titles/descriptions
+- Replaces image files in the images/gallery/ folder
+- Updates HTML pages with new content
+- Creates backups of original files
+
+## Manual Process (if needed):
+If you prefer to apply changes manually:
+
+1. Download the individual files provided
+2. Replace the corresponding files in your website
+3. Follow the file-specific instructions
+
+## Troubleshooting:
+- Make sure Python is installed on your computer
+- Ensure you're running the script from your website folder
+- Check that all file paths are correct
+- Clear browser cache if changes don't appear
+
+Generated on: ${new Date().toLocaleString()}
+`;
+
+    // Create downloadable instructions file
+    const instructionsBlob = new Blob([instructions], { type: 'text/plain' });
+    const instructionsUrl = URL.createObjectURL(instructionsBlob);
+    
+    const downloadLink = document.createElement('a');
+    downloadLink.href = instructionsUrl;
+    downloadLink.download = 'APPLY_CHANGES_INSTRUCTIONS.txt';
+    downloadLink.textContent = 'Download Instructions';
+    downloadLink.className = 'download-link';
+    downloadLink.style.cssText = 'display: block; margin: 10px 0; padding: 10px; background: #9C27B0; color: white; text-decoration: none; border-radius: 5px; text-align: center;';
+    
+    // Add download link to message container
+    const messageContainer = document.getElementById('message-container');
+    if (messageContainer) {
+        messageContainer.appendChild(downloadLink);
+        
+        // Remove download link after 30 seconds
+        setTimeout(() => {
+            if (downloadLink.parentNode) {
+                downloadLink.parentNode.removeChild(downloadLink);
+            }
+            URL.revokeObjectURL(instructionsUrl);
+        }, 30000);
+    }
 }
 
 // Requests Management Functions
-async function loadRequests() {
-    try {
-        const response = await fetch('http://localhost:3002/api/submissions');
-        const result = await response.json();
-        
-        if (result.success) {
-            renderRequestsGrid(result.submissions);
-            window.requestsData = result.submissions; // Store for status update
-        } else {
-            showMessage('Error loading requests: ' + result.message, 'error');
-        }
-    } catch (error) {
-        console.error('Error loading requests:', error);
-        showMessage('Error loading requests. Please check if the form server is running.', 'error');
-    }
-}
-
-function renderRequestsGrid(submissions) {
-    imageGrid.innerHTML = '';
-    
-    if (submissions.length === 0) {
-        imageGrid.innerHTML = '<div class="no-requests"><p>No cake requests found.</p></div>';
-        return;
-    }
-    
-    submissions.forEach(submission => {
-        const requestCard = createRequestCard(submission);
-        imageGrid.appendChild(requestCard);
-    });
-}
-
-function createRequestCard(submission) {
-    const card = document.createElement('div');
-    card.className = 'request-card';
-    
-    const statusClass = getStatusClass(submission.status);
-    const statusText = getStatusText(submission.status);
-    
-    card.innerHTML = `
-        <div class="request-card-header">
-            <h4>Request #${submission.id} - ${submission.name}</h4>
-            <span class="status-badge ${statusClass}">${statusText}</span>
-        </div>
-        <div class="request-card-content">
-            <div class="request-info">
-                <p><strong>Date Needed:</strong> ${submission['date-needed']}</p>
-                <p><strong>Cake Size:</strong> ${submission['cake-size']}</p>
-                <p><strong>Cake Flavor:</strong> ${submission['cake-flavor']}</p>
-                <p><strong>Event Type:</strong> ${submission['event-type'] || 'Not specified'}</p>
-                <p><strong>Budget:</strong> ${submission['budget-range'] || 'Not specified'}</p>
-                <p><strong>Submitted:</strong> ${new Date(submission.timestamp).toLocaleString()}</p>
-            </div>
-            
-            <div class="request-details">
-                <h5>Contact Information</h5>
-                <p><strong>Email:</strong> ${submission.email}</p>
-                <p><strong>Phone:</strong> ${submission.phone}</p>
-                
-                <h5>Design Description</h5>
-                <p>${submission['design-description']}</p>
-                
-                ${submission['special-requests'] ? `
-                    <h5>Special Requests</h5>
-                    <p>${submission['special-requests']}</p>
-                ` : ''}
-                
-                ${submission.referenceImage ? `
-                    <h5>Reference Image</h5>
-                    <img src="${submission.referenceImage}" alt="Reference" class="reference-image">
-                ` : ''}
-            </div>
-            
-            <div class="request-actions">
-                <button class="action-button view-button" onclick="viewRequest(${submission.id})">
-                    <i class="fas fa-eye"></i> View Details
-                </button>
-                <button class="action-button status-button" onclick="updateRequestStatus(${submission.id})">
-                    <i class="fas fa-edit"></i> Update Status
-                </button>
-                <button class="action-button delete-button" onclick="deleteRequest(${submission.id})">
-                    <i class="fas fa-trash"></i> Delete
-                </button>
-            </div>
+function loadRequests() {
+    const imageGrid = document.getElementById('image-grid');
+    imageGrid.innerHTML = `
+        <div class="no-requests">
+            <i class="fas fa-clipboard-list"></i>
+            <p>No cake requests found.</p>
+            <p>This feature requires a backend server to be running.</p>
         </div>
     `;
-    
-    return card;
-}
-
-function getStatusClass(status) {
-    switch (status) {
-        case 'pending': return 'status-pending';
-        case 'reviewed': return 'status-reviewed';
-        case 'approved': return 'status-approved';
-        case 'in-progress': return 'status-progress';
-        case 'completed': return 'status-completed';
-        case 'cancelled': return 'status-cancelled';
-        default: return 'status-pending';
-    }
-}
-
-function getStatusText(status) {
-    switch (status) {
-        case 'pending': return 'Pending';
-        case 'reviewed': return 'Reviewed';
-        case 'approved': return 'Approved';
-        case 'in-progress': return 'In Progress';
-        case 'completed': return 'Completed';
-        case 'cancelled': return 'Cancelled';
-        default: return 'Pending';
-    }
-}
-
-async function updateRequestStatus(submissionId) {
-    // Find the submission to get current status/notes (optional, for better UX)
-    let submission = null;
-    if (window.requestsData && Array.isArray(window.requestsData)) {
-        submission = window.requestsData.find(s => s.id === submissionId);
-    }
-    openStatusModal(submissionId, submission ? submission.status : 'pending', submission ? (submission.adminNotes || '') : '');
-}
-
-async function deleteRequest(submissionId) {
-    if (!confirm('Are you sure you want to delete this request? This action cannot be undone.')) {
-        return;
-    }
-    
-    try {
-        const response = await fetch(`http://localhost:3002/api/submissions/${submissionId}`, {
-            method: 'DELETE'
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            showMessage('Request deleted successfully!', 'success');
-            loadRequests(); // Reload the requests
-        } else {
-            showMessage('Error deleting request: ' + result.message, 'error');
-        }
-    } catch (error) {
-        console.error('Error deleting request:', error);
-        showMessage('Error deleting request. Please try again.', 'error');
-    }
-}
-
-function viewRequest(submissionId) {
-    let submission = null;
-    if (window.requestsData && Array.isArray(window.requestsData)) {
-        submission = window.requestsData.find(s => s.id === submissionId);
-    }
-    if (submission) {
-        openDetailsModal(submission);
-    } else {
-        alert('Request details not found.');
-    }
 }
 
 // Utility Functions
 function showMessage(message, type = 'success') {
+    const messageContainer = document.getElementById('message-container');
+    
+    if (!messageContainer) {
+        console.error('Message container not found');
+        // Fallback to alert if message container doesn't exist
+        alert(`${type.toUpperCase()}: ${message}`);
+        return;
+    }
+    
     const messageElement = document.createElement('div');
     messageElement.className = `message ${type}`;
     messageElement.innerHTML = `
@@ -812,30 +875,4 @@ function showMessage(message, type = 'success') {
     setTimeout(() => {
         messageElement.remove();
     }, 5000);
-}
-
-// File upload preview
-newImageInput.addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            currentImage.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-    }
-});
-
-// Keyboard shortcuts
-document.addEventListener('keydown', function(e) {
-    // Escape key to close modal
-    if (e.key === 'Escape' && !imageModal.classList.contains('hidden')) {
-        closeImageModal();
-    }
-    
-    // Ctrl/Cmd + S to save all changes
-    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-        e.preventDefault();
-        saveAllChanges();
-    }
-}); 
+} 
