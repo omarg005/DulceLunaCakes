@@ -129,22 +129,84 @@ document.addEventListener('DOMContentLoaded', () => {
     const forms = document.querySelectorAll('form');
     
     forms.forEach(form => {
-        form.addEventListener('submit', (e) => {
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
             
             if (validateForm(form)) {
-                // Show success message
-                const successMsg = document.createElement('div');
-                successMsg.className = 'success-message';
-                successMsg.textContent = 'Thank you! Your message has been sent successfully. We\'ll get back to you soon!';
+                // Show loading state
+                const submitBtn = form.querySelector('.submit-button');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+                submitBtn.disabled = true;
                 
-                form.appendChild(successMsg);
-                form.reset();
-                
-                // Remove success message after 5 seconds
-                setTimeout(() => {
-                    successMsg.remove();
-                }, 5000);
+                try {
+                    // Create FormData for file upload
+                    const formData = new FormData(form);
+                    
+                    // Submit to server
+                    const response = await fetch('http://localhost:3002/api/submit-request', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        // Show success message
+                        const successMsg = document.createElement('div');
+                        successMsg.className = 'success-message';
+                        successMsg.innerHTML = `
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <strong>Thank you! Your request has been submitted successfully!</strong><br>
+                                Request ID: ${result.submissionId}<br>
+                                We'll review your request and contact you within 24 hours.
+                            </div>
+                        `;
+                        
+                        form.appendChild(successMsg);
+                        form.reset();
+                        
+                        // Remove success message after 8 seconds
+                        setTimeout(() => {
+                            successMsg.remove();
+                        }, 8000);
+                    } else {
+                        throw new Error(result.message || 'Submission failed');
+                    }
+                    
+                } catch (error) {
+                    console.error('Error submitting form:', error);
+                    
+                    // Show error message
+                    const errorMsg = document.createElement('div');
+                    errorMsg.className = 'error-message';
+                    errorMsg.style.cssText = `
+                        background: #fee;
+                        color: #c33;
+                        padding: 1rem;
+                        border-radius: var(--border-radius);
+                        margin-top: 1rem;
+                        text-align: center;
+                        border: 1px solid #fcc;
+                    `;
+                    errorMsg.innerHTML = `
+                        <i class="fas fa-exclamation-circle"></i>
+                        <strong>Error submitting request:</strong> ${error.message}<br>
+                        Please try again or contact us directly.
+                    `;
+                    
+                    form.appendChild(errorMsg);
+                    
+                    // Remove error message after 5 seconds
+                    setTimeout(() => {
+                        errorMsg.remove();
+                    }, 5000);
+                } finally {
+                    // Reset button
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
             }
         });
     });

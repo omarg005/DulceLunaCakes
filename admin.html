@@ -6,6 +6,8 @@
     <title>Admin Panel - Dulce Luna Cakes</title>
     <meta name="description" content="Admin panel for managing website content and images">
     
+
+    
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -73,6 +75,7 @@
                         <button class="page-tab active" data-page="index">Home Page</button>
                         <button class="page-tab" data-page="gallery">Gallery</button>
                         <button class="page-tab" data-page="about">About</button>
+                        <button class="page-tab" data-page="requests">Review Requests</button>
                     </div>
                 </div>
 
@@ -130,6 +133,56 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Update Modal -->
+    <div id="status-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Update Status</h3>
+                <button id="close-status-modal" class="close-button">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="status-update-form" class="status-update-form">
+                    <div class="form-group">
+                        <label for="status-select">New Status</label>
+                        <select id="status-select" name="status-select" required>
+                            <option value="pending">Pending</option>
+                            <option value="reviewed">Reviewed</option>
+                            <option value="approved">Approved</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="completed">Completed</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="status-notes">Admin Notes (optional)</label>
+                        <textarea id="status-notes" name="status-notes" rows="2"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" id="cancel-status-update" class="cancel-button">Cancel</button>
+                        <button type="submit" class="save-button">Update Status</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Request Details Modal -->
+    <div id="details-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Request Details</h3>
+                <button id="close-details-modal" class="close-button">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="details-modal-body">
+                <!-- Details will be populated dynamically -->
             </div>
         </div>
     </div>

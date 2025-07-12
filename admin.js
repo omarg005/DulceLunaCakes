@@ -115,6 +115,10 @@ const PAGE_CONTENT = {
             }
             // Add more gallery images as needed
         ]
+    },
+    requests: {
+        title: 'Review Cake Requests',
+        isRequestsPage: true
     }
 };
 
@@ -142,6 +146,113 @@ const newImageInput = document.getElementById('new-image');
 const imageTitleInput = document.getElementById('image-title');
 const imageDescriptionInput = document.getElementById('image-description');
 const messageContainer = document.getElementById('message-container');
+
+// Modal elements for status update
+const statusModal = document.getElementById('status-modal');
+const closeStatusModalBtn = document.getElementById('close-status-modal');
+const statusUpdateForm = document.getElementById('status-update-form');
+const statusSelect = document.getElementById('status-select');
+const statusNotes = document.getElementById('status-notes');
+const cancelStatusUpdateBtn = document.getElementById('cancel-status-update');
+let currentStatusSubmissionId = null;
+
+function openStatusModal(submissionId, currentStatus = 'pending', currentNotes = '') {
+    currentStatusSubmissionId = submissionId;
+    statusSelect.value = currentStatus;
+    statusNotes.value = currentNotes || '';
+    statusModal.classList.remove('hidden');
+}
+
+function closeStatusModal() {
+    currentStatusSubmissionId = null;
+    statusModal.classList.add('hidden');
+}
+
+closeStatusModalBtn.addEventListener('click', closeStatusModal);
+cancelStatusUpdateBtn.addEventListener('click', closeStatusModal);
+
+statusUpdateForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const status = statusSelect.value;
+    const notes = statusNotes.value;
+    if (!currentStatusSubmissionId) return;
+    try {
+        const response = await fetch(`http://localhost:3002/api/submissions/${currentStatusSubmissionId}/status`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ status, notes })
+        });
+        const result = await response.json();
+        if (result.success) {
+            showMessage('Request status updated successfully!', 'success');
+            loadRequests();
+        } else {
+            showMessage('Error updating status: ' + result.message, 'error');
+        }
+    } catch (error) {
+        console.error('Error updating status:', error);
+        showMessage('Error updating status. Please try again.', 'error');
+    }
+    closeStatusModal();
+});
+
+// Modal elements for request details
+const detailsModal = document.getElementById('details-modal');
+const closeDetailsModalBtn = document.getElementById('close-details-modal');
+const detailsModalBody = document.getElementById('details-modal-body');
+
+function openDetailsModal(submission) {
+    // Build the details HTML
+    detailsModalBody.innerHTML = `
+        <div class="details-section">
+            <h4>Contact Information</h4>
+            <p><strong>Name:</strong> ${submission.name}</p>
+            <p><strong>Email:</strong> ${submission.email}</p>
+            <p><strong>Phone:</strong> ${submission.phone}</p>
+        </div>
+        <div class="details-section">
+            <h4>Event Details</h4>
+            <p><strong>Date Needed:</strong> ${submission['date-needed']}</p>
+            <p><strong>Event Type:</strong> ${submission['event-type'] || 'Not specified'}</p>
+            <p><strong>Event Address:</strong> ${submission['event-address'] || 'Not specified'}</p>
+            <p><strong>City:</strong> ${submission['event-city'] || 'Not specified'}</p>
+            <p><strong>Zip Code:</strong> ${submission['event-zip'] || 'Not specified'}</p>
+        </div>
+        <div class="details-section">
+            <h4>Cake Specifications</h4>
+            <p><strong>Size:</strong> ${submission['cake-size']}</p>
+            <p><strong>Flavor:</strong> ${submission['cake-flavor']}</p>
+            <p><strong>Frosting:</strong> ${submission['frosting-type'] || 'Not specified'}</p>
+        </div>
+        <div class="details-section">
+            <h4>Design Details</h4>
+            <p><strong>Description:</strong> ${submission['design-description']}</p>
+            <p><strong>Color Scheme:</strong> ${submission['color-scheme'] || 'Not specified'}</p>
+            <p><strong>Special Requests:</strong> ${submission['special-requests'] || 'None'}</p>
+            <p><strong>Inspiration Links:</strong> ${submission['inspiration-links'] || 'None'}</p>
+        </div>
+        <div class="details-section">
+            <h4>Status & Notes</h4>
+            <p><strong>Status:</strong> ${getStatusText(submission.status)}</p>
+            <p><strong>Admin Notes:</strong> ${submission.adminNotes || 'None'}</p>
+        </div>
+        <div class="details-section">
+            <h4>Submitted</h4>
+            <p>${new Date(submission.timestamp).toLocaleString()}</p>
+        </div>
+        ${submission.referenceImage ? `<div class="details-section"><h4>Reference Image</h4><img src="${submission.referenceImage}" alt="Reference" class="reference-image"></div>` : ''}
+    `;
+    detailsModal.classList.remove('hidden');
+}
+
+function closeDetailsModal() {
+    detailsModal.classList.add('hidden');
+    detailsModalBody.innerHTML = '';
+}
+
+closeDetailsModalBtn.addEventListener('click', closeDetailsModal);
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', function() {
@@ -278,7 +389,12 @@ function loadPageContent(page) {
     if (!content) return;
     
     pageTitle.textContent = content.title;
-    renderImageGrid(content.images);
+    
+    if (content.isRequestsPage) {
+        loadRequests();
+    } else {
+        renderImageGrid(content.images);
+    }
 }
 
 function renderImageGrid(images) {
@@ -520,6 +636,165 @@ function applyChangesToWebsite() {
             // 3. Update any database or configuration files
         }
     });
+}
+
+// Requests Management Functions
+async function loadRequests() {
+    try {
+        const response = await fetch('http://localhost:3002/api/submissions');
+        const result = await response.json();
+        
+        if (result.success) {
+            renderRequestsGrid(result.submissions);
+            window.requestsData = result.submissions; // Store for status update
+        } else {
+            showMessage('Error loading requests: ' + result.message, 'error');
+        }
+    } catch (error) {
+        console.error('Error loading requests:', error);
+        showMessage('Error loading requests. Please check if the form server is running.', 'error');
+    }
+}
+
+function renderRequestsGrid(submissions) {
+    imageGrid.innerHTML = '';
+    
+    if (submissions.length === 0) {
+        imageGrid.innerHTML = '<div class="no-requests"><p>No cake requests found.</p></div>';
+        return;
+    }
+    
+    submissions.forEach(submission => {
+        const requestCard = createRequestCard(submission);
+        imageGrid.appendChild(requestCard);
+    });
+}
+
+function createRequestCard(submission) {
+    const card = document.createElement('div');
+    card.className = 'request-card';
+    
+    const statusClass = getStatusClass(submission.status);
+    const statusText = getStatusText(submission.status);
+    
+    card.innerHTML = `
+        <div class="request-card-header">
+            <h4>Request #${submission.id} - ${submission.name}</h4>
+            <span class="status-badge ${statusClass}">${statusText}</span>
+        </div>
+        <div class="request-card-content">
+            <div class="request-info">
+                <p><strong>Date Needed:</strong> ${submission['date-needed']}</p>
+                <p><strong>Cake Size:</strong> ${submission['cake-size']}</p>
+                <p><strong>Cake Flavor:</strong> ${submission['cake-flavor']}</p>
+                <p><strong>Event Type:</strong> ${submission['event-type'] || 'Not specified'}</p>
+                <p><strong>Budget:</strong> ${submission['budget-range'] || 'Not specified'}</p>
+                <p><strong>Submitted:</strong> ${new Date(submission.timestamp).toLocaleString()}</p>
+            </div>
+            
+            <div class="request-details">
+                <h5>Contact Information</h5>
+                <p><strong>Email:</strong> ${submission.email}</p>
+                <p><strong>Phone:</strong> ${submission.phone}</p>
+                
+                <h5>Design Description</h5>
+                <p>${submission['design-description']}</p>
+                
+                ${submission['special-requests'] ? `
+                    <h5>Special Requests</h5>
+                    <p>${submission['special-requests']}</p>
+                ` : ''}
+                
+                ${submission.referenceImage ? `
+                    <h5>Reference Image</h5>
+                    <img src="${submission.referenceImage}" alt="Reference" class="reference-image">
+                ` : ''}
+            </div>
+            
+            <div class="request-actions">
+                <button class="action-button view-button" onclick="viewRequest(${submission.id})">
+                    <i class="fas fa-eye"></i> View Details
+                </button>
+                <button class="action-button status-button" onclick="updateRequestStatus(${submission.id})">
+                    <i class="fas fa-edit"></i> Update Status
+                </button>
+                <button class="action-button delete-button" onclick="deleteRequest(${submission.id})">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
+            </div>
+        </div>
+    `;
+    
+    return card;
+}
+
+function getStatusClass(status) {
+    switch (status) {
+        case 'pending': return 'status-pending';
+        case 'reviewed': return 'status-reviewed';
+        case 'approved': return 'status-approved';
+        case 'in-progress': return 'status-progress';
+        case 'completed': return 'status-completed';
+        case 'cancelled': return 'status-cancelled';
+        default: return 'status-pending';
+    }
+}
+
+function getStatusText(status) {
+    switch (status) {
+        case 'pending': return 'Pending';
+        case 'reviewed': return 'Reviewed';
+        case 'approved': return 'Approved';
+        case 'in-progress': return 'In Progress';
+        case 'completed': return 'Completed';
+        case 'cancelled': return 'Cancelled';
+        default: return 'Pending';
+    }
+}
+
+async function updateRequestStatus(submissionId) {
+    // Find the submission to get current status/notes (optional, for better UX)
+    let submission = null;
+    if (window.requestsData && Array.isArray(window.requestsData)) {
+        submission = window.requestsData.find(s => s.id === submissionId);
+    }
+    openStatusModal(submissionId, submission ? submission.status : 'pending', submission ? (submission.adminNotes || '') : '');
+}
+
+async function deleteRequest(submissionId) {
+    if (!confirm('Are you sure you want to delete this request? This action cannot be undone.')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`http://localhost:3002/api/submissions/${submissionId}`, {
+            method: 'DELETE'
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showMessage('Request deleted successfully!', 'success');
+            loadRequests(); // Reload the requests
+        } else {
+            showMessage('Error deleting request: ' + result.message, 'error');
+        }
+    } catch (error) {
+        console.error('Error deleting request:', error);
+        showMessage('Error deleting request. Please try again.', 'error');
+    }
+}
+
+function viewRequest(submissionId) {
+    let submission = null;
+    if (window.requestsData && Array.isArray(window.requestsData)) {
+        submission = window.requestsData.find(s => s.id === submissionId);
+    }
+    if (submission) {
+        openDetailsModal(submission);
+    } else {
+        alert('Request details not found.');
+    }
 }
 
 // Utility Functions
