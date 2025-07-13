@@ -121,7 +121,11 @@
                 <form class="image-edit-form" id="image-edit-form">
                     <div class="form-group">
                         <label for="current-image">Current Image</label>
-                        <img id="current-image" src="" alt="Current image" style="max-width: 100%; height: 200px; object-fit: cover; border-radius: var(--border-radius);">
+                        <div id="current-image-container" class="loading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>No image selected</p>
+                        </div>
+                        <img id="current-image" style="max-width: 100%; height: 200px; object-fit: cover; border-radius: var(--border-radius); display: none;" alt="Current image">
                     </div>
                     <div class="form-group">
                         <label for="new-image">Upload New Image</label>

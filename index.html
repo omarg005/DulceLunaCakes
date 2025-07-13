@@ -73,34 +73,10 @@
         <div class="container">
             <h2>Featured Creations</h2>
             <div class="cakes-grid">
-                <div class="cake-card">
-                    <div class="cake-image">
-                        <img src="" alt="Loading...">
-                    </div>
-                    <div class="cake-info">
-                        <h3>Loading...</h3>
-                        <p>Loading...</p>
-                    </div>
-                </div>
-                
-                <div class="cake-card">
-                    <div class="cake-image">
-                        <img src="" alt="Loading...">
-                    </div>
-                    <div class="cake-info">
-                        <h3>Loading...</h3>
-                        <p>Loading...</p>
-                    </div>
-                </div>
-                
-                <div class="cake-card">
-                    <div class="cake-image">
-                        <img src="" alt="Loading...">
-                    </div>
-                    <div class="cake-info">
-                        <h3>Loading...</h3>
-                        <p>Loading...</p>
-                    </div>
+                <!-- Featured cakes will be loaded dynamically -->
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading featured cakes...</p>
                 </div>
             </div>
         </div>
@@ -115,9 +91,12 @@
                     <p>Loading...</p>
                     <a href="about.html" class="secondary-button">Read More</a>
                 </div>
-                <div class="about-image">
-                    <img src="" alt="Loading...">
+                            <div class="about-image">
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading image...</p>
                 </div>
+            </div>
             </div>
         </div>
     </section>
@@ -131,11 +110,11 @@
                     <i class="fab fa-instagram"></i>
                     <span>Instagram</span>
                 </a>
-                <a href="https://facebook.com/dulcelunacakes" target="_blank" rel="noopener noreferrer" class="social-icon">
-                    <i class="fab fa-facebook"></i>
-                    <span>Facebook</span>
-                </a>
-                <a href="https://tiktok.com/@dulce_luna_cakes_" target="_blank" rel="noopener noreferrer" class="social-icon">
+                                    <a href="https://facebook.com/dulce_luna_cakes_" target="_blank" rel="noopener noreferrer" class="social-icon">
+                        <i class="fab fa-facebook"></i>
+                        <span>Facebook</span>
+                    </a>
+                    <a href="https://tiktok.com/@dulce_luna_cakes_" target="_blank" rel="noopener noreferrer" class="social-icon">
                     <i class="fab fa-tiktok"></i>
                     <span>TikTok</span>
                 </a>
@@ -165,13 +144,13 @@
                 <div class="footer-section">
                     <h4>Connect With Us</h4>
                     <div class="footer-social">
-                        <a href="https://instagram.com/dulcelunacakes" target="_blank" rel="noopener noreferrer">
+                        <a href="https://instagram.com/dulce_luna_cakes_" target="_blank" rel="noopener noreferrer">
                             <i class="fab fa-instagram"></i>
                         </a>
                         <a href="https://facebook.com/dulce_luna_cakes_" target="_blank" rel="noopener noreferrer">
                             <i class="fab fa-facebook"></i>
                         </a>
-                        <a href="https://tiktok.com/@dulcelunacakes" target="_blank" rel="noopener noreferrer">
+                        <a href="https://tiktok.com/@dulce_luna_cakes_" target="_blank" rel="noopener noreferrer">
                             <i class="fab fa-tiktok"></i>
                         </a>
                     </div>
@@ -198,45 +177,70 @@
                 const response = await fetch('images/index/index_data.json');
                 const data = await response.json();
                 
-                data.forEach(item => {
-                    if (item.type === 'hero') {
-                        // Update hero section
-                        const heroTitle = document.querySelector('.hero-title');
-                        const heroSubtitle = document.querySelector('.hero-subtitle');
-                        if (heroTitle) heroTitle.textContent = item.title;
-                        if (heroSubtitle) heroSubtitle.textContent = item.description;
-                    } else if (item.type === 'featured') {
-                        // Update featured cakes - use index-based selectors
-                        const cakeCards = document.querySelectorAll('.cake-card');
-                        const index = data.filter(d => d.type === 'featured').indexOf(item);
-                        if (cakeCards[index]) {
-                            const img = cakeCards[index].querySelector('img');
-                            const title = cakeCards[index].querySelector('h3');
-                            const desc = cakeCards[index].querySelector('p');
-                            
-                            if (img) {
-                                img.src = item.path;
-                                img.alt = item.title;
-                            }
-                            if (title) title.textContent = item.title;
-                            if (desc) desc.textContent = item.description;
-                        }
-                    } else if (item.type === 'about') {
-                        // Update about section
-                        const aboutImage = document.querySelector('.about-preview .about-image img');
-                        const aboutTitle = document.querySelector('.about-preview .about-text h2');
-                        const aboutDesc = document.querySelector('.about-preview .about-text p');
-                        
-                        if (aboutImage) {
-                            aboutImage.src = item.path;
-                            aboutImage.alt = item.title;
-                        }
-                        if (aboutTitle) aboutTitle.textContent = item.title;
-                        if (aboutDesc) aboutDesc.textContent = item.description;
+                // Get containers
+                const cakesGrid = document.querySelector('.cakes-grid');
+                const aboutImageContainer = document.querySelector('.about-preview .about-image');
+                
+                // Process data
+                const heroItems = data.filter(d => d.type === 'hero');
+                const featuredItems = data.filter(d => d.type === 'featured');
+                const aboutItems = data.filter(d => d.type === 'about');
+                
+                // Update hero section
+                if (heroItems.length > 0) {
+                    const heroTitle = document.querySelector('.hero-title');
+                    const heroSubtitle = document.querySelector('.hero-subtitle');
+                    if (heroTitle) heroTitle.textContent = heroItems[0].title;
+                    if (heroSubtitle) heroSubtitle.textContent = heroItems[0].description;
+                }
+                
+                // Update featured cakes
+                if (featuredItems.length > 0) {
+                    cakesGrid.innerHTML = '';
+                    featuredItems.forEach((item, index) => {
+                        const cakeCard = document.createElement('div');
+                        cakeCard.className = 'cake-card fade-in';
+                        cakeCard.style.animationDelay = `${index * 0.2}s`;
+                        cakeCard.innerHTML = `
+                            <div class="cake-image">
+                                <img src="${item.path}" alt="${item.title}" loading="lazy">
+                            </div>
+                            <div class="cake-info">
+                                <h3>${item.title}</h3>
+                                <p>${item.description}</p>
+                            </div>
+                        `;
+                        cakesGrid.appendChild(cakeCard);
+                    });
+                }
+                
+                // Update about section
+                if (aboutItems.length > 0) {
+                    const aboutLoading = aboutImageContainer.querySelector('.loading');
+                    if (aboutLoading) {
+                        const img = document.createElement('img');
+                        img.src = aboutItems[0].path;
+                        img.alt = aboutItems[0].title;
+                        img.className = 'fade-in';
+                        img.onload = () => {
+                            aboutLoading.remove();
+                            aboutImageContainer.appendChild(img);
+                        };
                     }
-                });
+                    
+                    const aboutTitle = document.querySelector('.about-preview .about-text h2');
+                    const aboutDesc = document.querySelector('.about-preview .about-text p');
+                    if (aboutTitle) aboutTitle.textContent = aboutItems[0].title;
+                    if (aboutDesc) aboutDesc.textContent = aboutItems[0].description;
+                }
+                
             } catch (error) {
                 console.error('Error loading index content:', error);
+                // Show error states
+                const cakesGrid = document.querySelector('.cakes-grid');
+                if (cakesGrid) {
+                    cakesGrid.innerHTML = '<p style="text-align: center; color: var(--text-light);">Unable to load content. Please refresh the page.</p>';
+                }
             }
         }
         

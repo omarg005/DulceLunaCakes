@@ -60,9 +60,12 @@
     <section class="about-section">
         <div class="container">
             <div class="about-content">
-                <div class="about-image">
-                    <img src="" alt="Loading...">
+                            <div class="about-image">
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading image...</p>
                 </div>
+            </div>
                 
                 <div class="about-text">
                     <h2>Loading...</h2>
@@ -206,13 +209,13 @@
                 <div class="footer-section">
                     <h4>Connect With Us</h4>
                     <div class="footer-social">
-                        <a href="https://instagram.com/dulcelunacakes" target="_blank" rel="noopener noreferrer">
+                        <a href="https://instagram.com/dulce_luna_cakes_" target="_blank" rel="noopener noreferrer">
                             <i class="fab fa-instagram"></i>
                         </a>
-                        <a href="https://facebook.com/dulcelunacakes" target="_blank" rel="noopener noreferrer">
+                        <a href="https://facebook.com/dulce_luna_cakes_" target="_blank" rel="noopener noreferrer">
                             <i class="fab fa-facebook"></i>
                         </a>
-                        <a href="https://tiktok.com/@dulcelunacakes" target="_blank" rel="noopener noreferrer">
+                        <a href="https://tiktok.com/@dulce_luna_cakes_" target="_blank" rel="noopener noreferrer">
                             <i class="fab fa-tiktok"></i>
                         </a>
                     </div>
@@ -239,23 +242,43 @@
                 const response = await fetch('images/about/about_data.json');
                 const data = await response.json();
                 
-                data.forEach(item => {
-                    if (item.type === 'profile') {
-                        // Update about section
-                        const aboutImage = document.querySelector('.about-section .about-image img');
-                        const aboutTitle = document.querySelector('.about-section .about-text h2');
-                        const aboutDesc = document.querySelector('.about-section .about-text p');
-                        
-                        if (aboutImage) {
-                            aboutImage.src = item.path;
-                            aboutImage.alt = item.title;
-                        }
-                        if (aboutTitle) aboutTitle.textContent = item.title;
-                        if (aboutDesc) aboutDesc.textContent = item.description;
+                const profileItems = data.filter(d => d.type === 'profile');
+                
+                if (profileItems.length > 0) {
+                    const item = profileItems[0];
+                    
+                    // Update about image with loading state
+                    const aboutImageContainer = document.querySelector('.about-section .about-image');
+                    const aboutLoading = aboutImageContainer.querySelector('.loading');
+                    if (aboutLoading) {
+                        const img = document.createElement('img');
+                        img.src = item.path;
+                        img.alt = item.title;
+                        img.className = 'fade-in';
+                        img.onload = () => {
+                            aboutLoading.remove();
+                            aboutImageContainer.appendChild(img);
+                        };
+                        img.onerror = () => {
+                            aboutLoading.innerHTML = '<i class="fas fa-exclamation-triangle"></i><p>Unable to load image</p>';
+                        };
                     }
-                });
+                    
+                    // Update text content
+                    const aboutTitle = document.querySelector('.about-section .about-text h2');
+                    const aboutDesc = document.querySelector('.about-section .about-text p');
+                    if (aboutTitle) aboutTitle.textContent = item.title;
+                    if (aboutDesc) aboutDesc.textContent = item.description;
+                }
+                
             } catch (error) {
                 console.error('Error loading about content:', error);
+                // Show error state
+                const aboutImageContainer = document.querySelector('.about-section .about-image');
+                const aboutLoading = aboutImageContainer.querySelector('.loading');
+                if (aboutLoading) {
+                    aboutLoading.innerHTML = '<i class="fas fa-exclamation-triangle"></i><p>Unable to load content</p>';
+                }
             }
         }
         

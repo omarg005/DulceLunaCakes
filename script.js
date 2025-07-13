@@ -143,8 +143,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Create FormData for file upload
                     const formData = new FormData(form);
                     
-                    // Submit to server
-                    const response = await fetch('http://localhost:3002/api/submit-request', {
+                    // Submit to server (using relative URL for production deployment)
+                    const response = await fetch('/api/submit-request', {
                         method: 'POST',
                         body: formData
                     });
@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } catch (error) {
                     console.error('Error submitting form:', error);
                     
-                    // Show error message
+                    // Show user-friendly error message
                     const errorMsg = document.createElement('div');
                     errorMsg.className = 'error-message';
                     errorMsg.style.cssText = `
@@ -190,18 +190,28 @@ document.addEventListener('DOMContentLoaded', () => {
                         text-align: center;
                         border: 1px solid #fcc;
                     `;
-                    errorMsg.innerHTML = `
-                        <i class="fas fa-exclamation-circle"></i>
-                        <strong>Error submitting request:</strong> ${error.message}<br>
-                        Please try again or contact us directly.
-                    `;
+                    
+                    // Check if it's a network error (server not available)
+                    if (error.message.includes('fetch') || error.name === 'TypeError') {
+                        errorMsg.innerHTML = `
+                            <i class="fas fa-exclamation-circle"></i>
+                            <strong>Server temporarily unavailable</strong><br>
+                            Please contact us directly at <a href="mailto:hello@dulcelunacakes.com">hello@dulcelunacakes.com</a> or call <a href="tel:+15551234567">(555) 123-4567</a>.
+                        `;
+                    } else {
+                        errorMsg.innerHTML = `
+                            <i class="fas fa-exclamation-circle"></i>
+                            <strong>Error submitting request:</strong> ${error.message}<br>
+                            Please try again or contact us directly.
+                        `;
+                    }
                     
                     form.appendChild(errorMsg);
                     
-                    // Remove error message after 5 seconds
+                    // Remove error message after 8 seconds
                     setTimeout(() => {
                         errorMsg.remove();
-                    }, 5000);
+                    }, 8000);
                 } finally {
                     // Reset button
                     submitBtn.innerHTML = originalText;
@@ -243,67 +253,7 @@ function createLightbox() {
     return lightbox;
 }
 
-// Add lightbox styles
-const lightboxStyle = document.createElement('style');
-lightboxStyle.textContent = `
-    .lightbox {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.9);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        z-index: 10000;
-    }
-    
-    .lightbox.active {
-        display: flex;
-    }
-    
-    .lightbox-content {
-        position: relative;
-        max-width: 90%;
-        max-height: 90%;
-    }
-    
-    .lightbox-image {
-        width: 100%;
-        height: auto;
-        border-radius: var(--border-radius);
-    }
-    
-    .lightbox-caption {
-        color: white;
-        text-align: center;
-        margin-top: 1rem;
-        font-size: 1.1rem;
-    }
-    
-    .lightbox-close {
-        position: absolute;
-        top: -40px;
-        right: 0;
-        background: none;
-        border: none;
-        color: white;
-        font-size: 2rem;
-        cursor: pointer;
-        padding: 0;
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    .lightbox-close:hover {
-        color: var(--primary-pink);
-    }
-`;
-document.head.appendChild(lightboxStyle);
+// Lightbox styles are now defined in styles.css
 
 // Initialize lightbox for gallery images
 document.addEventListener('DOMContentLoaded', () => {

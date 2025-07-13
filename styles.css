@@ -174,6 +174,16 @@ p {
     padding: 0 2rem;
 }
 
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
 .hero-title {
     font-size: 3.5rem;
     font-weight: 700;
@@ -187,17 +197,23 @@ p {
     opacity: 0.9;
 }
 
-/* Buttons */
-.cta-button {
+/* Button Base Styles */
+.cta-button,
+.secondary-button {
     display: inline-block;
-    background: white;
-    color: var(--primary-pink);
     padding: 1rem 2rem;
     border-radius: 50px;
     text-decoration: none;
     font-weight: 600;
     font-size: 1.1rem;
     transition: var(--transition);
+    border: none;
+    cursor: pointer;
+}
+
+.cta-button {
+    background: white;
+    color: var(--primary-pink);
     box-shadow: var(--shadow-soft);
 }
 
@@ -207,15 +223,11 @@ p {
 }
 
 .secondary-button {
-    display: inline-block;
     background: transparent;
     color: var(--primary-pink);
     padding: 0.8rem 1.5rem;
     border: 2px solid var(--primary-pink);
-    border-radius: 50px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: var(--transition);
+    font-size: 1rem;
 }
 
 .secondary-button:hover {
@@ -259,7 +271,11 @@ p {
     margin-top: 2rem;
 }
 
-.cake-card {
+/* Card Base Styles */
+.cake-card,
+.process-step,
+.philosophy-item,
+.faq-item {
     background: white;
     border-radius: var(--border-radius);
     overflow: hidden;
@@ -267,7 +283,9 @@ p {
     transition: var(--transition);
 }
 
-.cake-card:hover {
+.cake-card:hover,
+.process-step:hover,
+.philosophy-item:hover {
     transform: translateY(-10px);
     box-shadow: var(--shadow-hover);
 }
@@ -672,34 +690,19 @@ p {
     line-height: 1.5;
 }
 
-.gallery-caption h3,
-.gallery-item .gallery-caption h3,
-.gallery-grid .gallery-item .gallery-caption h3 {
+/* Consolidated gallery caption styles */
+.gallery-caption h3 {
     margin-bottom: 0.5rem;
     font-size: 1.2rem;
     font-weight: 700;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
-    color: #fff !important; /* Changed from #ff00ff to white */
-    background: none !important; /* Removed white background */
-    padding: 5px 10px;
-    border-radius: 5px;
-    display: inline-block;
 }
 
-.gallery-caption p,
-.gallery-item .gallery-caption p,
-.gallery-grid .gallery-item .gallery-caption p {
+.gallery-caption p {
     font-size: 0.9rem;
     opacity: 1;
     margin-bottom: 0;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
     line-height: 1.4;
-    color: #fff !important; /* Changed from #ff00ff to white */
     font-weight: 500;
-    background: none !important; /* Removed white background */
-    padding: 5px 10px;
-    border-radius: 5px;
-    display: inline-block;
 }
 
 /* CTA Section */
@@ -837,29 +840,27 @@ p {
 
 .process-step {
     text-align: center;
-    background: white;
     padding: 2rem;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-soft);
-    transition: var(--transition);
 }
 
-.process-step:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-hover);
-}
-
-.step-icon {
-    width: 80px;
-    height: 80px;
+/* Icon Base Styles */
+.step-icon,
+.timeline-icon,
+.philosophy-icon,
+.contact-icon {
     background: var(--primary-pink);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+    color: white;
+}
+
+.step-icon {
+    width: 80px;
+    height: 80px;
     margin: 0 auto 1.5rem;
     font-size: 2rem;
-    color: white;
 }
 
 .process-step h3 {
@@ -949,13 +950,7 @@ p {
 .timeline-icon {
     width: 60px;
     height: 60px;
-    background: var(--primary-pink);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     font-size: 1.5rem;
-    color: white;
     flex-shrink: 0;
 }
 
@@ -986,26 +981,13 @@ p {
     text-align: center;
     padding: 2rem;
     background: var(--accent-mint);
-    border-radius: var(--border-radius);
-    transition: var(--transition);
-}
-
-.philosophy-item:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-soft);
 }
 
 .philosophy-icon {
     width: 70px;
     height: 70px;
-    background: var(--primary-pink);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     margin: 0 auto 1.5rem;
     font-size: 1.8rem;
-    color: white;
 }
 
 .philosophy-item h3 {
@@ -1044,13 +1026,7 @@ p {
 .contact-icon {
     width: 50px;
     height: 50px;
-    background: var(--primary-pink);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     font-size: 1.2rem;
-    color: white;
     flex-shrink: 0;
 }
 
@@ -1140,10 +1116,7 @@ p {
 }
 
 .faq-item {
-    background: white;
     padding: 2rem;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-soft);
 }
 
 .faq-item h3 {
@@ -1479,19 +1452,6 @@ p {
     gap: 1rem;
 }
 
-/* Loading Styles */
-.loading {
-    text-align: center;
-    padding: 3rem;
-    color: var(--text-light);
-}
-
-.loading i {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-    color: var(--primary-pink);
-}
-
 /* Responsive Admin Styles */
 @media (max-width: 768px) {
     .admin-tabs {
@@ -1531,7 +1491,7 @@ p {
 .hidden { display: none; }
 .visible { display: block; }
 
-/* Instagram Integration Styles */
+/* Loading Styles */
 .loading {
     text-align: center;
     padding: 3rem;
@@ -1542,6 +1502,66 @@ p {
     font-size: 2rem;
     margin-bottom: 1rem;
     color: var(--primary-pink);
+}
+
+/* Loading States for Different Contexts */
+.about-image .loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 500px;
+    background: var(--secondary-lavender);
+    border-radius: var(--border-radius);
+}
+
+.cake-image .loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 250px;
+    background: var(--accent-mint);
+}
+
+.cakes-grid .loading {
+    grid-column: 1 / -1;
+    background: var(--accent-mint);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+}
+
+/* Image Placeholder Styles */
+.image-placeholder {
+    background: var(--secondary-lavender);
+    border: 2px dashed var(--primary-pink);
+    border-radius: var(--border-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-light);
+    font-style: italic;
+}
+
+/* Fade-in animation for loaded content */
+.fade-in {
+    opacity: 0;
+    animation: fadeIn 0.5s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Spinner animation */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.fa-spin {
+    animation: spin 1s linear infinite;
 }
 
 .instagram-link {
@@ -1576,4 +1596,62 @@ p {
     transform: translateY(0);
     opacity: 1;
     pointer-events: auto;
+} 
+
+/* Lightbox Styles */
+.lightbox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+.lightbox.active {
+    display: flex;
+}
+
+.lightbox-content {
+    position: relative;
+    max-width: 90%;
+    max-height: 90%;
+}
+
+.lightbox-image {
+    width: 100%;
+    height: auto;
+    border-radius: var(--border-radius);
+}
+
+.lightbox-caption {
+    color: white;
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 1.1rem;
+}
+
+.lightbox-close {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lightbox-close:hover {
+    color: var(--primary-pink);
 } 
