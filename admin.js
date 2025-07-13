@@ -12,6 +12,40 @@ let currentEditingImage = null;
 let changes = {};
 let PAGE_CONTENT = {};
 
+// Sandbox mode functions
+function getSandboxRequests() {
+    return JSON.parse(localStorage.getItem('sandboxRequests') || '[]');
+}
+
+function updateSandboxRequestStatus(requestId, newStatus) {
+    const requests = getSandboxRequests();
+    const requestIndex = requests.findIndex(req => req.id === requestId);
+    if (requestIndex !== -1) {
+        requests[requestIndex].status = newStatus;
+        requests[requestIndex].lastUpdated = new Date().toISOString();
+        localStorage.setItem('sandboxRequests', JSON.stringify(requests));
+        loadRequests(); // Refresh the display
+    }
+}
+
+function deleteSandboxRequest(requestId) {
+    const requests = getSandboxRequests();
+    const filteredRequests = requests.filter(req => req.id !== requestId);
+    localStorage.setItem('sandboxRequests', JSON.stringify(filteredRequests));
+    loadRequests(); // Refresh the display
+}
+
+function updateModeIndicator() {
+    const modeIndicator = document.getElementById('current-mode');
+    if (modeIndicator) {
+        // Check if SANDBOX_MODE is defined in the global scope
+        const isSandboxMode = typeof window.SANDBOX_MODE !== 'undefined' ? window.SANDBOX_MODE : true;
+        modeIndicator.textContent = isSandboxMode ? 'Sandbox Mode' : 'Production Mode';
+        modeIndicator.style.backgroundColor = isSandboxMode ? 'var(--accent-mint)' : 'var(--primary-pink)';
+        modeIndicator.style.color = isSandboxMode ? 'var(--text-dark)' : 'white';
+    }
+}
+
 // Load page content from JSON files
 async function loadPageContentData() {
     try {
@@ -118,11 +152,14 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Load page content data first
     loadPageContentData().then(() => {
-        // Check if already logged in
-        if (localStorage.getItem('adminLoggedIn') === 'true') {
-            console.log('User already logged in');
-            showDashboard();
-        }
+            // Check if already logged in
+    if (localStorage.getItem('adminLoggedIn') === 'true') {
+        console.log('User already logged in');
+        showDashboard();
+    }
+    
+    // Update mode indicator
+    updateModeIndicator();
     });
     
     // Login form
@@ -245,6 +282,7 @@ function showDashboard() {
         adminDashboard.classList.remove('hidden');
         console.log('Dashboard should now be visible');
         loadPageContent(currentPage);
+        updateModeIndicator(); // Update mode indicator when dashboard is shown
     } else {
         console.error('Login screen or admin dashboard not found');
     }
@@ -694,11 +732,102 @@ Generated on: ${new Date().toLocaleString()}
 // Requests Management Functions
 function loadRequests() {
     const imageGrid = document.getElementById('image-grid');
+    const sandboxRequests = getSandboxRequests();
+    
+    if (sandboxRequests.length === 0) {
+        imageGrid.innerHTML = `
+            <div class="no-requests">
+                <i class="fas fa-clipboard-list"></i>
+                <p>No cake requests found.</p>
+                <p>Submit a request through the website to see it appear here (Sandbox Mode).</p>
+            </div>
+        `;
+        return;
+    }
+    
+    // Create requests display
+    const requestsHTML = sandboxRequests.map(request => createRequestCard(request)).join('');
+    
     imageGrid.innerHTML = `
-        <div class="no-requests">
-            <i class="fas fa-clipboard-list"></i>
-            <p>No cake requests found.</p>
-            <p>This feature requires a backend server to be running.</p>
+        <div class="requests-header">
+            <h3>Cake Requests (Sandbox Mode)</h3>
+            <div class="request-stats">
+                <div class="stat-card">
+                    <h4>Pending</h4>
+                    <span class="stat-number">${sandboxRequests.filter(r => r.status === 'pending').length}</span>
+                </div>
+                <div class="stat-card">
+                    <h4>In Progress</h4>
+                    <span class="stat-number">${sandboxRequests.filter(r => r.status === 'in_progress').length}</span>
+                </div>
+                <div class="stat-card">
+                    <h4>Completed</h4>
+                    <span class="stat-number">${sandboxRequests.filter(r => r.status === 'completed').length}</span>
+                </div>
+            </div>
+        </div>
+        <div class="requests-grid">
+            ${requestsHTML}
+        </div>
+    `;
+}
+
+function createRequestCard(request) {
+    const statusColors = {
+        pending: '#ffc107',
+        in_progress: '#007bff',
+        completed: '#28a745',
+        cancelled: '#dc3545'
+    };
+    
+    const statusLabels = {
+        pending: 'Pending',
+        in_progress: 'In Progress',
+        completed: 'Completed',
+        cancelled: 'Cancelled'
+    };
+    
+    const submittedDate = new Date(request.submittedAt).toLocaleDateString();
+    const submittedTime = new Date(request.submittedAt).toLocaleTimeString();
+    
+    return `
+        <div class="request-card">
+            <div class="request-header">
+                <h4>${request.name || 'Unknown Customer'}</h4>
+                <span class="status-badge" style="background-color: ${statusColors[request.status]}; color: white;">
+                    ${statusLabels[request.status]}
+                </span>
+            </div>
+            <div class="request-content">
+                <div class="request-info">
+                    <p><strong>Request ID:</strong> ${request.id}</p>
+                    <p><strong>Email:</strong> ${request.email || 'Not provided'}</p>
+                    <p><strong>Phone:</strong> ${request.phone || 'Not provided'}</p>
+                    <p><strong>Event Date:</strong> ${request.eventDate || 'Not specified'}</p>
+                    <p><strong>Event Type:</strong> ${request.eventType || 'Not specified'}</p>
+                    <p><strong>Cake Size:</strong> ${request.cakeSize || 'Not specified'}</p>
+                    <p><strong>Flavor:</strong> ${request.flavor || 'Not specified'}</p>
+                    <p><strong>Budget:</strong> ${request.budget || 'Not specified'}</p>
+                    <p><strong>Submitted:</strong> ${submittedDate} at ${submittedTime}</p>
+                </div>
+                ${request.description ? `
+                    <div class="request-description">
+                        <h5>Description:</h5>
+                        <p>${request.description}</p>
+                    </div>
+                ` : ''}
+                <div class="request-actions">
+                    <select onchange="updateSandboxRequestStatus('${request.id}', this.value)" class="status-select">
+                        <option value="pending" ${request.status === 'pending' ? 'selected' : ''}>Pending</option>
+                        <option value="in_progress" ${request.status === 'in_progress' ? 'selected' : ''}>In Progress</option>
+                        <option value="completed" ${request.status === 'completed' ? 'selected' : ''}>Completed</option>
+                        <option value="cancelled" ${request.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                    </select>
+                    <button onclick="deleteSandboxRequest('${request.id}')" class="delete-btn">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </div>
+            </div>
         </div>
     `;
 }

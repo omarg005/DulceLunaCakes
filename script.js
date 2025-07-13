@@ -124,32 +124,122 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
+// Configuration - Set to true for sandbox mode (testing)
+const SANDBOX_MODE = true; // Change to false for production
+
+// Make SANDBOX_MODE available globally for admin panel
+window.SANDBOX_MODE = SANDBOX_MODE;
+
+// Debug: Log sandbox mode on page load
+console.log('Script loaded. SANDBOX_MODE:', SANDBOX_MODE);
+console.log('Current timestamp:', new Date().toISOString());
+console.log('Script version: 2025-07-13-17:12');
+
+// Test if script is running
+window.testSandboxMode = function() {
+    console.log('Manual test - SANDBOX_MODE:', SANDBOX_MODE);
+    console.log('Manual test - localStorage test:', localStorage.getItem('test') || 'undefined');
+    localStorage.setItem('test', 'working');
+    console.log('Manual test - localStorage after set:', localStorage.getItem('test'));
+};
+
+// Sandbox storage functions
+function saveSandboxRequest(requestData) {
+    try {
+        const requests = JSON.parse(localStorage.getItem('sandboxRequests') || '[]');
+        const requestId = 'REQ-' + Date.now();
+        const fullRequest = {
+            id: requestId,
+            ...requestData,
+            status: 'pending',
+            submittedAt: new Date().toISOString(),
+            lastUpdated: new Date().toISOString()
+        };
+        requests.push(fullRequest);
+        localStorage.setItem('sandboxRequests', JSON.stringify(requests));
+        console.log('Successfully saved request to localStorage');
+        return requestId;
+    } catch (error) {
+        console.error('Error saving to localStorage:', error);
+        throw new Error('Failed to save request locally: ' + error.message);
+    }
+}
+
+function getSandboxRequests() {
+    return JSON.parse(localStorage.getItem('sandboxRequests') || '[]');
+}
+
 // Handle form submissions
 document.addEventListener('DOMContentLoaded', () => {
-    const forms = document.querySelectorAll('form');
+    const forms = document.querySelectorAll('.cake-request-form, .contact-form');
+    console.log('Found forms:', forms.length);
     
-    forms.forEach(form => {
+    forms.forEach((form, index) => {
+        console.log(`Setting up form ${index}:`, form.className);
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
+            console.log('Form submitted:', form.className);
             
-            if (validateForm(form)) {
-                // Show loading state
-                const submitBtn = form.querySelector('.submit-button');
-                const originalText = submitBtn.innerHTML;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
-                submitBtn.disabled = true;
-                
-                try {
-                    // Create FormData for file upload
-                    const formData = new FormData(form);
+            try {
+                if (validateForm(form)) {
+                    console.log('Form validation passed');
+                    // Show loading state
+                    const submitBtn = form.querySelector('.submit-button');
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+                    submitBtn.disabled = true;
                     
-                    // Submit to server (using relative URL for production deployment)
-                    const response = await fetch('/api/submit-request', {
-                        method: 'POST',
-                        body: formData
-                    });
+                    try {
+                    let result;
                     
-                    const result = await response.json();
+                    console.log('SANDBOX_MODE:', SANDBOX_MODE);
+                    
+                    if (SANDBOX_MODE) {
+                        console.log('Entering sandbox mode');
+                        // Sandbox mode - store locally and simulate success
+                        const formData = new FormData(form);
+                        const requestData = {};
+                        
+                        console.log('Converting FormData to object');
+                        // Convert FormData to object
+                        for (let [key, value] of formData.entries()) {
+                            if (requestData[key]) {
+                                // Handle multiple values (like checkboxes)
+                                if (Array.isArray(requestData[key])) {
+                                    requestData[key].push(value);
+                                } else {
+                                    requestData[key] = [requestData[key], value];
+                                }
+                            } else {
+                                requestData[key] = value;
+                            }
+                        }
+                        
+                        console.log('RequestData:', requestData);
+                        
+                        // Save to local storage
+                        console.log('Saving to localStorage');
+                        const requestId = saveSandboxRequest(requestData);
+                        console.log('Saved with ID:', requestId);
+                        
+                        // Simulate success
+                        result = {
+                            success: true,
+                            submissionId: requestId,
+                            mode: 'sandbox'
+                        };
+                        console.log('Sandbox result:', result);
+                    } else {
+                        // Production mode - submit to server
+                        const formData = new FormData(form);
+                        
+                        const response = await fetch('/api/submit-request', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        result = await response.json();
+                    }
                     
                     if (result.success) {
                         // Show success message
@@ -160,7 +250,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             <div>
                                 <strong>Thank you! Your request has been submitted successfully!</strong><br>
                                 Request ID: ${result.submissionId}<br>
-                                We'll review your request and contact you within 24 hours.
+                                ${result.mode === 'sandbox' ? 
+                                    '<em>Note: Running in sandbox mode - no emails sent</em><br>' : 
+                                    'We\'ll review your request and contact you within 24 hours.'
+                                }
                             </div>
                         `;
                         
@@ -177,6 +270,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                 } catch (error) {
                     console.error('Error submitting form:', error);
+                    console.error('Error details:', {
+                        message: error.message,
+                        name: error.name,
+                        stack: error.stack
+                    });
                     
                     // Show user-friendly error message
                     const errorMsg = document.createElement('div');
@@ -217,6 +315,32 @@ document.addEventListener('DOMContentLoaded', () => {
                     submitBtn.innerHTML = originalText;
                     submitBtn.disabled = false;
                 }
+            }
+            } catch (outerError) {
+                console.error('Outer form submission error:', outerError);
+                // Show a generic error message
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'error-message';
+                errorMsg.style.cssText = `
+                    background: #fee;
+                    color: #c33;
+                    padding: 1rem;
+                    border-radius: var(--border-radius);
+                    margin-top: 1rem;
+                    text-align: center;
+                    border: 1px solid #fcc;
+                `;
+                errorMsg.innerHTML = `
+                    <i class="fas fa-exclamation-circle"></i>
+                    <strong>Unexpected error:</strong> ${outerError.message}<br>
+                    Please try again or contact us directly.
+                `;
+                form.appendChild(errorMsg);
+                
+                // Remove error message after 8 seconds
+                setTimeout(() => {
+                    errorMsg.remove();
+                }, 8000);
             }
         });
     });

@@ -69,6 +69,24 @@
         <!-- Admin Main Content -->
         <main class="admin-main">
             <div class="admin-container">
+                <!-- Configuration Panel -->
+                <div class="config-panel">
+                    <h2>System Configuration</h2>
+                    <div class="config-item">
+                        <label>
+                            <strong>Mode:</strong>
+                            <span id="current-mode" class="mode-indicator">Sandbox Mode</span>
+                        </label>
+                        <p class="config-description">
+                            <strong>Sandbox:</strong> Requests are stored locally, no emails sent<br>
+                            <strong>Production:</strong> Requests are sent to server and emails are sent
+                        </p>
+                        <p class="config-note">
+                            <em>Note: To change mode, edit the SANDBOX_MODE variable in script.js</em>
+                        </p>
+                    </div>
+                </div>
+
                 <!-- Page Selector -->
                 <div class="page-selector">
                     <h2>Select Page to Manage</h2>
