@@ -1,0 +1,14 @@
+[
+  {
+    "filename": "HiImLuna.avif",
+    "title": "Hi, I'm Nomi!",
+    "description": "Baking has always been my love language. From the moment I first mixed flour and sugar in my grandmother's kitchen, I knew that creating sweet moments through cake was my calling.",
+    "path": "images/about/HiImLuna.avif",
+    "type": "profile",
+    "targetElements": {
+      "image": ".about-image img",
+      "title": ".about-text h2",
+      "description": ".about-text p"
+    }
+  }
+] 

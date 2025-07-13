@@ -61,12 +61,12 @@
         <div class="container">
             <div class="about-content">
                 <div class="about-image">
-                    <img src="images/about/HiImLuna.avif" alt="Luna the Baker">
+                    <img src="" alt="Loading...">
                 </div>
                 
                 <div class="about-text">
-                    <h2>Hi, I'm Nomi!</h2>
-                    <p>Baking has always been my love language. From the moment I first mixed flour and sugar in my grandmother's kitchen, I knew that creating sweet moments through cake was my calling.</p>
+                    <h2>Loading...</h2>
+                    <p>Loading...</p>
                     
                     <p>After years of crafting cakes for family and friends, watching their faces light up with joy at every celebration, Dulce Luna Cakes was born — a place where your celebrations come to life in buttercream and fondant.</p>
                     
@@ -232,5 +232,35 @@
 
     <!-- JavaScript -->
     <script src="script.js"></script>
+    <script>
+        // Load and populate content from JSON
+        async function loadAboutContent() {
+            try {
+                const response = await fetch('images/about/about_data.json');
+                const data = await response.json();
+                
+                data.forEach(item => {
+                    if (item.type === 'profile') {
+                        // Update about section
+                        const aboutImage = document.querySelector('.about-section .about-image img');
+                        const aboutTitle = document.querySelector('.about-section .about-text h2');
+                        const aboutDesc = document.querySelector('.about-section .about-text p');
+                        
+                        if (aboutImage) {
+                            aboutImage.src = item.path;
+                            aboutImage.alt = item.title;
+                        }
+                        if (aboutTitle) aboutTitle.textContent = item.title;
+                        if (aboutDesc) aboutDesc.textContent = item.description;
+                    }
+                });
+            } catch (error) {
+                console.error('Error loading about content:', error);
+            }
+        }
+        
+        // Load content when page loads
+        document.addEventListener('DOMContentLoaded', loadAboutContent);
+    </script>
 </body>
 </html> 

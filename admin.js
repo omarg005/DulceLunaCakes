@@ -6,268 +6,87 @@ const ADMIN_CREDENTIALS = {
     password: 'dulceluna2025' // Change this to a secure password
 };
 
-// Page content configuration
-const PAGE_CONTENT = {
-    index: {
-        title: 'Home Page Content',
-        images: [
-            {
-                id: 'hero-background',
-                name: 'Hero Background',
-                currentImage: 'images/index/Hero.avif',
-                currentTitle: 'Custom Cakes That Capture Your Sweetest Moments',
-                currentDescription: 'Where edible art meets your celebration',
-                targetFile: 'images/index/Hero.avif',
-                targetElements: {
-                    image: '.hero::before',
-                    title: '.hero-title',
-                    description: '.hero-subtitle'
-                },
-                isHero: true
-            },
-            {
-                id: 'chocolate-floral-tier',
-                name: 'Chocolate Floral Tier',
-                currentImage: 'images/index/ChocolateFloralTier.avif',
-                currentTitle: 'Chocolate Floral Tier',
-                currentDescription: 'A stunning three-tier chocolate cake adorned with delicate sugar flowers',
-                targetFile: 'images/index/ChocolateFloralTier.avif',
-                targetElements: {
-                    image: '.cake-card:nth-child(1) img',
-                    title: '.cake-card:nth-child(1) h3',
-                    description: '.cake-card:nth-child(1) p'
-                }
-            },
-            {
-                id: 'unicorn-birthday-magic',
-                name: 'Unicorn Birthday Magic',
-                currentImage: 'images/index/UnicornBirthdayMagic.avif',
-                currentTitle: 'Unicorn Birthday Magic',
-                currentDescription: 'Colorful layers with rainbow frosting and magical unicorn decorations',
-                targetFile: 'images/index/UnicornBirthdayMagic.avif',
-                targetElements: {
-                    image: '.cake-card:nth-child(2) img',
-                    title: '.cake-card:nth-child(2) h3',
-                    description: '.cake-card:nth-child(2) p'
-                }
-            },
-            {
-                id: 'rustic-wedding-cake',
-                name: 'Rustic Wedding Cake',
-                currentImage: 'images/index/RusticWeddingCake.avif',
-                currentTitle: 'Rustic Wedding Cake',
-                currentDescription: 'Elegant naked cake with fresh flowers and rustic charm',
-                targetFile: 'images/index/RusticWeddingCake.avif',
-                targetElements: {
-                    image: '.cake-card:nth-child(3) img',
-                    title: '.cake-card:nth-child(3) h3',
-                    description: '.cake-card:nth-child(3) p'
-                }
-            },
-            {
-                id: 'meet-the-baker',
-                name: 'Meet the Baker',
-                currentImage: 'images/index/MeetTheBaker.avif',
-                currentTitle: 'Meet the Baker',
-                currentDescription: 'Hi, I\'m Luna! Baking has always been my love language.',
-                targetFile: 'images/index/MeetTheBaker.avif',
-                targetElements: {
-                    image: '.about-image img',
-                    title: '.about-text h2',
-                    description: '.about-text p'
-                }
-            }
-        ]
-    },
-    about: {
-        title: 'About Page Content',
-        images: [
-            {
-                id: 'hi-im-luna',
-                name: 'Hi, I\'m Luna',
-                currentImage: 'images/about/HiImLuna.avif',
-                currentTitle: 'Hi, I\'m Nomi!',
-                currentDescription: 'Baking has always been my love language. From the moment I first mixed flour and sugar in my grandmother\'s kitchen, I knew that creating sweet moments through cake was my calling.',
-                targetFile: 'images/about/HiImLuna.avif',
-                targetElements: {
-                    image: '.about-image img',
-                    title: '.about-text h2',
-                    description: '.about-text p'
-                }
-            }
-        ]
-    },
-    gallery: {
-        title: 'Gallery Content',
-        images: [
-            {
-                id: 'gallery-1',
-                name: 'Chocolate Floral Tier',
-                currentImage: 'images/gallery/ChocolateFloralTier.jpg',
-                currentTitle: 'Chocolate Floral Tier',
-                currentDescription: 'A stunning three-tier chocolate cake adorned with delicate sugar flowers and gold accents',
-                targetFile: 'images/gallery/ChocolateFloralTier.jpg',
-                targetElements: {
-                    image: '.gallery-item:nth-child(1) img',
-                    title: '.gallery-item:nth-child(1) h3',
-                    description: '.gallery-item:nth-child(1) p'
-                }
-            },
-            {
-                id: 'gallery-2',
-                name: 'Unicorn Birthday Magic',
-                currentImage: 'images/gallery/UnicornBirthdayMagic.jpg',
-                currentTitle: 'Unicorn Birthday Magic',
-                currentDescription: 'Colorful layers with rainbow frosting and magical unicorn decorations',
-                targetFile: 'images/gallery/UnicornBirthdayMagic.jpg',
-                targetElements: {
-                    image: '.gallery-item:nth-child(2) img',
-                    title: '.gallery-item:nth-child(2) h3',
-                    description: '.gallery-item:nth-child(2) p'
-                }
-            },
-            {
-                id: 'gallery-3',
-                name: 'Rustic Wedding Cake',
-                currentImage: 'images/gallery/RusticWeddingCake.jpg',
-                currentTitle: 'Rustic Wedding Cake',
-                currentDescription: 'Elegant naked cake with fresh flowers and rustic charm',
-                targetFile: 'images/gallery/RusticWeddingCake.jpg',
-                targetElements: {
-                    image: '.gallery-item:nth-child(3) img',
-                    title: '.gallery-item:nth-child(3) h3',
-                    description: '.gallery-item:nth-child(3) p'
-                }
-            },
-            {
-                id: 'gallery-4',
-                name: 'Vanilla Buttercream Dream',
-                currentImage: 'images/gallery/VanillaButtercreamDream.jpg',
-                currentTitle: 'Vanilla Buttercream Dream',
-                currentDescription: 'Classic vanilla cake with smooth buttercream frosting',
-                targetFile: 'images/gallery/VanillaButtercreamDream.jpg',
-                targetElements: {
-                    image: '.gallery-item:nth-child(4) img',
-                    title: '.gallery-item:nth-child(4) h3',
-                    description: '.gallery-item:nth-child(4) p'
-                }
-            },
-            {
-                id: 'gallery-5',
-                name: 'Red Velvet Elegance',
-                currentImage: 'images/gallery/RedVelvetElegance.jpg',
-                currentTitle: 'Red Velvet Elegance',
-                currentDescription: 'Rich red velvet with cream cheese frosting and gold accents',
-                targetFile: 'images/gallery/RedVelvetElegance.jpg',
-                targetElements: {
-                    image: '.gallery-item:nth-child(5) img',
-                    title: '.gallery-item:nth-child(5) h3',
-                    description: '.gallery-item:nth-child(5) p'
-                }
-            },
-            {
-                id: 'gallery-6',
-                name: 'Lemon Zest Delight',
-                currentImage: 'images/gallery/LemonZestDelight.jpg',
-                currentTitle: 'Lemon Zest Delight',
-                currentDescription: 'Fresh lemon cake with citrus glaze and edible flowers',
-                targetFile: 'images/gallery/LemonZestDelight.jpg',
-                targetElements: {
-                    image: '.gallery-item:nth-child(6) img',
-                    title: '.gallery-item:nth-child(6) h3',
-                    description: '.gallery-item:nth-child(6) p'
-                }
-            },
-            {
-                id: 'gallery-7',
-                name: 'Marble Masterpiece',
-                currentImage: 'images/gallery/MarbleMasterpiece.jpg',
-                currentTitle: 'Marble Masterpiece',
-                currentDescription: 'Swirled chocolate and vanilla with ganache drizzle',
-                targetFile: 'images/gallery/MarbleMasterpiece.jpg',
-                targetElements: {
-                    image: '.gallery-item:nth-child(7) img',
-                    title: '.gallery-item:nth-child(7) h3',
-                    description: '.gallery-item:nth-child(7) p'
-                }
-            },
-            {
-                id: 'gallery-8',
-                name: 'Princess Birthday Cake',
-                currentImage: 'images/gallery/PrincessBirthdayCake.jpg',
-                currentTitle: 'Princess Birthday Cake',
-                currentDescription: 'Pink ombre layers with crown and sparkle decorations',
-                targetFile: 'images/gallery/PrincessBirthdayCake.jpg',
-                targetElements: {
-                    image: '.gallery-item:nth-child(8) img',
-                    title: '.gallery-item:nth-child(8) h3',
-                    description: '.gallery-item:nth-child(8) p'
-                }
-            },
-            {
-                id: 'gallery-9',
-                name: 'Garden Party Cake',
-                currentImage: 'images/gallery/GardenPartyCake.jpg',
-                currentTitle: 'Garden Party Cake',
-                currentDescription: 'Spring-inspired cake with edible flowers and pastel colors',
-                targetFile: 'images/gallery/GardenPartyCake.jpg',
-                targetElements: {
-                    image: '.gallery-item:nth-child(9) img',
-                    title: '.gallery-item:nth-child(9) h3',
-                    description: '.gallery-item:nth-child(9) p'
-                }
-            },
-            {
-                id: 'gallery-10',
-                name: 'Modern Geometric Cake',
-                currentImage: 'images/gallery/ModernGeometricCake.jpg',
-                currentTitle: 'Modern Geometric Cake',
-                currentDescription: 'Clean lines and geometric patterns in fondant',
-                targetFile: 'images/gallery/ModernGeometricCake.jpg',
-                targetElements: {
-                    image: '.gallery-item:nth-child(10) img',
-                    title: '.gallery-item:nth-child(10) h3',
-                    description: '.gallery-item:nth-child(10) p'
-                }
-            },
-            {
-                id: 'gallery-11',
-                name: 'Carrot Cake Comfort',
-                currentImage: 'images/gallery/CarrotCakeComfort.jpg',
-                currentTitle: 'Carrot Cake Comfort',
-                currentDescription: 'Spiced carrot cake with cream cheese frosting and walnuts',
-                targetFile: 'images/gallery/CarrotCakeComfort.jpg',
-                targetElements: {
-                    image: '.gallery-item:nth-child(11) img',
-                    title: '.gallery-item:nth-child(11) h3',
-                    description: '.gallery-item:nth-child(11) p'
-                }
-            },
-            {
-                id: 'gallery-12',
-                name: 'Chocolate Lovers Dream',
-                currentImage: 'images/gallery/ChocolateLoversDream.jpg',
-                currentTitle: 'Chocolate Lovers Dream',
-                currentDescription: 'Triple chocolate layers with chocolate ganache and shavings',
-                targetFile: 'images/gallery/ChocolateLoversDream.jpg',
-                targetElements: {
-                    image: '.gallery-item:nth-child(12) img',
-                    title: '.gallery-item:nth-child(12) h3',
-                    description: '.gallery-item:nth-child(12) p'
-                }
-            }
-        ]
-    },
-    requests: {
-        title: 'Review Cake Requests',
-        isRequestsPage: true
-    }
-};
-
 // Global variables
 let currentPage = 'index';
 let currentEditingImage = null;
 let changes = {};
+let PAGE_CONTENT = {};
+
+// Load page content from JSON files
+async function loadPageContentData() {
+    try {
+        // Load index page data
+        const indexResponse = await fetch('images/index/index_data.json');
+        const indexData = await indexResponse.json();
+        
+        // Load about page data
+        const aboutResponse = await fetch('images/about/about_data.json');
+        const aboutData = await aboutResponse.json();
+        
+        // Load gallery data
+        const galleryResponse = await fetch('images/gallery/gallery_data.json');
+        const galleryData = await galleryResponse.json();
+        
+        // Convert to admin panel format
+        PAGE_CONTENT = {
+            index: {
+                title: 'Home Page Content',
+                images: indexData.map(item => ({
+                    id: item.filename.replace(/\.[^/.]+$/, '').toLowerCase().replace(/[^a-z0-9]/g, '-'),
+                    name: item.title,
+                    currentImage: item.path,
+                    currentTitle: item.title,
+                    currentDescription: item.description,
+                    targetFile: item.path,
+                    targetElements: item.targetElements,
+                    isHero: item.type === 'hero'
+                }))
+            },
+            about: {
+                title: 'About Page Content',
+                images: aboutData.map(item => ({
+                    id: item.filename.replace(/\.[^/.]+$/, '').toLowerCase().replace(/[^a-z0-9]/g, '-'),
+                    name: item.title,
+                    currentImage: item.path,
+                    currentTitle: item.title,
+                    currentDescription: item.description,
+                    targetFile: item.path,
+                    targetElements: item.targetElements
+                }))
+            },
+            gallery: {
+                title: 'Gallery Content',
+                images: galleryData.map((item, index) => ({
+                    id: `gallery-${index + 1}`,
+                    name: item.title,
+                    currentImage: item.path,
+                    currentTitle: item.title,
+                    currentDescription: item.description,
+                    targetFile: item.path,
+                    targetElements: {
+                        image: `.gallery-item:nth-child(${index + 1}) img`,
+                        title: `.gallery-item:nth-child(${index + 1}) h3`,
+                        description: `.gallery-item:nth-child(${index + 1}) p`
+                    }
+                }))
+            },
+            requests: {
+                title: 'Review Cake Requests',
+                isRequestsPage: true
+            }
+        };
+        
+        console.log('Page content loaded successfully');
+        
+        // If already logged in, load the current page
+        if (localStorage.getItem('adminLoggedIn') === 'true') {
+            loadPageContent(currentPage);
+        }
+    } catch (error) {
+        console.error('Error loading page content:', error);
+        showMessage('Error loading page content. Please refresh the page.', 'error');
+    }
+}
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', function() {
@@ -297,11 +116,14 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Admin dashboard:', adminDashboard);
     console.log('Image grid:', imageGrid);
     
-    // Check if already logged in
-    if (localStorage.getItem('adminLoggedIn') === 'true') {
-        console.log('User already logged in');
-        showDashboard();
-    }
+    // Load page content data first
+    loadPageContentData().then(() => {
+        // Check if already logged in
+        if (localStorage.getItem('adminLoggedIn') === 'true') {
+            console.log('User already logged in');
+            showDashboard();
+        }
+    });
     
     // Login form
     if (loginForm) {
@@ -682,6 +504,36 @@ function generateChangesData() {
                 title: change && change.title ? change.title : image.currentTitle,
                 description: change && change.description ? change.description : image.currentDescription,
                 path: image.currentImage
+            };
+        });
+    }
+    
+    // If this is the index page, include updated index data
+    if (currentPage === 'index') {
+        changesData.updatedIndexData = content.images.map(image => {
+            const change = changes[image.id];
+            return {
+                filename: image.currentImage.split('/').pop(),
+                title: change && change.title ? change.title : image.currentTitle,
+                description: change && change.description ? change.description : image.currentDescription,
+                path: image.currentImage,
+                type: image.isHero ? 'hero' : (image.name === 'Meet the Baker' ? 'about' : 'featured'),
+                targetElements: image.targetElements
+            };
+        });
+    }
+    
+    // If this is the about page, include updated about data
+    if (currentPage === 'about') {
+        changesData.updatedAboutData = content.images.map(image => {
+            const change = changes[image.id];
+            return {
+                filename: image.currentImage.split('/').pop(),
+                title: change && change.title ? change.title : image.currentTitle,
+                description: change && change.description ? change.description : image.currentDescription,
+                path: image.currentImage,
+                type: 'profile',
+                targetElements: image.targetElements
             };
         });
     }

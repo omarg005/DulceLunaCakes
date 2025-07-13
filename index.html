@@ -51,8 +51,8 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
-            <h1 class="hero-title">Custom Cakes That Capture Your Sweetest Moments</h1>
-            <p class="hero-subtitle">Where edible art meets your celebration</p>
+            <h1 class="hero-title">Loading...</h1>
+            <p class="hero-subtitle">Loading...</p>
             <a href="request.html" class="cta-button">Request a Cake</a>
         </div>
         <div class="hero-overlay"></div>
@@ -75,31 +75,31 @@
             <div class="cakes-grid">
                 <div class="cake-card">
                     <div class="cake-image">
-                        <img src="images/index/ChocolateFloralTier.avif" alt="Chocolate Floral Tier Cake">
+                        <img src="" alt="Loading...">
                     </div>
                     <div class="cake-info">
-                        <h3>Chocolate Floral Tier</h3>
-                        <p>A stunning three-tier chocolate cake adorned with delicate sugar flowers</p>
+                        <h3>Loading...</h3>
+                        <p>Loading...</p>
                     </div>
                 </div>
                 
                 <div class="cake-card">
                     <div class="cake-image">
-                        <img src="images/index/UnicornBirthdayMagic.avif" alt="Unicorn Birthday Magic Cake">
+                        <img src="" alt="Loading...">
                     </div>
                     <div class="cake-info">
-                        <h3>Unicorn Birthday Magic</h3>
-                        <p>Colorful layers with rainbow frosting and magical unicorn decorations</p>
+                        <h3>Loading...</h3>
+                        <p>Loading...</p>
                     </div>
                 </div>
                 
                 <div class="cake-card">
                     <div class="cake-image">
-                        <img src="images/index/RusticWeddingCake.avif" alt="Rustic Wedding Cake">
+                        <img src="" alt="Loading...">
                     </div>
                     <div class="cake-info">
-                        <h3>Rustic Wedding Cake</h3>
-                        <p>Elegant naked cake with fresh flowers and rustic charm</p>
+                        <h3>Loading...</h3>
+                        <p>Loading...</p>
                     </div>
                 </div>
             </div>
@@ -111,12 +111,12 @@
         <div class="container">
             <div class="about-content">
                 <div class="about-text">
-                    <h2>Meet the Baker</h2>
-                    <p>Hi, I'm Luna! Baking has always been my love language. After years of crafting cakes for family and friends, Dulce Luna Cakes was born — a place where your celebrations come to life in buttercream and fondant.</p>
+                    <h2>Loading...</h2>
+                    <p>Loading...</p>
                     <a href="about.html" class="secondary-button">Read More</a>
                 </div>
                 <div class="about-image">
-                    <img src="images/index/MeetTheBaker.avif" alt="Luna the Baker">
+                    <img src="" alt="Loading...">
                 </div>
             </div>
         </div>
@@ -191,5 +191,57 @@
 
     <!-- JavaScript -->
     <script src="script.js"></script>
+    <script>
+        // Load and populate content from JSON
+        async function loadIndexContent() {
+            try {
+                const response = await fetch('images/index/index_data.json');
+                const data = await response.json();
+                
+                data.forEach(item => {
+                    if (item.type === 'hero') {
+                        // Update hero section
+                        const heroTitle = document.querySelector('.hero-title');
+                        const heroSubtitle = document.querySelector('.hero-subtitle');
+                        if (heroTitle) heroTitle.textContent = item.title;
+                        if (heroSubtitle) heroSubtitle.textContent = item.description;
+                    } else if (item.type === 'featured') {
+                        // Update featured cakes - use index-based selectors
+                        const cakeCards = document.querySelectorAll('.cake-card');
+                        const index = data.filter(d => d.type === 'featured').indexOf(item);
+                        if (cakeCards[index]) {
+                            const img = cakeCards[index].querySelector('img');
+                            const title = cakeCards[index].querySelector('h3');
+                            const desc = cakeCards[index].querySelector('p');
+                            
+                            if (img) {
+                                img.src = item.path;
+                                img.alt = item.title;
+                            }
+                            if (title) title.textContent = item.title;
+                            if (desc) desc.textContent = item.description;
+                        }
+                    } else if (item.type === 'about') {
+                        // Update about section
+                        const aboutImage = document.querySelector('.about-preview .about-image img');
+                        const aboutTitle = document.querySelector('.about-preview .about-text h2');
+                        const aboutDesc = document.querySelector('.about-preview .about-text p');
+                        
+                        if (aboutImage) {
+                            aboutImage.src = item.path;
+                            aboutImage.alt = item.title;
+                        }
+                        if (aboutTitle) aboutTitle.textContent = item.title;
+                        if (aboutDesc) aboutDesc.textContent = item.description;
+                    }
+                });
+            } catch (error) {
+                console.error('Error loading index content:', error);
+            }
+        }
+        
+        // Load content when page loads
+        document.addEventListener('DOMContentLoaded', loadIndexContent);
+    </script>
 </body>
 </html> 

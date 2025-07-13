@@ -41,8 +41,10 @@ def main():
     
     if page == 'gallery':
         apply_gallery_changes(changes_data, backup_dir)
-    elif page in ['index', 'about']:
-        apply_page_changes(changes_data, backup_dir)
+    elif page == 'index':
+        apply_index_changes(changes_data, backup_dir)
+    elif page == 'about':
+        apply_about_changes(changes_data, backup_dir)
     else:
         print(f"❌ Unknown page type: {page}")
         return
@@ -76,8 +78,52 @@ def apply_gallery_changes(changes_data, backup_dir):
     # Handle image uploads
     handle_image_uploads(changes_data, backup_dir)
 
+def apply_index_changes(changes_data, backup_dir):
+    """Apply changes to index page"""
+    print("\n--- Applying Index Page Changes ---")
+    
+    # Update index_data.json
+    index_data_file = "images/index/index_data.json"
+    if changes_data.get('updatedIndexData'):
+        # Backup original file
+        if os.path.exists(index_data_file):
+            backup_file = os.path.join(backup_dir, "index_data.json")
+            shutil.copy2(index_data_file, backup_file)
+            print(f"📋 Backed up: {index_data_file}")
+        
+        # Write updated index data
+        os.makedirs(os.path.dirname(index_data_file), exist_ok=True)
+        with open(index_data_file, 'w', encoding='utf-8') as f:
+            json.dump(changes_data['updatedIndexData'], f, indent=2, ensure_ascii=False)
+        print(f"✅ Updated: {index_data_file}")
+    
+    # Handle image uploads
+    handle_image_uploads(changes_data, backup_dir)
+
+def apply_about_changes(changes_data, backup_dir):
+    """Apply changes to about page"""
+    print("\n--- Applying About Page Changes ---")
+    
+    # Update about_data.json
+    about_data_file = "images/about/about_data.json"
+    if changes_data.get('updatedAboutData'):
+        # Backup original file
+        if os.path.exists(about_data_file):
+            backup_file = os.path.join(backup_dir, "about_data.json")
+            shutil.copy2(about_data_file, backup_file)
+            print(f"📋 Backed up: {about_data_file}")
+        
+        # Write updated about data
+        os.makedirs(os.path.dirname(about_data_file), exist_ok=True)
+        with open(about_data_file, 'w', encoding='utf-8') as f:
+            json.dump(changes_data['updatedAboutData'], f, indent=2, ensure_ascii=False)
+        print(f"✅ Updated: {about_data_file}")
+    
+    # Handle image uploads
+    handle_image_uploads(changes_data, backup_dir)
+
 def apply_page_changes(changes_data, backup_dir):
-    """Apply changes to index or about pages"""
+    """Apply changes to index or about pages (legacy function)"""
     print(f"\n--- Applying {changes_data.get('page', '').title()} Page Changes ---")
     
     page_file = f"{changes_data.get('page', 'index')}.html"

@@ -1,0 +1,62 @@
+[
+  {
+    "filename": "Hero.avif",
+    "title": "Custom Cakes That Capture Your Sweetest Moments",
+    "description": "Where edible art meets your celebration",
+    "path": "images/index/Hero.avif",
+    "type": "hero",
+    "targetElements": {
+      "image": ".hero::before",
+      "title": ".hero-title",
+      "description": ".hero-subtitle"
+    }
+  },
+  {
+    "filename": "ChocolateFloralTier.avif",
+    "title": "Chocolate Floral Tier",
+    "description": "A stunning three-tier chocolate cake adorned with delicate sugar flowers",
+    "path": "images/index/ChocolateFloralTier.avif",
+    "type": "featured",
+    "targetElements": {
+      "image": ".cake-card:nth-child(1) img",
+      "title": ".cake-card:nth-child(1) h3",
+      "description": ".cake-card:nth-child(1) p"
+    }
+  },
+  {
+    "filename": "UnicornBirthdayMagic.avif",
+    "title": "Unicorn Birthday Magic",
+    "description": "Colorful layers with rainbow frosting and magical unicorn decorations",
+    "path": "images/index/UnicornBirthdayMagic.avif",
+    "type": "featured",
+    "targetElements": {
+      "image": ".cake-card:nth-child(2) img",
+      "title": ".cake-card:nth-child(2) h3",
+      "description": ".cake-card:nth-child(2) p"
+    }
+  },
+  {
+    "filename": "RusticWeddingCake.avif",
+    "title": "Rustic Wedding Cake",
+    "description": "Elegant naked cake with fresh flowers and rustic charm",
+    "path": "images/index/RusticWeddingCake.avif",
+    "type": "featured",
+    "targetElements": {
+      "image": ".cake-card:nth-child(3) img",
+      "title": ".cake-card:nth-child(3) h3",
+      "description": ".cake-card:nth-child(3) p"
+    }
+  },
+  {
+    "filename": "MeetTheBaker.avif",
+    "title": "Meet the Baker",
+    "description": "Hi, I'm Luna! Baking has always been my love language.",
+    "path": "images/index/MeetTheBaker.avif",
+    "type": "about",
+    "targetElements": {
+      "image": ".about-image img",
+      "title": ".about-text h2",
+      "description": ".about-text p"
+    }
+  }
+] 
