@@ -6,7 +6,7 @@ const path = require('path');
 const cors = require('cors');
 
 const app = express();
-const PORT = 3002;
+const PORT = process.env.FORM_PORT ? parseInt(process.env.FORM_PORT, 10) : (process.env.PORT ? parseInt(process.env.PORT, 10) + 1 : 3002);
 
 // Middleware
 app.use(cors());
@@ -191,7 +191,7 @@ async function sendConfirmationEmail(submission) {
 function generateOwnerEmailHTML(submission) {
     return `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #f8b4d9;">New Cake Request</h2>
+            <h2 style="color: #8b5f82;">New Cake Request</h2>
             
             <h3>Contact Information</h3>
             <p><strong>Name:</strong> ${submission.name}</p>
@@ -228,7 +228,7 @@ function generateOwnerEmailHTML(submission) {
 function generateCustomerEmailHTML(submission) {
     return `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #f8b4d9;">Thank You for Your Cake Request!</h2>
+            <h2 style="color: #8b5f82;">Thank You for Your Cake Request!</h2>
             
             <p>Dear ${submission.name},</p>
             

@@ -313,7 +313,12 @@ function loadPageContent(page) {
     if (!content) return;
     
     const pageTitle = document.getElementById('page-title');
-    pageTitle.textContent = content.title;
+    // Prepend icon for requests page
+    if (page === 'requests') {
+        pageTitle.innerHTML = `<i class="fas fa-clipboard-list" style="margin-right:8px;"></i>${content.title}`;
+    } else {
+        pageTitle.textContent = content.title;
+    }
     
     if (content.isRequestsPage) {
         loadRequests();
@@ -745,12 +750,28 @@ function loadRequests() {
         return;
     }
     
-    // Create requests display
-    const requestsHTML = sandboxRequests.map(request => createRequestCard(request)).join('');
+    // Default filter: show only pending and in_progress
+    const currentFilter = window.__requestsFilter || 'active';
+    const filtered = filterRequests(sandboxRequests, currentFilter);
+    
+    // Create filter controls
+    const filterControls = `
+        <div class="requests-controls" style="display:flex;justify-content:flex-end;align-items:center;margin:0.75rem 0;gap:0.5rem;">
+            <label for="requests-filter" style="margin-right:0.25rem;font-weight:600;">View:</label>
+            <select id="requests-filter" style="padding:0.5rem 0.75rem;border-radius:8px;">
+                <option value="all" ${currentFilter==='all'?'selected':''}>View All</option>
+                <option value="pending" ${currentFilter==='pending'?'selected':''}>Pending</option>
+                <option value="in_progress" ${currentFilter==='in_progress'?'selected':''}>In Progress</option>
+                <option value="completed" ${currentFilter==='completed'?'selected':''}>Completed</option>
+                <option value="cancelled" ${currentFilter==='cancelled'?'selected':''}>Cancelled</option>
+                <option value="active" ${currentFilter==='active'?'selected':''}>Pending + In Progress</option>
+            </select>
+        </div>`;
+    
+    const requestsHTML = filtered.map(request => createRequestCard(request)).join('');
     
     imageGrid.innerHTML = `
         <div class="requests-header">
-            <h3>Cake Requests (Sandbox Mode)</h3>
             <div class="request-stats">
                 <div class="stat-card">
                     <h4>Pending</h4>
@@ -765,11 +786,40 @@ function loadRequests() {
                     <span class="stat-number">${sandboxRequests.filter(r => r.status === 'completed').length}</span>
                 </div>
             </div>
+            ${filterControls}
         </div>
         <div class="requests-grid">
             ${requestsHTML}
         </div>
     `;
+
+    // Bind filter change
+    const filterSelect = document.getElementById('requests-filter');
+    if (filterSelect) {
+        filterSelect.addEventListener('change', (e) => {
+            window.__requestsFilter = e.target.value;
+            loadRequests();
+        });
+    }
+}
+
+function filterRequests(requests, filter) {
+    switch (filter) {
+        case 'all':
+            return requests;
+        case 'pending':
+            return requests.filter(r => r.status === 'pending');
+        case 'in_progress':
+            return requests.filter(r => r.status === 'in_progress');
+        case 'completed':
+            return requests.filter(r => r.status === 'completed');
+        case 'cancelled':
+            return requests.filter(r => r.status === 'cancelled');
+        case 'active':
+        default:
+            // default active view: pending + in_progress
+            return requests.filter(r => r.status === 'pending' || r.status === 'in_progress');
+    }
 }
 
 function createRequestCard(request) {
@@ -790,6 +840,18 @@ function createRequestCard(request) {
     const submittedDate = new Date(request.submittedAt).toLocaleDateString();
     const submittedTime = new Date(request.submittedAt).toLocaleTimeString();
     
+    const eventDate = request.eventDate || request['date-needed'] || 'Not specified';
+    const eventType = request.eventType || request['event-type'] || 'Not specified';
+    const cakeSize = request.cakeSize || request['cake-size'] || 'Not specified';
+    const flavor = request.flavor || request['cake-flavor'] || 'Not specified';
+    const frosting = request.frosting || request['frosting-type'] || 'Not specified';
+    const filling = request.filling || request['cake-filling'] || 'Not specified';
+    const budget = request.budget || request['budget-range'] || 'Not specified';
+    const requestDelivery = (request.requestDelivery || request['request-delivery'] || 'no');
+    const eventAddress = request.eventAddress || request['event-address'] || '';
+    const eventCity = request.eventCity || request['event-city'] || '';
+    const eventZip = request.eventZip || request['event-zip'] || '';
+
     return `
         <div class="request-card">
             <div class="request-header">
@@ -803,17 +865,21 @@ function createRequestCard(request) {
                     <p><strong>Request ID:</strong> ${request.id}</p>
                     <p><strong>Email:</strong> ${request.email || 'Not provided'}</p>
                     <p><strong>Phone:</strong> ${request.phone || 'Not provided'}</p>
-                    <p><strong>Event Date:</strong> ${request.eventDate || 'Not specified'}</p>
-                    <p><strong>Event Type:</strong> ${request.eventType || 'Not specified'}</p>
-                    <p><strong>Cake Size:</strong> ${request.cakeSize || 'Not specified'}</p>
-                    <p><strong>Flavor:</strong> ${request.flavor || 'Not specified'}</p>
-                    <p><strong>Budget:</strong> ${request.budget || 'Not specified'}</p>
+                    <p><strong>Event Date:</strong> ${eventDate}</p>
+                    <p><strong>Event Type:</strong> ${eventType}</p>
+                    <p><strong>Request Delivery:</strong> ${requestDelivery === 'yes' ? 'Yes' : 'No'}</p>
+                    ${requestDelivery === 'yes' ? `<p><strong>Delivery Address:</strong> ${[eventAddress, eventCity, eventZip].filter(Boolean).join(', ') || 'Not specified'}</p>` : ''}
+                    <p><strong>Cake Size:</strong> ${cakeSize}</p>
+                    <p><strong>Flavor:</strong> ${flavor}</p>
+                    <p><strong>Frosting:</strong> ${frosting}</p>
+                    <p><strong>Filling:</strong> ${filling}</p>
+                    <p><strong>Budget:</strong> ${budget}</p>
                     <p><strong>Submitted:</strong> ${submittedDate} at ${submittedTime}</p>
                 </div>
                 ${request.description ? `
                     <div class="request-description">
                         <h5>Description:</h5>
-                        <p>${request.description}</p>
+                        <p>${request.description || request['design-description']}</p>
                     </div>
                 ` : ''}
                 <div class="request-actions">

@@ -1,6 +1,6 @@
 /* CSS Variables for Color Palette */
 :root {
-    --primary-pink: #f8b4d9;
+    --primary-pink: #8b5f82;
     --secondary-lavender: #e6d7ff;
     --accent-mint: #b8e6b8;
     --neutral-ivory: #fefefe;
@@ -88,7 +88,7 @@ p {
 }
 
 .logo i {
-    color: var(--primary-pink);
+    color: #8b5f82;
     margin-right: 0.5rem;
     font-size: 1.8rem;
 }
@@ -194,7 +194,9 @@ p {
 .hero-subtitle {
     font-size: 1.3rem;
     margin-bottom: 2rem;
-    opacity: 0.9;
+    opacity: 0.95;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 /* Button Base Styles */

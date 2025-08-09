@@ -27,7 +27,7 @@ A modern, elegant, and mobile-responsive website for Dulce Luna Cakes, a custom 
 ## 🎨 Color Palette
 
 The website uses a beautiful pastel color scheme:
-- **Primary Pink**: `#f8b4d9` - Main brand color
+- **Primary Pink**: `#8b5f82` - Main brand color
 - **Secondary Lavender**: `#e6d7ff` - Accent color
 - **Accent Mint**: `#b8e6b8` - Highlight color
 - **Neutral Ivory**: `#fefefe` - Background color
@@ -88,7 +88,7 @@ The contact form includes:
 To change the color scheme, modify the CSS variables in `styles.css`:
 ```css
 :root {
-    --primary-pink: #f8b4d9;
+    --primary-pink: #8b5f82;
     --secondary-lavender: #e6d7ff;
     --accent-mint: #b8e6b8;
     /* ... other colors */

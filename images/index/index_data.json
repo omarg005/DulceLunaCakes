@@ -2,7 +2,7 @@
   {
     "filename": "Hero.avif",
     "title": "Custom Cakes That Capture Your Sweetest Moments",
-    "description": "Where edible art meets your celebration",
+    "description": "Creatively Delicious",
     "path": "images/index/Hero.avif",
     "type": "hero",
     "targetElements": {
@@ -50,8 +50,8 @@
   {
     "filename": "MeetTheBaker.avif",
     "title": "Meet the Baker",
-    "description": "Hi, I'm Luna! Baking has always been my love language.",
-    "path": "images/index/MeetTheBaker.avif",
+    "description": "Hi, I'm Nomi! Baking has always been my love language.",
+    "path": "images/index/Nomi.jpg",
     "type": "about",
     "targetElements": {
       "image": ".about-image img",

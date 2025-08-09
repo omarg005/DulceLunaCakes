@@ -83,15 +83,53 @@ document.addEventListener('DOMContentLoaded', () => {
 function validateForm(form) {
     const requiredFields = form.querySelectorAll('[required]');
     let isValid = true;
+    const errors = [];
+    let firstInvalidField = null;
 
     requiredFields.forEach(field => {
-        if (!field.value.trim()) {
+        const value = (field.value || '').trim();
+        if (!value) {
             field.classList.add('error');
+            if (!firstInvalidField) firstInvalidField = field;
+            const label = (field.closest('.form-group')?.querySelector('label')?.innerText || field.name || 'This field').replace(/\s*\*$/, '');
+            errors.push(`${label} is required`);
             isValid = false;
         } else {
             field.classList.remove('error');
         }
     });
+
+    // Conditional validation for delivery fields on request form
+    try {
+        const deliverySelect = form.querySelector('#request-delivery');
+        if (deliverySelect && deliverySelect.value === 'yes') {
+            const addressField = form.querySelector('#event-address');
+            const cityField = form.querySelector('#event-city');
+            const zipField = form.querySelector('#event-zip');
+
+            const deliveryFields = [addressField, cityField, zipField];
+            deliveryFields.forEach(field => {
+                if (field) {
+                    const value = (field.value || '').trim();
+                    if (!value) {
+                        field.classList.add('error');
+                        if (!firstInvalidField) firstInvalidField = field;
+                        const label = (field.closest('.form-group')?.querySelector('label')?.innerText || field.name || 'This field').replace(/\s*\*$/, '');
+                        errors.push(`${label} is required when Request Delivery is Yes`);
+                        isValid = false;
+                    } else {
+                        field.classList.remove('error');
+                    }
+                }
+            });
+        }
+    } catch (err) {
+        console.warn('Conditional delivery validation skipped:', err);
+    }
+
+    // Expose errors and first invalid field to submit handler
+    form.__validationErrors = errors;
+    form.__firstInvalidField = firstInvalidField;
 
     return isValid;
 }
@@ -123,6 +161,57 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+// Simple informational modal for validation errors
+function showInfoModal(title, messages) {
+    const existing = document.getElementById('info-modal');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.id = 'info-modal';
+
+    const content = document.createElement('div');
+    content.className = 'modal-content';
+
+    const header = document.createElement('div');
+    header.className = 'modal-header';
+
+    const h3 = document.createElement('h3');
+    h3.textContent = title || 'Please review and correct the following';
+
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'modal-close';
+    closeBtn.innerHTML = '&times;';
+
+    header.appendChild(h3);
+    header.appendChild(closeBtn);
+
+    const body = document.createElement('div');
+    const list = document.createElement('ul');
+    list.style.paddingLeft = '1.2rem';
+    list.style.margin = '0 0 0.5rem 0';
+
+    const msgs = Array.isArray(messages) ? messages : [String(messages || 'Unknown error')];
+    msgs.slice(0, 10).forEach(msg => {
+        const li = document.createElement('li');
+        li.textContent = msg;
+        list.appendChild(li);
+    });
+    body.appendChild(list);
+
+    content.appendChild(header);
+    content.appendChild(body);
+    modal.appendChild(content);
+    document.body.appendChild(modal);
+
+    function close() { modal.remove(); }
+    closeBtn.addEventListener('click', close);
+    modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
+
+    // Show modal
+    modal.style.display = 'flex';
+}
 
 // Configuration - Set to true for sandbox mode (testing)
 const SANDBOX_MODE = true; // Change to false for production
@@ -181,7 +270,8 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Form submitted:', form.className);
             
             try {
-                if (validateForm(form)) {
+                const isValid = validateForm(form);
+                if (isValid) {
                     console.log('Form validation passed');
                     // Show loading state
                     const submitBtn = form.querySelector('.submit-button');
@@ -201,7 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const requestData = {};
                         
                         console.log('Converting FormData to object');
-                        // Convert FormData to object
+                        // Convert FormData to object (normalize keys to camelCase-like names too)
                         for (let [key, value] of formData.entries()) {
                             if (requestData[key]) {
                                 // Handle multiple values (like checkboxes)
@@ -212,6 +302,25 @@ document.addEventListener('DOMContentLoaded', () => {
                                 }
                             } else {
                                 requestData[key] = value;
+                            }
+
+                            // Also mirror some fields with friendlier keys for admin display
+                            const map = {
+                                'date-needed': 'eventDate',
+                                'event-type': 'eventType',
+                                'event-address': 'eventAddress',
+                                'event-city': 'eventCity',
+                                'event-zip': 'eventZip',
+                                'cake-size': 'cakeSize',
+                                'cake-flavor': 'flavor',
+                                'frosting-type': 'frosting',
+                                'cake-filling': 'filling',
+                                'budget-range': 'budget',
+                                'design-description': 'description',
+                                'request-delivery': 'requestDelivery'
+                            };
+                            if (map[key]) {
+                                requestData[map[key]] = value;
                             }
                         }
                         
@@ -315,6 +424,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     submitBtn.innerHTML = originalText;
                     submitBtn.disabled = false;
                 }
+            } else {
+                const errors = form.__validationErrors || ['Please fill out all required fields.'];
+                showInfoModal('Please fix the highlighted fields', errors);
+                const firstInvalid = form.__firstInvalidField;
+                if (firstInvalid && typeof firstInvalid.scrollIntoView === 'function') {
+                    firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    try { firstInvalid.focus({ preventScroll: true }); } catch (_) {}
+                }
+                return;
             }
             } catch (outerError) {
                 console.error('Outer form submission error:', outerError);
@@ -344,6 +462,28 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+});
+
+// Toggle delivery fields visibility on request page
+document.addEventListener('DOMContentLoaded', () => {
+    const deliverySelect = document.getElementById('request-delivery');
+    const deliveryFields = document.getElementById('delivery-fields');
+    if (!deliverySelect || !deliveryFields) {
+        return;
+    }
+
+    function updateDeliveryVisibility() {
+        const shouldShow = deliverySelect.value === 'yes';
+        if (shouldShow) {
+            deliveryFields.classList.remove('hidden');
+        } else {
+            deliveryFields.classList.add('hidden');
+        }
+    }
+
+    // Initialize and bind change handler
+    updateDeliveryVisibility();
+    deliverySelect.addEventListener('change', updateDeliveryVisibility);
 });
 
 // Image lightbox functionality for gallery

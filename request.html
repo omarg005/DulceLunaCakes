@@ -103,23 +103,33 @@
                                 <option value="other">Other</option>
                             </select>
                         </div>
+
+                         <div class="form-group">
+                             <label for="request-delivery">Request Delivery</label>
+                             <select id="request-delivery" name="request-delivery">
+                                 <option value="no" selected>No</option>
+                                 <option value="yes">Yes</option>
+                             </select>
+                         </div>
                         
-                        <div class="form-group">
-                            <label for="event-address">Event Address</label>
-                            <input type="text" id="event-address" name="event-address" placeholder="Street address">
-                        </div>
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="event-city">City</label>
-                                <input type="text" id="event-city" name="event-city" placeholder="City">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="event-zip">Zip Code</label>
-                                <input type="text" id="event-zip" name="event-zip" placeholder="Zip code">
-                            </div>
-                        </div>
+                         <div id="delivery-fields" class="delivery-fields hidden">
+                             <div class="form-group">
+                                 <label for="event-address">Event Address *</label>
+                                 <input type="text" id="event-address" name="event-address" placeholder="Street address">
+                             </div>
+                             
+                             <div class="form-row">
+                                 <div class="form-group">
+                                     <label for="event-city">City *</label>
+                                     <input type="text" id="event-city" name="event-city" placeholder="City">
+                                 </div>
+                                 
+                                 <div class="form-group">
+                                     <label for="event-zip">Zip Code *</label>
+                                     <input type="text" id="event-zip" name="event-zip" placeholder="Zip code">
+                                 </div>
+                             </div>
+                         </div>
                     </div>
 
                     <div class="form-section">
@@ -160,11 +170,25 @@
                                 <option value="buttercream">Buttercream</option>
                                 <option value="cream-cheese">Cream Cheese</option>
                                 <option value="fondant">Fondant</option>
-                                <option value="ganache">Ganache</option>
-                                <option value="whipped-cream">Whipped Cream</option>
                                 <option value="custom">Custom</option>
                             </select>
                         </div>
+
+                         <div class="form-group">
+                             <label for="cake-filling">Cake Filling</label>
+                             <select id="cake-filling" name="cake-filling">
+                                 <option value="">Select cake filling</option>
+                                 <option value="Vanilla Rum Dulce de Leche">Vanilla Rum Dulce de Leche</option>
+                                 <option value="Vanilla Rum Guava">Vanilla Rum Guava</option>
+                                 <option value="Chocolate Salted Caramel">Chocolate Salted Caramel</option>
+                                 <option value="Chocolate Nutella with Fresh Strawberries">Chocolate Nutella with Fresh Strawberries</option>
+                                 <option value="Lemon Raspberry">Lemon Raspberry</option>
+                                 <option value="Lemon Cream Cheese">Lemon Cream Cheese</option>
+                                 <option value="Red Velvet Cream Cheese">Red Velvet Cream Cheese</option>
+                                 <option value="Chocolate Pistachio with Fresh Strawberries">Chocolate Pistachio with Fresh Strawberries</option>
+                                 <option value="Orange Cream Cycle">Orange Cream Cycle</option>
+                             </select>
+                         </div>
                     </div>
 
                     <div class="form-section">
