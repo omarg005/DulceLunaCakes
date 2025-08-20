@@ -386,11 +386,25 @@ function editImage(imageId) {
     
     // Populate modal
     const currentImage = document.getElementById('current-image');
+    const currentImageContainer = document.getElementById('current-image-container');
     const imageTitleInput = document.getElementById('image-title');
     const imageDescriptionInput = document.getElementById('image-description');
     const imageModal = document.getElementById('image-modal');
     
+    // Set image source and show it
+    currentImage.onload = function() {
+        currentImage.style.display = 'block';
+        currentImageContainer.style.display = 'none';
+    };
+    
+    currentImage.onerror = function() {
+        currentImageContainer.innerHTML = '<i class="fas fa-exclamation-triangle"></i><p>Image not found</p>';
+        currentImageContainer.style.display = 'block';
+        currentImage.style.display = 'none';
+    };
+    
     currentImage.src = image.currentImage;
+    
     imageTitleInput.value = image.currentTitle;
     imageDescriptionInput.value = image.currentDescription;
     
@@ -401,9 +415,20 @@ function editImage(imageId) {
 function closeImageModal() {
     const imageModal = document.getElementById('image-modal');
     const imageEditForm = document.getElementById('image-edit-form');
+    const currentImage = document.getElementById('current-image');
+    const currentImageContainer = document.getElementById('current-image-container');
     
     imageModal.classList.add('hidden');
     currentEditingImage = null;
+    
+    // Reset image display
+    currentImage.style.display = 'none';
+    currentImage.src = '';
+    currentImage.onload = null;
+    currentImage.onerror = null;
+    currentImageContainer.innerHTML = '<i class="fas fa-spinner fa-spin"></i><p>No image selected</p>';
+    currentImageContainer.style.display = 'block';
+    
     imageEditForm.reset();
 }
 
