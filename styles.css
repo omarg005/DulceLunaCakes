@@ -621,6 +621,7 @@ p {
     opacity: 0.9;
     max-width: 600px;
     margin: 0 auto;
+    color: white;
 }
 
 /* Gallery Styles */
