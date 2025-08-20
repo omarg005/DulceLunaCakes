@@ -1,4 +1,5 @@
 // Admin Panel JavaScript
+console.log('=== ADMIN.JS SCRIPT LOADED ===');
 
 // Configuration
 const ADMIN_CREDENTIALS = {
@@ -6,60 +7,356 @@ const ADMIN_CREDENTIALS = {
     password: 'dulceluna2025' // Change this to a secure password
 };
 
+// Supabase Auth Integration
+let supabaseAuthService = null;
+let authState = {
+    user: null,
+    session: null,
+    isAuthenticated: false,
+    isLoading: true,
+    fallbackMode: false
+};
+
+// Try to load Supabase auth service
+async function initSupabaseAuth() {
+    console.log('=== STARTING SUPABASE INIT ===');
+    console.log('window.supabase available:', !!window.supabase);
+    
+    try {
+        // Check if Supabase is available globally
+        if (!window.supabase) {
+            console.error('Supabase not loaded from CDN');
+            throw new Error('Supabase not loaded');
+        }
+        
+        console.log('Supabase CDN loaded successfully');
+        
+        // Initialize Supabase client directly
+        const supabaseUrl = 'https://pwvnrtkrnibaxzrduzmj.supabase.co';
+        const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3dm5ydGtybmliYXh6cmR1em1qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTk1NjEsImV4cCI6MjA3MTIzNTU2MX0.E_IntUR0qo5j75Xc4rlP1YCB_Seq-cM42M8ntE1C-zY';
+        
+        console.log('Creating Supabase client with URL:', supabaseUrl);
+        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+        console.log('Supabase client created:', !!supabaseClient);
+        
+        // Initialize simple auth service
+        supabaseAuthService = {
+            async getCurrentUser() {
+                try {
+                    const { data: { user }, error } = await supabaseClient.auth.getUser();
+                    console.log('getCurrentUser raw result:', { user, error });
+                    return { success: !error, user, error: error?.message };
+                } catch (err) {
+                    console.log('getCurrentUser catch:', err);
+                    return { success: false, error: err.message };
+                }
+            },
+            async signIn(email, password) {
+                try {
+                    const { data, error } = await supabaseClient.auth.signInWithPassword({
+                        email,
+                        password
+                    });
+                    return { success: !error, user: data.user, session: data.session, error: error?.message };
+                } catch (err) {
+                    return { success: false, error: err.message };
+                }
+            },
+            async signOut() {
+                try {
+                    const { error } = await supabaseClient.auth.signOut();
+                    return { success: !error, error: error?.message };
+                } catch (err) {
+                    return { success: false, error: err.message };
+                }
+            },
+            async resetPassword(email) {
+                try {
+                    const { error } = await supabaseClient.auth.resetPasswordForEmail(email);
+                    return { success: !error, error: error?.message };
+                } catch (err) {
+                    return { success: false, error: err.message };
+                }
+            },
+            fallbackAuth: async (username, password) => {
+                return await fallbackLogin(username, password);
+            },
+            clearFallbackAuth: async () => {
+                localStorage.removeItem('fallback_session');
+                return { success: true };
+            }
+        };
+        
+        // Simple test - if we got this far, Supabase is working
+        console.log('Skipping complex test, Supabase client created successfully');
+        
+        // Initialize auth state directly
+        authState.fallbackMode = false;
+        authState.isLoading = false;
+        console.log('✅ Supabase Auth initialized successfully (direct mode)');
+        return true;
+    } catch (error) {
+        console.warn('Supabase Auth not available, using fallback:', error.message);
+        authState.fallbackMode = true;
+        authState.isLoading = false;
+    }
+    return false;
+}
+
 // Global variables
 let currentPage = 'index';
 let currentEditingImage = null;
 let changes = {};
 let PAGE_CONTENT = {};
 
-// Sandbox mode functions
+// Data fetching functions - Updated for Supabase
+async function getRequests() {
+    try {
+        // Try to fetch from Supabase API first
+        const response = await fetch(getApiUrl(CONFIG.ENDPOINTS.SUBMISSIONS));
+        const data = await response.json();
+        
+        if (data.success && Array.isArray(data.submissions)) {
+            console.log(`Loaded ${data.submissions.length} requests from Supabase`);
+            return data.submissions;
+        } else {
+            console.warn('Supabase API failed, falling back to localStorage');
+            // Fallback to localStorage (sandbox mode)
+            return JSON.parse(localStorage.getItem('sandboxRequests') || '[]');
+        }
+    } catch (error) {
+        console.error('Error fetching requests:', error);
+        // Fallback to localStorage
+        return JSON.parse(localStorage.getItem('sandboxRequests') || '[]');
+    }
+}
+
+// Legacy function for backward compatibility
 function getSandboxRequests() {
     return JSON.parse(localStorage.getItem('sandboxRequests') || '[]');
 }
 
-function updateSandboxRequestStatus(requestId, newStatus) {
-    const requests = getSandboxRequests();
-    const requestIndex = requests.findIndex(req => req.id === requestId);
-    if (requestIndex !== -1) {
-        requests[requestIndex].status = newStatus;
-        requests[requestIndex].lastUpdated = new Date().toISOString();
-        localStorage.setItem('sandboxRequests', JSON.stringify(requests));
-        loadRequests(); // Refresh the display
+async function updateRequestStatus(requestId, newStatus, notes = '') {
+    try {
+        // Try to update via Supabase API first
+        const response = await fetch(getApiUrl(`${CONFIG.ENDPOINTS.SUBMISSIONS}/${requestId}/status`), {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 
+                status: newStatus,
+                notes: notes
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            console.log('Status updated via Supabase API');
+            loadRequests(); // Refresh the display
+            showMessage(`Request status updated to ${newStatus}`, 'success');
+            return true;
+        } else {
+            throw new Error(result.error || 'Failed to update status');
+        }
+    } catch (error) {
+        console.error('Error updating status via API:', error);
+        
+        // Fallback to localStorage for sandbox mode
+        const requests = getSandboxRequests();
+        const requestIndex = requests.findIndex(req => req.id === requestId);
+        if (requestIndex !== -1) {
+            requests[requestIndex].status = newStatus;
+            requests[requestIndex].lastUpdated = new Date().toISOString();
+            localStorage.setItem('sandboxRequests', JSON.stringify(requests));
+            loadRequests(); // Refresh the display
+            showMessage(`Request status updated to ${newStatus} (local storage)`, 'success');
+            return true;
+        }
+        
+        showMessage('Failed to update request status', 'error');
+        return false;
     }
 }
 
+// Legacy function for backward compatibility
+function updateSandboxRequestStatus(requestId, newStatus) {
+    updateRequestStatus(requestId, newStatus);
+}
+
+async function deleteRequest(requestId) {
+    try {
+        // Try to delete via Supabase API first
+        const response = await fetch(getApiUrl(`${CONFIG.ENDPOINTS.SUBMISSIONS}/${requestId}`), {
+            method: 'DELETE'
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            console.log('Request deleted via Supabase API');
+            loadRequests(); // Refresh the display
+            showMessage('Request deleted successfully', 'success');
+            return true;
+        } else {
+            throw new Error(result.error || 'Failed to delete request');
+        }
+    } catch (error) {
+        console.error('Error deleting request via API:', error);
+        
+        // Fallback to localStorage for sandbox mode
+        const requests = getSandboxRequests();
+        const filteredRequests = requests.filter(req => req.id !== requestId);
+        localStorage.setItem('sandboxRequests', JSON.stringify(filteredRequests));
+        loadRequests(); // Refresh the display
+        showMessage('Request deleted (local storage)', 'success');
+        return true;
+    }
+}
+
+// Legacy function for backward compatibility
 function deleteSandboxRequest(requestId) {
-    const requests = getSandboxRequests();
-    const filteredRequests = requests.filter(req => req.id !== requestId);
-    localStorage.setItem('sandboxRequests', JSON.stringify(filteredRequests));
-    loadRequests(); // Refresh the display
+    deleteRequest(requestId);
 }
 
 function updateModeIndicator() {
     const modeIndicator = document.getElementById('current-mode');
     if (modeIndicator) {
-        // Check if SANDBOX_MODE is defined in the global scope
-        const isSandboxMode = typeof window.SANDBOX_MODE !== 'undefined' ? window.SANDBOX_MODE : true;
+        // Determine mode based on Supabase connection and server availability
+        // Since we're connected to Supabase and have active servers, we're in production mode
+        const isSandboxMode = false; // We're now using Supabase, so we're in production mode
         modeIndicator.textContent = isSandboxMode ? 'Sandbox Mode' : 'Production Mode';
         modeIndicator.style.backgroundColor = isSandboxMode ? 'var(--accent-mint)' : 'var(--primary-pink)';
         modeIndicator.style.color = isSandboxMode ? 'var(--text-dark)' : 'white';
     }
 }
 
-// Load page content from JSON files
+function updateAuthDisplay() {
+    const userInfoElement = document.getElementById('user-info');
+    const authModeElement = document.getElementById('auth-mode');
+    const systemConfigPanel = document.getElementById('system-config-panel');
+    
+    if (userInfoElement && authState.user) {
+        const userName = authState.user.user_metadata?.name || 
+                        authState.user.email || 
+                        'Admin User';
+        userInfoElement.textContent = `Welcome, ${userName}`;
+    }
+    
+    if (authModeElement) {
+        const authMode = authState.fallbackMode ? 'Local Auth' : 'Supabase Auth';
+        authModeElement.textContent = authMode;
+        authModeElement.style.backgroundColor = authState.fallbackMode ? 'orange' : 'green';
+        authModeElement.style.color = 'white';
+        authModeElement.style.padding = '4px 8px';
+        authModeElement.style.borderRadius = '4px';
+        authModeElement.style.fontSize = '0.8rem';
+        authModeElement.style.marginLeft = '1rem';
+    }
+    
+    // Show/hide system configuration panel based on auth mode
+    if (systemConfigPanel) {
+        // Show config panel only in fallback/local auth mode (sandbox mode)
+        // Hide it when using Supabase Auth (production mode)
+        systemConfigPanel.style.display = authState.fallbackMode ? 'block' : 'none';
+    }
+}
+
+// Helper function to get target elements based on content type and order
+function getTargetElementsForType(type, orderIndex) {
+    switch (type) {
+        case 'hero':
+            return {
+                image: ".hero::before",
+                title: ".hero-title",
+                description: ".hero-subtitle"
+            };
+        case 'featured':
+            const cardIndex = orderIndex + 1; // CSS nth-child is 1-based
+            return {
+                image: `.cake-card:nth-child(${cardIndex}) img`,
+                title: `.cake-card:nth-child(${cardIndex}) h3`,
+                description: `.cake-card:nth-child(${cardIndex}) p`
+            };
+        case 'about':
+            return {
+                image: ".about-image img",
+                title: ".about-text h2",
+                description: ".about-text p"
+            };
+        default:
+            return {};
+    }
+}
+
+// Load page content from Supabase API with fallback to JSON files
 async function loadPageContentData() {
     try {
-        // Load index page data
-        const indexResponse = await fetch('images/index/index_data.json');
-        const indexData = await indexResponse.json();
+        let indexData, aboutData, galleryData;
         
-        // Load about page data
-        const aboutResponse = await fetch('images/about/about_data.json');
-        const aboutData = await aboutResponse.json();
-        
-        // Load gallery data
-        const galleryResponse = await fetch('images/gallery/gallery_data.json');
-        const galleryData = await galleryResponse.json();
+        // Try to load from Supabase API first
+        try {
+            console.log('Loading data from Supabase API...');
+            
+            // Load index content from Supabase
+            const indexResponse = await fetch(getApiUrl(CONFIG.ENDPOINTS.INDEX_CONTENT));
+            const indexResult = await indexResponse.json();
+            
+            if (indexResult.success) {
+                // Convert Supabase format to admin panel format
+                indexData = indexResult.content.map(item => ({
+                    filename: item.image_url ? item.image_url.split('/').pop() : 'unknown',
+                    title: item.title,
+                    description: item.description,
+                    path: item.image_url || `images/index/${item.title.toLowerCase().replace(/\s+/g, '-')}.jpg`,
+                    type: item.type,
+                    targetElements: getTargetElementsForType(item.type, item.order_index),
+                    supabaseId: item.id // Store Supabase ID for updates
+                }));
+                
+                // Separate about data
+                aboutData = indexData.filter(item => item.type === 'about');
+                indexData = indexData.filter(item => item.type !== 'about');
+                
+                console.log(`✅ Loaded ${indexData.length} index items and ${aboutData.length} about items from Supabase`);
+            } else {
+                throw new Error(`Supabase API failed: ${indexResult.error}`);
+            }
+            
+            // Load gallery data from Supabase
+            const galleryResponse = await fetch(getApiUrl(CONFIG.ENDPOINTS.GALLERY_IMAGES));
+            const galleryResult = await galleryResponse.json();
+            
+            if (galleryResult.success) {
+                galleryData = galleryResult.images.map(item => ({
+                    filename: item.image_url ? item.image_url.split('/').pop() : 'unknown',
+                    title: item.title,
+                    description: item.description,
+                    path: item.image_url || `images/gallery/${item.title.toLowerCase().replace(/\s+/g, '-')}.jpg`,
+                    supabaseId: item.id // Store Supabase ID for updates
+                }));
+                
+                console.log(`✅ Loaded ${galleryData.length} gallery items from Supabase`);
+            } else {
+                throw new Error(`Supabase gallery API failed: ${galleryResult.error}`);
+            }
+            
+        } catch (apiError) {
+            console.warn('Supabase API failed, falling back to local JSON files:', apiError.message);
+            
+            // Fallback to local JSON files
+            const indexResponse = await fetch('images/index/index_data.json');
+            indexData = await indexResponse.json();
+            
+            const aboutResponse = await fetch('images/about/about_data.json');
+            aboutData = await aboutResponse.json();
+            
+            const galleryResponse = await fetch('images/gallery/gallery_data.json');
+            galleryData = await galleryResponse.json();
+            
+            console.log('✅ Loaded data from local JSON files as fallback');
+        }
         
         // Convert to admin panel format
         PAGE_CONTENT = {
@@ -114,7 +411,7 @@ async function loadPageContentData() {
         
         // If already logged in, load the current page
         if (localStorage.getItem('adminLoggedIn') === 'true') {
-            loadPageContent(currentPage);
+            await loadPageContent(currentPage);
         }
     } catch (error) {
         console.error('Error loading page content:', error);
@@ -150,16 +447,26 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Admin dashboard:', adminDashboard);
     console.log('Image grid:', imageGrid);
     
-    // Load page content data first
-    loadPageContentData().then(() => {
-            // Check if already logged in
-    if (localStorage.getItem('adminLoggedIn') === 'true') {
-        console.log('User already logged in');
-        showDashboard();
-    }
-    
-    // Update mode indicator
-    updateModeIndicator();
+    // Initialize authentication and load page content
+    initSupabaseAuth().then(() => {
+        return loadPageContentData();
+    }).then(async () => {
+        // Check authentication state
+        if (authState.isAuthenticated || localStorage.getItem('adminLoggedIn') === 'true') {
+            console.log('User already logged in');
+            await showDashboard();
+        }
+        
+        // Update mode indicator
+        updateModeIndicator();
+        updateAuthDisplay();
+    }).catch(async (error) => {
+        console.error('Error during initialization:', error);
+        // Fallback to basic auth check
+        if (localStorage.getItem('adminLoggedIn') === 'true') {
+            await showDashboard();
+        }
+        updateModeIndicator();
     });
     
     // Login form
@@ -176,10 +483,21 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('Logout button not found');
     }
     
+    // Forgot password
+    const forgotPasswordBtn = document.getElementById('forgot-password-btn');
+    if (forgotPasswordBtn) {
+        forgotPasswordBtn.addEventListener('click', handleForgotPassword);
+    }
+    
+    // Image preview functionality
+    if (newImageInput) {
+        newImageInput.addEventListener('change', handleImagePreview);
+    }
+    
     // Page tabs
     if (pageTabs && pageTabs.length > 0) {
         pageTabs.forEach(tab => {
-            tab.addEventListener('click', () => switchPage(tab.dataset.page));
+            tab.addEventListener('click', async () => await switchPage(tab.dataset.page));
         });
     } else {
         console.error('Page tabs not found');
@@ -234,27 +552,157 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Authentication Functions
-function handleLogin(e) {
+async function handleLogin(e) {
     e.preventDefault();
     
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
     
     console.log('Login attempt:', { username, password });
+    console.log('Auth state:', authState);
+    console.log('Supabase service available:', !!supabaseAuthService);
+    console.log('Fallback mode:', authState.fallbackMode);
     
-    if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
-        localStorage.setItem('adminLoggedIn', 'true');
-        showDashboard();
-        showMessage('Login successful!', 'success');
-    } else {
-        showLoginError('Invalid username or password');
+    // Show loading state
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Signing in...';
+    submitBtn.disabled = true;
+    
+    try {
+        let result;
+        
+        if (supabaseAuthService && !authState.fallbackMode) {
+            // Try Supabase authentication first
+            console.log('Attempting Supabase authentication...');
+            result = await supabaseAuthService.signIn(username, password);
+            console.log('Supabase auth result:', result);
+            
+            if (result.success) {
+                authState.user = result.user;
+                authState.session = result.session;
+                authState.isAuthenticated = true;
+                localStorage.setItem('adminLoggedIn', 'true');
+                await showDashboard();
+                showMessage('Login successful!', 'success');
+                return;
+            } else {
+                // If Supabase fails, try fallback
+                console.warn('Supabase login failed, trying fallback:', result.error);
+                result = await supabaseAuthService.fallbackAuth(username, password);
+            }
+        } else {
+            // Use fallback authentication
+            result = await fallbackLogin(username, password);
+        }
+        
+        if (result.success) {
+            if (result.fallback) {
+                authState.user = result.user;
+                authState.session = result.session;
+                authState.isAuthenticated = true;
+                authState.fallbackMode = true;
+            }
+            localStorage.setItem('adminLoggedIn', 'true');
+            await showDashboard();
+            showMessage(result.message || 'Login successful!', 'success');
+        } else {
+            showLoginError(result.error || 'Invalid username or password');
+        }
+        
+    } catch (error) {
+        console.error('Login error:', error);
+        showLoginError('Login failed. Please try again.');
+    } finally {
+        // Reset button state
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
     }
 }
 
-function handleLogout() {
-    localStorage.removeItem('adminLoggedIn');
-    showLoginScreen();
-    showMessage('Logged out successfully', 'success');
+// Fallback login function
+async function fallbackLogin(username, password) {
+    if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
+        const fallbackSession = {
+            user: {
+                id: 'fallback-admin',
+                email: 'admin@dulcelunacakes.com',
+                user_metadata: { name: 'Admin User' }
+            },
+            access_token: 'fallback-token',
+            expires_at: Date.now() + (24 * 60 * 60 * 1000) // 24 hours
+        };
+
+        return {
+            success: true,
+            user: fallbackSession.user,
+            session: fallbackSession,
+            message: 'Login successful (local mode)',
+            fallback: true
+        };
+    }
+
+    return {
+        success: false,
+        error: 'Invalid username or password',
+        fallback: true
+    };
+}
+
+async function handleLogout() {
+    try {
+        // Sign out from Supabase if available
+        if (supabaseAuthService && !authState.fallbackMode) {
+            await supabaseAuthService.signOut();
+        } else if (supabaseAuthService && authState.fallbackMode) {
+            await supabaseAuthService.clearFallbackAuth();
+        }
+        
+        // Clear auth state
+        authState.user = null;
+        authState.session = null;
+        authState.isAuthenticated = false;
+        
+        // Clear local storage
+        localStorage.removeItem('adminLoggedIn');
+        
+        showLoginScreen();
+        showMessage('Logged out successfully', 'success');
+        
+    } catch (error) {
+        console.error('Logout error:', error);
+        // Still proceed with logout even if there's an error
+        localStorage.removeItem('adminLoggedIn');
+        showLoginScreen();
+        showMessage('Logged out', 'success');
+    }
+}
+
+async function handleForgotPassword() {
+    const email = document.getElementById('username').value;
+    
+    if (!email) {
+        showLoginError('Please enter your email address');
+        return;
+    }
+    
+    if (!supabaseAuthService || authState.fallbackMode) {
+        showLoginError('Password reset is only available with Supabase authentication. Please contact administrator.');
+        return;
+    }
+    
+    try {
+        const result = await supabaseAuthService.resetPassword(email);
+        
+        if (result.success) {
+            showLoginSuccess('Password reset email sent! Check your inbox.');
+        } else {
+            showLoginError(result.error || 'Failed to send password reset email');
+        }
+    } catch (error) {
+        console.error('Password reset error:', error);
+        showLoginError('Failed to send password reset email');
+    }
 }
 
 function showLoginScreen() {
@@ -269,7 +717,7 @@ function showLoginScreen() {
     loginError.style.display = 'none';
 }
 
-function showDashboard() {
+async function showDashboard() {
     console.log('showDashboard called');
     const loginScreen = document.getElementById('login-screen');
     const adminDashboard = document.getElementById('admin-dashboard');
@@ -281,7 +729,7 @@ function showDashboard() {
         loginScreen.classList.add('hidden');
         adminDashboard.classList.remove('hidden');
         console.log('Dashboard should now be visible');
-        loadPageContent(currentPage);
+        await loadPageContent(currentPage);
         updateModeIndicator(); // Update mode indicator when dashboard is shown
     } else {
         console.error('Login screen or admin dashboard not found');
@@ -290,12 +738,34 @@ function showDashboard() {
 
 function showLoginError(message) {
     const loginError = document.getElementById('login-error');
+    const loginSuccess = document.getElementById('login-success');
+    
+    // Hide success message
+    if (loginSuccess) {
+        loginSuccess.style.display = 'none';
+    }
+    
     loginError.textContent = message;
     loginError.style.display = 'block';
 }
 
+function showLoginSuccess(message) {
+    const loginSuccess = document.getElementById('login-success');
+    const loginError = document.getElementById('login-error');
+    
+    // Hide error message
+    if (loginError) {
+        loginError.style.display = 'none';
+    }
+    
+    if (loginSuccess) {
+        loginSuccess.textContent = message;
+        loginSuccess.style.display = 'block';
+    }
+}
+
 // Page Management Functions
-function switchPage(page) {
+async function switchPage(page) {
     currentPage = page;
     
     // Update active tab
@@ -305,10 +775,10 @@ function switchPage(page) {
     });
     
     // Load page content
-    loadPageContent(page);
+    await loadPageContent(page);
 }
 
-function loadPageContent(page) {
+async function loadPageContent(page) {
     const content = PAGE_CONTENT[page];
     if (!content) return;
     
@@ -321,7 +791,7 @@ function loadPageContent(page) {
     }
     
     if (content.isRequestsPage) {
-        loadRequests();
+        await loadRequests();
     } else {
         renderImageGrid(content.images);
     }
@@ -408,8 +878,40 @@ function editImage(imageId) {
     imageTitleInput.value = image.currentTitle;
     imageDescriptionInput.value = image.currentDescription;
     
+    // Reset new image preview
+    const newImagePreviewContainer = document.getElementById('new-image-preview-container');
+    const newImageInput = document.getElementById('new-image');
+    newImagePreviewContainer.style.display = 'none';
+    newImageInput.value = '';
+    
     // Show modal
     imageModal.classList.remove('hidden');
+}
+
+// Handle image preview when user selects a new image
+function handleImagePreview(event) {
+    const file = event.target.files[0];
+    const newImagePreviewContainer = document.getElementById('new-image-preview-container');
+    const newImagePreview = document.getElementById('new-image-preview');
+    
+    if (file) {
+        // Check if file is an image
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                newImagePreview.src = e.target.result;
+                newImagePreviewContainer.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            // Hide preview if not an image
+            newImagePreviewContainer.style.display = 'none';
+            showMessage('Please select a valid image file', 'error');
+        }
+    } else {
+        // Hide preview if no file selected
+        newImagePreviewContainer.style.display = 'none';
+    }
 }
 
 function closeImageModal() {
@@ -417,6 +919,7 @@ function closeImageModal() {
     const imageEditForm = document.getElementById('image-edit-form');
     const currentImage = document.getElementById('current-image');
     const currentImageContainer = document.getElementById('current-image-container');
+    const newImagePreviewContainer = document.getElementById('new-image-preview-container');
     
     imageModal.classList.add('hidden');
     currentEditingImage = null;
@@ -428,6 +931,9 @@ function closeImageModal() {
     currentImage.onerror = null;
     currentImageContainer.innerHTML = '<i class="fas fa-spinner fa-spin"></i><p>No image selected</p>';
     currentImageContainer.style.display = 'block';
+    
+    // Hide new image preview
+    newImagePreviewContainer.style.display = 'none';
     
     imageEditForm.reset();
 }
@@ -491,8 +997,8 @@ function updateImageCardPreview(imageId, title, description, imageFile) {
     }
 }
 
-// Save Functions
-function saveAllChanges() {
+// Save Functions - Updated for Supabase
+async function saveAllChanges() {
     console.log('Save all changes called');
     console.log('Current changes:', changes);
     
@@ -501,26 +1007,189 @@ function saveAllChanges() {
         return;
     }
     
-    showMessage('Saving changes...', 'success');
+    showMessage('Saving changes to Supabase...', 'info');
     
-    // Apply changes to the current page content
-    Object.keys(changes).forEach(imageId => {
-        const change = changes[imageId];
-        const content = PAGE_CONTENT[currentPage];
-        const image = content.images.find(img => img.id === imageId);
-        
-        if (image) {
-            if (change.title) image.currentTitle = change.title;
-            if (change.description) image.currentDescription = change.description;
+    let savedCount = 0;
+    let errorCount = 0;
+    
+    try {
+        // Process each change
+        for (const imageId of Object.keys(changes)) {
+            const change = changes[imageId];
+            const content = PAGE_CONTENT[currentPage];
+            const image = content.images ? content.images.find(img => img.id === imageId) : null;
+            
+            if (!image) {
+                console.warn(`Image not found for ID: ${imageId}`);
+                errorCount++;
+                continue;
+            }
+            
+            try {
+                let imageUrl = null;
+                
+                // Upload new image if provided
+                if (change.newImage) {
+                    console.log(`Uploading new image for ${imageId}...`);
+                    // Pass the original image path to maintain directory structure
+                    imageUrl = await uploadImageToSupabase(change.newImage, image.currentImage);
+                    if (!imageUrl) {
+                        throw new Error('Failed to upload image');
+                    }
+                }
+                
+                // Determine which API endpoint to use
+                const isGalleryItem = currentPage === 'gallery';
+                const updateData = {
+                    title: change.title || image.currentTitle,
+                    description: change.description || image.currentDescription
+                };
+                
+                if (imageUrl) {
+                    updateData.image_url = imageUrl;
+                }
+                
+                // Get the Supabase record ID from the image data
+                const supabaseId = await getSupabaseIdForImage(image, isGalleryItem);
+                if (!supabaseId) {
+                    throw new Error('Could not find Supabase record ID');
+                }
+                
+                // Update the record in Supabase
+                const apiEndpoint = isGalleryItem 
+                    ? getApiUrl(`${CONFIG.ENDPOINTS.GALLERY_IMAGES}/${supabaseId}`)
+                    : getApiUrl(`${CONFIG.ENDPOINTS.INDEX_CONTENT}/${supabaseId}`);
+                
+                console.log(`Updating ${isGalleryItem ? 'gallery image' : 'index content'} with ID: ${supabaseId}`);
+                
+                const response = await fetch(apiEndpoint, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updateData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    console.log(`✅ Updated ${image.currentTitle}`);
+                    savedCount++;
+                    
+                    // Update local data to reflect changes
+                    if (change.title) image.currentTitle = change.title;
+                    if (change.description) image.currentDescription = change.description;
+                    if (imageUrl) image.currentImage = imageUrl;
+                } else {
+                    throw new Error(result.error || 'Failed to update');
+                }
+                
+            } catch (itemError) {
+                console.error(`Failed to save ${image.currentTitle}:`, itemError);
+                errorCount++;
+            }
         }
-    });
+        
+        // Clear changes after successful save
+        changes = {};
+        
+        // Show result message
+        if (savedCount > 0 && errorCount === 0) {
+            showMessage(`✅ Successfully saved ${savedCount} changes to Supabase!`, 'success');
+        } else if (savedCount > 0 && errorCount > 0) {
+            showMessage(`⚠️ Saved ${savedCount} changes, but ${errorCount} failed. Check console for details.`, 'warning');
+        } else {
+            showMessage(`❌ Failed to save changes. Check console for details.`, 'error');
+        }
+        
+        // Reload page content to reflect changes
+        await loadPageContent(currentPage);
+        
+    } catch (error) {
+        console.error('Error in saveAllChanges:', error);
+        showMessage('Failed to save changes. Check console for details.', 'error');
+    }
+}
+
+// Helper function to upload image to Supabase
+async function uploadImageToSupabase(imageFile, originalImagePath = null) {
+    try {
+        const formData = new FormData();
+        formData.append('image', imageFile);
+        
+        // Include original path so server knows which directory to use
+        if (originalImagePath) {
+            formData.append('originalPath', originalImagePath);
+        }
+        
+        const response = await fetch(getApiUrl(CONFIG.ENDPOINTS.UPLOAD_IMAGE), {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            console.log('Image uploaded to Supabase Storage:', result.image_url);
+            return result.image_url;
+        } else {
+            console.error('Image upload failed:', result.error);
+            return null;
+        }
+    } catch (error) {
+        console.error('Error uploading image:', error);
+        return null;
+    }
+}
+
+// Helper function to get Supabase record ID for an image
+async function getSupabaseIdForImage(image, isGalleryItem) {
+    // First check if we have the Supabase ID stored directly
+    if (image.supabaseId) {
+        console.log(`Using stored Supabase ID for ${image.currentTitle}: ${image.supabaseId}`);
+        return image.supabaseId;
+    }
     
-    // Generate comprehensive changes data for Python script
-    generateChangesData();
-    
-    changes = {};
-    showMessage('Changes data generated! Download the changes file and run the Python script to apply changes.', 'success');
-    loadPageContent(currentPage);
+    // Fallback: search for the ID via API (for backwards compatibility)
+    try {
+        const apiEndpoint = isGalleryItem 
+            ? getApiUrl(CONFIG.ENDPOINTS.GALLERY_IMAGES)
+            : getApiUrl(CONFIG.ENDPOINTS.INDEX_CONTENT);
+        
+        const response = await fetch(apiEndpoint);
+        const result = await response.json();
+        
+        if (result.success) {
+            const items = isGalleryItem ? result.images : result.content;
+            
+            // Try to match by title first, then by current image URL
+            let matchedItem = items.find(item => 
+                item.title === image.currentTitle || 
+                item.image_url === image.currentImage
+            );
+            
+            // If no match found, try partial matching by filename
+            if (!matchedItem) {
+                const imageFilename = image.currentImage.split('/').pop();
+                matchedItem = items.find(item => 
+                    item.image_url && item.image_url.includes(imageFilename)
+                );
+            }
+            
+            if (matchedItem) {
+                console.log(`Found Supabase ID for ${image.currentTitle}: ${matchedItem.id}`);
+                // Store the ID for future use
+                image.supabaseId = matchedItem.id;
+                return matchedItem.id;
+            }
+        }
+        
+        console.warn(`Could not find Supabase record for ${image.currentTitle}`);
+        return null;
+    } catch (error) {
+        console.error('Error getting Supabase ID:', error);
+        return null;
+    }
 }
 
 function generateChangesData() {
@@ -760,11 +1429,20 @@ Generated on: ${new Date().toLocaleString()}
 }
 
 // Requests Management Functions
-function loadRequests() {
+async function loadRequests() {
     const imageGrid = document.getElementById('image-grid');
-    const sandboxRequests = getSandboxRequests();
     
-    if (sandboxRequests.length === 0) {
+    // Show loading state
+    imageGrid.innerHTML = `
+        <div class="loading-state">
+            <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary-pink); margin-bottom: 1rem;"></i>
+            <p>Loading cake requests...</p>
+        </div>
+    `;
+    
+    const requests = await getRequests();
+    
+    if (requests.length === 0) {
         imageGrid.innerHTML = `
             <div class="no-requests">
                 <i class="fas fa-clipboard-list"></i>
@@ -777,7 +1455,7 @@ function loadRequests() {
     
     // Default filter: show only pending and in_progress
     const currentFilter = window.__requestsFilter || 'active';
-    const filtered = filterRequests(sandboxRequests, currentFilter);
+    const filtered = filterRequests(requests, currentFilter);
     
     // Create filter controls
     const filterControls = `
@@ -800,15 +1478,15 @@ function loadRequests() {
             <div class="request-stats">
                 <div class="stat-card">
                     <h4>Pending</h4>
-                    <span class="stat-number">${sandboxRequests.filter(r => r.status === 'pending').length}</span>
+                    <span class="stat-number">${requests.filter(r => r.status === 'pending').length}</span>
                 </div>
                 <div class="stat-card">
                     <h4>In Progress</h4>
-                    <span class="stat-number">${sandboxRequests.filter(r => r.status === 'in_progress').length}</span>
+                    <span class="stat-number">${requests.filter(r => r.status === 'in_progress').length}</span>
                 </div>
                 <div class="stat-card">
                     <h4>Completed</h4>
-                    <span class="stat-number">${sandboxRequests.filter(r => r.status === 'completed').length}</span>
+                    <span class="stat-number">${requests.filter(r => r.status === 'completed').length}</span>
                 </div>
             </div>
             ${filterControls}
@@ -908,13 +1586,13 @@ function createRequestCard(request) {
                     </div>
                 ` : ''}
                 <div class="request-actions">
-                    <select onchange="updateSandboxRequestStatus('${request.id}', this.value)" class="status-select">
+                    <select onchange="updateRequestStatus('${request.id}', this.value)" class="status-select">
                         <option value="pending" ${request.status === 'pending' ? 'selected' : ''}>Pending</option>
                         <option value="in_progress" ${request.status === 'in_progress' ? 'selected' : ''}>In Progress</option>
                         <option value="completed" ${request.status === 'completed' ? 'selected' : ''}>Completed</option>
                         <option value="cancelled" ${request.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
                     </select>
-                    <button onclick="deleteSandboxRequest('${request.id}')" class="delete-btn">
+                    <button onclick="deleteRequest('${request.id}')" class="delete-btn">
                         <i class="fas fa-trash"></i> Delete
                     </button>
                 </div>

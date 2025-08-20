@@ -38,6 +38,10 @@ npm-debug.log*
 .env.test.local
 .env.production.local
 
+# Supabase
+.supabase/
+supabase/.env
+
 # IDE files
 .vscode/
 .idea/

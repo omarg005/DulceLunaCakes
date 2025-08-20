@@ -6,6 +6,9 @@
     <title>Admin Panel - Dulce Luna Cakes</title>
     <meta name="description" content="Admin panel for managing Dulce Luna Cakes website content and images.">
     
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌙</text></svg>">
+    
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,6 +20,9 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="admin.css">
+    
+    <!-- Supabase Client -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <!-- Login Screen -->
@@ -29,7 +35,7 @@
             </div>
             <form class="login-form" id="login-form">
                 <div class="form-group">
-                    <label for="username">Username</label>
+                    <label for="username">Username or Email</label>
                     <input type="text" id="username" name="username" required>
                 </div>
                 <div class="form-group">
@@ -40,8 +46,14 @@
                     <i class="fas fa-sign-in-alt"></i>
                     Login
                 </button>
+                <div class="login-options">
+                    <button type="button" class="forgot-password-btn" id="forgot-password-btn">
+                        Forgot Password?
+                    </button>
+                </div>
             </form>
             <div class="login-error" id="login-error" style="display: none;"></div>
+            <div class="login-success" id="login-success" style="display: none;"></div>
         </div>
     </div>
 
@@ -53,6 +65,10 @@
                 <div class="admin-logo">
                     <i class="fas fa-moon"></i>
                     Dulce Luna Cakes - Admin
+                </div>
+                <div class="admin-user-info">
+                    <span id="user-info">Welcome, Admin</span>
+                    <span id="auth-mode">Local Auth</span>
                 </div>
                 <button class="logout-button" id="logout-btn">
                     <i class="fas fa-sign-out-alt"></i>
@@ -70,7 +86,7 @@
         <main class="admin-main">
             <div class="admin-container">
                 <!-- Configuration Panel -->
-                <div class="config-panel">
+                <div class="config-panel" id="system-config-panel">
                     <h2>System Configuration</h2>
                     <div class="config-item">
                         <label>
@@ -137,13 +153,23 @@
             </div>
             <div class="modal-body">
                 <form class="image-edit-form" id="image-edit-form">
-                    <div class="form-group">
-                        <label for="current-image">Current Image</label>
-                        <div id="current-image-container" class="loading">
-                            <i class="fas fa-spinner fa-spin"></i>
-                            <p>No image selected</p>
+                    <div class="image-preview-section">
+                        <div class="image-preview-container">
+                            <div class="form-group">
+                                <label for="current-image">Current Image</label>
+                                <div id="current-image-container" class="loading">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <p>No image selected</p>
+                                </div>
+                                <img id="current-image" class="preview-image" style="display: none;" alt="Current image">
+                            </div>
                         </div>
-                        <img id="current-image" style="max-width: 100%; height: 200px; object-fit: cover; border-radius: var(--border-radius); display: none;" alt="Current image">
+                        <div class="image-preview-container" id="new-image-preview-container" style="display: none;">
+                            <div class="form-group">
+                                <label>New Image</label>
+                                <img id="new-image-preview" class="preview-image" alt="New image preview">
+                            </div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="new-image">Upload New Image</label>
@@ -195,7 +221,49 @@
         </div>
     </footer>
 
+    <!-- Test Supabase Loading -->
+    <script>
+        async function testSupabase() {
+            console.log('=== TESTING SUPABASE AVAILABILITY ===');
+            console.log('window.supabase:', window.supabase);
+            console.log('typeof window.supabase:', typeof window.supabase);
+            
+            if (window.supabase) {
+                console.log('✅ Supabase CDN loaded successfully');
+                try {
+                    // Test with your actual Supabase URL and key
+                    const supabaseUrl = 'https://pwvnrtkrnibaxzrduzmj.supabase.co';
+                    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3dm5ydGtybmliYXh6cmR1em1qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTk1NjEsImV4cCI6MjA3MTIzNTU2MX0.E_IntUR0qo5j75Xc4rlP1YCB_Seq-cM42M8ntE1C-zY';
+                    
+                    console.log('Testing with URL:', supabaseUrl);
+                    console.log('Key length:', supabaseKey.length);
+                    
+                    const testClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+                    console.log('✅ Supabase createClient works with real credentials');
+                    console.log('Client object:', testClient);
+                    
+                    // Test auth
+                    const authTest = await testClient.auth.getSession();
+                    console.log('✅ Auth test result:', authTest);
+                    
+                } catch (err) {
+                    console.error('❌ Supabase test failed:', err);
+                }
+            } else {
+                console.error('❌ Supabase CDN failed to load');
+            }
+        }
+        
+        // Run test when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', testSupabase);
+        } else {
+            testSupabase();
+        }
+    </script>
+    
     <!-- Admin JavaScript -->
+    <script src="config.js"></script>
     <script src="admin.js"></script>
 </body>
 </html> 

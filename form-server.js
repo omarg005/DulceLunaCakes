@@ -1,9 +1,28 @@
+// Load environment variables
+require('dotenv').config();
+
 const express = require('express');
 const multer = require('multer');
 const nodemailer = require('nodemailer');
 const fs = require('fs').promises;
 const path = require('path');
 const cors = require('cors');
+
+// Import Supabase services
+const { cakeRequestsService, testConnection } = require('./services/database-server');
+const { storageService } = require('./services/storage-server');
+
+// Direct Supabase client for new endpoints
+const { createClient } = require('@supabase/supabase-js');
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+const supabase = supabaseUrl && supabaseServiceKey ? createClient(supabaseUrl, supabaseServiceKey, {
+    auth: {
+        autoRefreshToken: false,
+        persistSession: false
+    }
+}) : null;
 
 const app = express();
 const PORT = process.env.FORM_PORT ? parseInt(process.env.FORM_PORT, 10) : (process.env.PORT ? parseInt(process.env.PORT, 10) + 1 : 3002);
@@ -44,7 +63,8 @@ const upload = multer({
     }
 });
 
-// Simple in-memory database (replace with real database in production)
+// Database operations now handled by Supabase
+// Fallback arrays for when Supabase is not configured
 let submissions = [];
 let nextId = 1;
 
@@ -72,20 +92,86 @@ app.post('/api/submit-request', upload.single('reference-image'), async (req, re
             referenceImage: uploadedFile ? uploadedFile.path : null
         };
         
-        // Store in database
-        submissions.push(submission);
+        // Handle image upload to Supabase Storage (optional)
+        let imageUrl = null;
+        if (uploadedFile) {
+            try {
+                // Try to upload to Supabase Storage
+                const targetFileName = `reference-images/${Date.now()}-${uploadedFile.originalname}`;
+                const storageResult = await storageService.moveUploadToStorage(
+                    uploadedFile.path, 
+                    targetFileName
+                );
+                
+                if (storageResult.success) {
+                    imageUrl = storageResult.data.url;
+                    console.log('Image uploaded to Supabase Storage:', imageUrl);
+                } else {
+                    // Fallback to local storage
+                    imageUrl = uploadedFile.path;
+                    console.warn('Supabase Storage upload failed, using local storage:', storageResult.error);
+                }
+            } catch (error) {
+                // Fallback to local storage
+                imageUrl = uploadedFile.path;
+                console.warn('Storage upload error, using local storage:', error.message);
+            }
+        }
+
+        // Store in Supabase database
+        const submissionData = {
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            event_date: formData['date-needed'],
+            event_type: formData['event-type'],
+            event_address: formData['event-address'],
+            event_city: formData['event-city'], 
+            event_zip: formData['event-zip'],
+            cake_size: formData['cake-size'],
+            cake_flavor: formData['cake-flavor'],
+            frosting_type: formData['frosting-type'],
+            cake_filling: formData['cake-filling'],
+            design_description: formData['design-description'],
+            color_scheme: formData['color-scheme'],
+            special_requests: formData['special-requests'],
+            budget_range: formData['budget-range'],
+            additional_notes: formData['additional-notes'],
+            reference_image_url: imageUrl,
+            request_delivery: formData['request-delivery'] === 'yes'
+        };
+
+        const result = await cakeRequestsService.create(submissionData);
         
-        // Send email to business owner
-        await sendEmailToOwner(submission);
-        
-        // Send confirmation email to customer
-        await sendConfirmationEmail(submission);
-        
-        res.json({ 
-            success: true, 
-            message: 'Request submitted successfully!',
-            submissionId: submission.id
-        });
+        if (result.success) {
+            // Use Supabase ID for the submission
+            submission.id = result.id;
+            
+            // Send email to business owner
+            await sendEmailToOwner(submission);
+            
+            // Send confirmation email to customer
+            await sendConfirmationEmail(submission);
+            
+            res.json({ 
+                success: true, 
+                message: result.message,
+                submissionId: result.id
+            });
+        } else {
+            // Fallback to in-memory storage if Supabase fails
+            console.warn('Supabase failed, using fallback storage:', result.error);
+            submissions.push(submission);
+            
+            await sendEmailToOwner(submission);
+            await sendConfirmationEmail(submission);
+            
+            res.json({ 
+                success: true, 
+                message: 'Request submitted successfully! (fallback mode)',
+                submissionId: submission.id
+            });
+        }
         
     } catch (error) {
         console.error('Error submitting request:', error);
@@ -98,55 +184,90 @@ app.post('/api/submit-request', upload.single('reference-image'), async (req, re
 });
 
 // Get all submissions (for admin panel)
-app.get('/api/submissions', (req, res) => {
-    res.json({ 
-        success: true, 
-        submissions: submissions.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-    });
+app.get('/api/submissions', async (req, res) => {
+    try {
+        const result = await cakeRequestsService.getAll();
+        
+        if (result.success) {
+            res.json({
+                success: true,
+                submissions: result.requests
+            });
+        } else {
+            // Fallback to in-memory data
+            res.json({ 
+                success: true, 
+                submissions: submissions.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+            });
+        }
+    } catch (error) {
+        console.error('Error fetching submissions:', error);
+        res.json({ 
+            success: true, 
+            submissions: submissions.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+        });
+    }
 });
 
 // Update submission status
-app.put('/api/submissions/:id/status', (req, res) => {
+app.put('/api/submissions/:id/status', async (req, res) => {
     try {
         const { id } = req.params;
         const { status, notes } = req.body;
         
-        const submission = submissions.find(s => s.id === parseInt(id));
-        if (!submission) {
-            return res.status(404).json({ success: false, message: 'Submission not found' });
+        const result = await cakeRequestsService.updateStatus(id, status, notes);
+        
+        if (result.success) {
+            res.json(result);
+        } else {
+            // Fallback to in-memory update
+            const submission = submissions.find(s => s.id === parseInt(id) || s.id === id);
+            if (!submission) {
+                return res.status(404).json({ success: false, message: 'Submission not found' });
+            }
+            
+            submission.status = status;
+            submission.adminNotes = notes;
+            submission.updatedAt = new Date().toISOString();
+            
+            res.json({ success: true, submission });
         }
         
-        submission.status = status;
-        submission.adminNotes = notes;
-        submission.updatedAt = new Date().toISOString();
-        
-        res.json({ success: true, submission });
-        
     } catch (error) {
+        console.error('Error updating submission status:', error);
         res.status(500).json({ success: false, message: error.message });
     }
 });
 
 // Delete submission
-app.delete('/api/submissions/:id', (req, res) => {
+app.delete('/api/submissions/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const index = submissions.findIndex(s => s.id === parseInt(id));
         
-        if (index === -1) {
-            return res.status(404).json({ success: false, message: 'Submission not found' });
+        const result = await cakeRequestsService.delete(id);
+        
+        if (result.success) {
+            res.json(result);
+        } else {
+            // Fallback to in-memory deletion
+            const index = submissions.findIndex(s => s.id === parseInt(id) || s.id === id);
+            
+            if (index === -1) {
+                return res.status(404).json({ success: false, message: 'Submission not found' });
+            }
+            
+            // Delete reference image if exists
+            const submission = submissions[index];
+            if (submission.referenceImage) {
+                fs.unlink(submission.referenceImage).catch(err => console.error('Error deleting file:', err));
+            }
+            
+            submissions.splice(index, 1);
+            res.json({ success: true, message: 'Submission deleted' });
         }
-        
-        // Delete reference image if exists
-        const submission = submissions[index];
-        if (submission.referenceImage) {
-            fs.unlink(submission.referenceImage).catch(err => console.error('Error deleting file:', err));
-        }
-        
-        submissions.splice(index, 1);
-        res.json({ success: true, message: 'Submission deleted' });
         
     } catch (error) {
+        console.error('Error deleting submission:', error);
         res.status(500).json({ success: false, message: error.message });
     }
 });
@@ -260,12 +381,268 @@ function generateCustomerEmailHTML(submission) {
 }
 
 // Health check endpoint
-app.get('/api/health', (req, res) => {
+app.get('/api/health', async (req, res) => {
+    const connection = await testConnection();
     res.json({ 
         status: 'OK', 
         timestamp: new Date().toISOString(),
-        submissionsCount: submissions.length
+        submissionsCount: submissions.length,
+        supabase: connection
     });
+});
+
+// Test Supabase connection endpoint
+app.get('/api/test-supabase', async (req, res) => {
+    const connection = await testConnection();
+    res.json(connection);
+});
+
+// Test Supabase storage endpoint
+app.get('/api/test-storage', async (req, res) => {
+    const storageTest = await storageService.testConnection();
+    res.json(storageTest);
+});
+
+// Get all gallery images
+app.get('/api/gallery-images', async (req, res) => {
+    try {
+        if (!supabase) {
+            return res.status(503).json({ 
+                success: false, 
+                error: 'Supabase not configured',
+                images: []
+            });
+        }
+
+        const { data: images, error } = await supabase
+            .from('gallery_images')
+            .select('*')
+            .order('order_index', { ascending: true });
+
+        if (error) {
+            console.error('Error fetching gallery images:', error);
+            return res.status(500).json({ 
+                success: false, 
+                error: error.message,
+                images: []
+            });
+        }
+
+        res.json({
+            success: true,
+            images: images || []
+        });
+    } catch (error) {
+        console.error('Error in gallery images endpoint:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: error.message,
+            images: []
+        });
+    }
+});
+
+// Get all index content
+app.get('/api/index-content', async (req, res) => {
+    try {
+        if (!supabase) {
+            return res.status(503).json({ 
+                success: false, 
+                error: 'Supabase not configured',
+                content: []
+            });
+        }
+
+        const { data: content, error } = await supabase
+            .from('index_content')
+            .select('*')
+            .order('order_index', { ascending: true });
+
+        if (error) {
+            console.error('Error fetching index content:', error);
+            return res.status(500).json({ 
+                success: false, 
+                error: error.message,
+                content: []
+            });
+        }
+
+        res.json({
+            success: true,
+            content: content || []
+        });
+    } catch (error) {
+        console.error('Error in index content endpoint:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: error.message,
+            content: []
+        });
+    }
+});
+
+// Update gallery image
+app.put('/api/gallery-images/:id', async (req, res) => {
+    try {
+        if (!supabase) {
+            return res.status(503).json({ 
+                success: false, 
+                error: 'Supabase not configured'
+            });
+        }
+
+        const { id } = req.params;
+        const { title, description, image_url } = req.body;
+
+        const updateData = {};
+        if (title) updateData.title = title;
+        if (description) updateData.description = description;
+        if (image_url) updateData.image_url = image_url;
+        updateData.updated_at = new Date().toISOString();
+
+        const { data: updatedImage, error } = await supabase
+            .from('gallery_images')
+            .update(updateData)
+            .eq('id', id)
+            .select()
+            .single();
+
+        if (error) {
+            console.error('Error updating gallery image:', error);
+            return res.status(500).json({ 
+                success: false, 
+                error: error.message
+            });
+        }
+
+        res.json({
+            success: true,
+            image: updatedImage
+        });
+    } catch (error) {
+        console.error('Error in gallery image update endpoint:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: error.message
+        });
+    }
+});
+
+// Update index content
+app.put('/api/index-content/:id', async (req, res) => {
+    try {
+        if (!supabase) {
+            return res.status(503).json({ 
+                success: false, 
+                error: 'Supabase not configured'
+            });
+        }
+
+        const { id } = req.params;
+        const { title, description, image_url } = req.body;
+
+        const updateData = {};
+        if (title) updateData.title = title;
+        if (description) updateData.description = description;
+        if (image_url) updateData.image_url = image_url;
+        updateData.updated_at = new Date().toISOString();
+
+        const { data: updatedContent, error } = await supabase
+            .from('index_content')
+            .update(updateData)
+            .eq('id', id)
+            .select()
+            .single();
+
+        if (error) {
+            console.error('Error updating index content:', error);
+            return res.status(500).json({ 
+                success: false, 
+                error: error.message
+            });
+        }
+
+        res.json({
+            success: true,
+            content: updatedContent
+        });
+    } catch (error) {
+        console.error('Error in index content update endpoint:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: error.message
+        });
+    }
+});
+
+// Upload image to Supabase Storage
+app.post('/api/upload-image', upload.single('image'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'No image file provided'
+            });
+        }
+
+        // Try to upload to Supabase Storage
+        // Check if this is replacing an existing image (get path from request)
+        const originalPath = req.body.originalPath;
+        let targetFileName;
+        
+        if (originalPath) {
+            let directory = 'admin-uploads'; // default
+            
+            // Handle both Supabase URLs and local paths
+            if (originalPath.includes('/storage/v1/object/public/images/')) {
+                // Extract directory from Supabase URL
+                const urlParts = originalPath.split('/storage/v1/object/public/images/')[1];
+                const pathParts = urlParts.split('/');
+                if (pathParts.length > 1) {
+                    directory = pathParts[0]; // gallery, index, about, etc.
+                }
+            } else if (originalPath.includes('images/')) {
+                // Extract directory from local path like "images/gallery/filename.jpg"
+                const imageParts = originalPath.split('images/')[1];
+                const pathParts = imageParts.split('/');
+                if (pathParts.length > 1) {
+                    directory = pathParts[0]; // gallery, index, about, etc.
+                }
+            }
+            
+            targetFileName = `${directory}/${Date.now()}-${req.file.originalname}`;
+            console.log(`Replacing image in ${directory}: ${targetFileName} (original: ${originalPath})`);
+        } else {
+            // Default to admin-uploads for new uploads
+            targetFileName = `admin-uploads/${Date.now()}-${req.file.originalname}`;
+        }
+        
+        const storageResult = await storageService.moveUploadToStorage(
+            req.file.path,
+            targetFileName
+        );
+
+        if (storageResult.success) {
+            res.json({
+                success: true,
+                image_url: storageResult.data.url,
+                filename: targetFileName
+            });
+        } else {
+            // Fallback to local file if Supabase fails
+            res.json({
+                success: false,
+                error: storageResult.error,
+                fallback_path: req.file.path
+            });
+        }
+    } catch (error) {
+        console.error('Error uploading image:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: error.message
+        });
+    }
 });
 
 // Start server

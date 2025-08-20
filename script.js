@@ -214,7 +214,206 @@ function showInfoModal(title, messages) {
 }
 
 // Configuration - Set to true for sandbox mode (testing)
-const SANDBOX_MODE = true; // Change to false for production
+const SANDBOX_MODE = false; // Change to false for production
+
+// Dynamic content loading from Supabase
+async function loadIndexContent() {
+    try {
+        console.log('Loading index content from Supabase...');
+        
+        const response = await fetch(getApiUrl(CONFIG.ENDPOINTS.INDEX_CONTENT));
+        const result = await response.json();
+        
+        if (result.success && result.content) {
+            // Load hero content
+            const heroContent = result.content.find(item => item.type === 'hero');
+            if (heroContent) {
+                updateHeroContent(heroContent);
+            }
+            
+            // Load featured cakes
+            const featuredContent = result.content.filter(item => item.type === 'featured');
+            if (featuredContent.length > 0) {
+                updateFeaturedCakes(featuredContent);
+            }
+            
+            // Load about preview
+            const aboutContent = result.content.find(item => item.type === 'about');
+            if (aboutContent) {
+                updateAboutPreview(aboutContent);
+            }
+            
+            console.log('✅ Index content loaded from Supabase');
+        } else {
+            console.warn('Failed to load from Supabase, using fallback');
+            loadFallbackContent();
+        }
+    } catch (error) {
+        console.error('Error loading index content:', error);
+        loadFallbackContent();
+    }
+}
+
+function updateHeroContent(heroContent) {
+    const heroSection = document.querySelector('.hero');
+    if (heroSection) {
+        // Update background image
+        heroSection.style.backgroundImage = `url('${heroContent.image_url}')`;
+        
+        // Update title and subtitle
+        const title = heroSection.querySelector('.hero-title');
+        const subtitle = heroSection.querySelector('.hero-subtitle');
+        
+        if (title) title.textContent = heroContent.title;
+        if (subtitle) subtitle.textContent = heroContent.description;
+    }
+}
+
+function updateFeaturedCakes(featuredContent) {
+    const cakesGrid = document.querySelector('.cakes-grid');
+    if (cakesGrid) {
+        cakesGrid.innerHTML = featuredContent.map(cake => `
+            <div class="cake-card" data-title="${cake.title}" data-description="${cake.description}">
+                <div class="cake-image">
+                    <img src="${cake.image_url}" alt="${cake.title}" loading="lazy">
+                </div>
+                <div class="cake-info">
+                    <h3>${cake.title}</h3>
+                    <p>${cake.description}</p>
+                </div>
+            </div>
+        `).join('');
+        
+        // Re-initialize image modal for new content
+        initializeImageModal();
+    }
+}
+
+function updateAboutPreview(aboutContent) {
+    const aboutText = document.querySelector('.about-preview .about-text h2');
+    const aboutDesc = document.querySelector('.about-preview .about-text p');
+    const aboutImageContainer = document.querySelector('.about-preview .about-image');
+    
+    if (aboutText) aboutText.textContent = aboutContent.title;
+    if (aboutDesc) aboutDesc.textContent = aboutContent.description;
+    
+    if (aboutImageContainer) {
+        aboutImageContainer.innerHTML = `
+            <img src="${aboutContent.image_url}" alt="${aboutContent.title}" loading="lazy">
+        `;
+    }
+}
+
+function loadFallbackContent() {
+    // Fallback content when Supabase fails
+    const cakesGrid = document.querySelector('.cakes-grid');
+    const aboutText = document.querySelector('.about-preview .about-text h2');
+    const aboutDesc = document.querySelector('.about-preview .about-text p');
+    
+    if (cakesGrid) {
+        cakesGrid.innerHTML = `
+            <div class="cake-card">
+                <div class="cake-image">
+                    <img src="images/gallery/ChocolateFloralTier.jpg" alt="Featured Cake" loading="lazy">
+                </div>
+                <div class="cake-info">
+                    <h3>Custom Cakes</h3>
+                    <p>Beautiful custom cakes for your special occasions</p>
+                </div>
+            </div>
+        `;
+    }
+    
+    if (aboutText) aboutText.textContent = "Meet the Baker";
+    if (aboutDesc) aboutDesc.textContent = "Creating sweet moments with every cake.";
+}
+
+// Gallery content loading
+async function loadGalleryContent() {
+    const galleryGrid = document.querySelector('.gallery-grid');
+    if (!galleryGrid) return; // Not on gallery page
+    
+    try {
+        console.log('Loading gallery content from Supabase...');
+        
+        const response = await fetch(getApiUrl(CONFIG.ENDPOINTS.GALLERY_IMAGES));
+        const result = await response.json();
+        
+        if (result.success && result.images) {
+            galleryGrid.innerHTML = result.images.map(image => `
+                <div class="gallery-item" data-title="${image.title}" data-description="${image.description}">
+                    <img src="${image.image_url}" alt="${image.title}" loading="lazy">
+                    <div class="gallery-caption">
+                        <h3>${image.title}</h3>
+                        <p>${image.description}</p>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Re-initialize image modal for gallery
+            initializeImageModal();
+            
+            console.log('✅ Gallery content loaded from Supabase');
+        } else {
+            console.warn('Failed to load gallery from Supabase');
+        }
+    } catch (error) {
+        console.error('Error loading gallery content:', error);
+    }
+}
+
+// About page content loading
+async function loadAboutContent() {
+    const aboutImage = document.querySelector('.about-image');
+    const aboutTitle = document.querySelector('.about-text h2');
+    const aboutDesc = document.querySelector('.about-text p');
+    
+    if (!aboutImage) return; // Not on about page
+    
+    try {
+        console.log('Loading about content from Supabase...');
+        
+        const response = await fetch(getApiUrl(CONFIG.ENDPOINTS.INDEX_CONTENT));
+        const result = await response.json();
+        
+        if (result.success && result.content) {
+            const aboutContent = result.content.find(item => item.type === 'about');
+            if (aboutContent) {
+                // Update image
+                aboutImage.innerHTML = `
+                    <img src="${aboutContent.image_url}" alt="${aboutContent.title}" loading="lazy">
+                `;
+                
+                // Update title (only if it's still "Loading...")
+                if (aboutTitle && aboutTitle.textContent === 'Loading...') {
+                    aboutTitle.textContent = aboutContent.title;
+                }
+                
+                // Update first paragraph (only if it's still "Loading...")
+                if (aboutDesc && aboutDesc.textContent === 'Loading...') {
+                    aboutDesc.textContent = aboutContent.description;
+                }
+                
+                console.log('✅ About content loaded from Supabase');
+            }
+        }
+    } catch (error) {
+        console.error('Error loading about content:', error);
+        
+        // Fallback content
+        if (aboutImage) {
+            aboutImage.innerHTML = `
+                <img src="images/about/Nomi.jpg" alt="About the Baker" loading="lazy">
+            `;
+        }
+        if (aboutTitle && aboutTitle.textContent === 'Loading...') {
+            aboutTitle.textContent = "Hi, I'm Nomi!";
+        }
+        if (aboutDesc && aboutDesc.textContent === 'Loading...') {
+            aboutDesc.textContent = "Baking has always been my love language.";
+        }
+    }
+}
 
 // Make SANDBOX_MODE available globally for admin panel
 window.SANDBOX_MODE = SANDBOX_MODE;
@@ -342,7 +541,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         // Production mode - submit to server
                         const formData = new FormData(form);
                         
-                        const response = await fetch('/api/submit-request', {
+                        const response = await fetch(getApiUrl(CONFIG.ENDPOINTS.SUBMIT_REQUEST), {
                             method: 'POST',
                             body: formData
                         });
@@ -537,7 +736,13 @@ function initializeImageModal() {
 }
 
 // Initialize modal when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // Load dynamic content from Supabase
+    await loadIndexContent();
+    await loadGalleryContent();
+    await loadAboutContent();
+    
+    // Initialize modal after content is loaded
     initializeImageModal();
     
     // Setup click handlers for gallery items (for gallery page)
