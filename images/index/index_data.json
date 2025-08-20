@@ -12,10 +12,10 @@
     }
   },
   {
-    "filename": "ChocolateFloralTier.avif",
-    "title": "Chocolate Floral Tier",
-    "description": "A stunning three-tier chocolate cake adorned with delicate sugar flowers",
-    "path": "images/index/ChocolateFloralTier.avif",
+    "filename": "MadHatter.jpeg",
+    "title": "Mad Hatter Cake",
+    "description": "A whimsical Alice in Wonderland themed cake featuring the Cheshire Cat, playing cards, mushrooms, and a golden pocket watch. Perfect for a magical birthday celebration.",
+    "path": "images/index/MadHatter.jpeg",
     "type": "featured",
     "targetElements": {
       "image": ".cake-card:nth-child(1) img",
@@ -24,10 +24,10 @@
     }
   },
   {
-    "filename": "UnicornBirthdayMagic.avif",
-    "title": "Unicorn Birthday Magic",
-    "description": "Colorful layers with rainbow frosting and magical unicorn decorations",
-    "path": "images/index/UnicornBirthdayMagic.avif",
+    "filename": "WhiteBlueCrown.jpg",
+    "title": "Royal Crown Cake",
+    "description": "An elegant two-tier cake with quilted fondant, gold detailing, and topped with a sparkling jeweled crown. Ideal for princess parties and regal celebrations.",
+    "path": "images/index/WhiteBlueCrown.jpg",
     "type": "featured",
     "targetElements": {
       "image": ".cake-card:nth-child(2) img",
@@ -36,10 +36,10 @@
     }
   },
   {
-    "filename": "RusticWeddingCake.avif",
-    "title": "Rustic Wedding Cake",
-    "description": "Elegant naked cake with fresh flowers and rustic charm",
-    "path": "images/index/RusticWeddingCake.avif",
+    "filename": "PinkBlueHotAirBaloons.jpg",
+    "title": "Hot Air Balloon Cake",
+    "description": "A dreamy pastel cake decorated with balloons, clouds, and floating designs, capturing the magic of a hot air balloon adventure. Great for baby showers or birthdays.",
+    "path": "images/index/PinkBlueHotAirBaloons.jpg",
     "type": "featured",
     "targetElements": {
       "image": ".cake-card:nth-child(3) img",

@@ -1,74 +1,74 @@
 [
   {
-    "filename": "ChocolateFloralTier.jpg",
-    "title": "Chocolate Floral Tier",
-    "description": "A stunning three-tier chocolate cake adorned with delicate sugar flowers and gold accents",
-    "path": "images/gallery/ChocolateFloralTier.jpg"
+    "filename": "WhiteBlueBears.jpg",
+    "title": "Teddy Bear Cake",
+    "description": "A sweet two-tier cake adorned with fondant teddy bears, balloons, and soft pastel accents. Perfect for baby showers, christenings, or first birthdays.",
+    "path": "images/gallery/WhiteBlueBears.jpg"
   },
   {
-    "filename": "UnicornBirthdayMagic.jpg",
-    "title": "Unicorn Birthday Magic",
-    "description": "Colorful layers with rainbow frosting and magical unicorn decorations",
-    "path": "images/gallery/UnicornBirthdayMagic.jpg"
+    "filename": "WhiteChristmas.jpg",
+    "title": "Christmas Winter Cake",
+    "description": "A rustic holiday cake with frosted pinecones, berries, and greenery, finished with a white chocolate drip. A festive centerpiece for Christmas gatherings.",
+    "path": "images/gallery/WhiteChristmas.jpg"
   },
   {
-    "filename": "RusticWeddingCake.jpg",
-    "title": "Rustic Wedding Cake",
-    "description": "Elegant naked cake with fresh flowers and rustic charm",
-    "path": "images/gallery/RusticWeddingCake.jpg"
+    "filename": "MoanaCake.jpg",
+    "title": "Moana Ocean Cake",
+    "description": "A vibrant ocean-inspired cake with Moana characters, sandy textures, and tropical details. Themed perfectly for adventurous birthday parties.",
+    "path": "images/gallery/MoanaCake.jpg"
   },
   {
-    "filename": "VanillaButtercreamDream.jpg",
-    "title": "Vanilla Buttercream Dream",
+    "filename": "WhitePinkOrchid.jpg",
+    "title": "Orchid Floral Cake",
     "description": "Classic vanilla cake with smooth buttercream frosting",
-    "path": "images/gallery/VanillaButtercreamDream.jpg"
+    "path": "images/gallery/WhitePinkOrchid.jpg"
   },
   {
-    "filename": "RedVelvetElegance.jpg",
-    "title": "Red Velvet Elegance",
-    "description": "Rich red velvet with cream cheese frosting and gold accents",
-    "path": "images/gallery/RedVelvetElegance.jpg"
+    "filename": "WhiteWithFlowers.jpg",
+    "title": "Rustic Rose Cake",
+    "description": "A semi-naked cake decorated with handcrafted sugar roses in soft pink and mauve tones. A simple yet romantic design for weddings or special celebrations.",
+    "path": "images/gallery/WhiteWithFlowers.jpg"
   },
   {
-    "filename": "LemonZestDelight.jpg",
-    "title": "Lemon Zest Delight",
-    "description": "Fresh lemon cake with citrus glaze and edible flowers",
-    "path": "images/gallery/LemonZestDelight.jpg"
+    "filename": "JackDaniels.jpg",
+    "title": "Jack Daniels Barrel Cake",
+    "description": "A bold and unique cake styled as a whiskey barrel, complete with miniature Jack Daniels bottles and edible ice cubes. The ultimate cake for whiskey lovers.",
+    "path": "images/gallery/JackDaniels.jpg"
   },
   {
-    "filename": "MarbleMasterpiece.jpg",
-    "title": "Marble Masterpiece",
-    "description": "Swirled chocolate and vanilla with ganache drizzle",
-    "path": "images/gallery/MarbleMasterpiece.jpg"
+    "filename": "Mexican.jpg",
+    "title": "Mexican Fiesta Cake",
+    "description": "A colorful fiesta-themed cake decorated with buttercream ruffles, cactus toppers, and papel picado banners. A lively choice for birthdays and Cinco de Mayo celebrations.",
+    "path": "images/gallery/Mexican.jpg"
   },
   {
-    "filename": "PrincessBirthdayCake.jpg",
-    "title": "Princess Birthday Cake",
-    "description": "Pink ombre layers with crown and sparkle decorations",
-    "path": "images/gallery/PrincessBirthdayCake.jpg"
+    "filename": "WoodsyFlora.jpg",
+    "title": "Enchanted Woodland Cake",
+    "description": "A nature-inspired cake with lifelike sugar flowers, leaves, and mushrooms against a wood-textured design. A magical choice for garden parties and woodland-themed events.",
+    "path": "images/gallery/WoodsyFlora.jpg"
   },
   {
-    "filename": "GardenPartyCake.jpg",
-    "title": "Garden Party Cake",
-    "description": "Spring-inspired cake with edible flowers and pastel colors",
-    "path": "images/gallery/GardenPartyCake.jpg"
+    "filename": "ButterFlyBirthday.jpg",
+    "title": "Midnight Butterfly Cake",
+    "description": "A stunning black cake decorated with golden accents, delicate butterflies, and deep purple blooms. A glamorous centerpiece for elegant birthday celebrations.",
+    "path": "images/gallery/ButterFlyBirthday.jpg"
   },
   {
-    "filename": "ModernGeometricCake.jpg",
+    "filename": "brito.jpg",
     "title": "Modern Geometric Cake",
     "description": "Clean lines and geometric patterns in fondant",
-    "path": "images/gallery/ModernGeometricCake.jpg"
+    "path": "images/gallery/brito.jpg"
   },
   {
-    "filename": "CarrotCakeComfort.jpg",
-    "title": "Carrot Cake Comfort",
-    "description": "Spiced carrot cake with cream cheese frosting and walnuts",
-    "path": "images/gallery/CarrotCakeComfort.jpg"
+    "filename": "HaloweenCaldron.jpg",
+    "title": "Witches’ Cauldron Cake",
+    "description": "A spooky Halloween cake bubbling with neon green slime, skulls, and witchy details. Ideal for haunted parties and themed birthdays.",
+    "path": "images/gallery/HaloweenCaldron.jpg"
   },
   {
-    "filename": "ChocolateLoversDream.jpg",
-    "title": "Chocolate Lovers Dream",
-    "description": "Triple chocolate layers with chocolate ganache and shavings",
-    "path": "images/gallery/ChocolateLoversDream.jpg"
+    "filename": "Naruto.jpg",
+    "title": "Naruto Ramen Cake",
+    "description": "A playful cake designed to look like a ramen bowl, complete with noodles, eggs, and Naruto enjoying his favorite dish. A must-have for anime fans.",
+    "path": "images/gallery/Naruto.jpg"
   }
 ]
