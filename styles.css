@@ -302,6 +302,7 @@ p {
     height: 100%;
     object-fit: cover;
     transition: var(--transition);
+    cursor: pointer;
 }
 
 .cake-card:hover .cake-image img {
@@ -310,6 +311,12 @@ p {
 
 .cake-info {
     padding: 1.5rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.cake-info:hover {
+    background: rgba(230, 215, 255, 0.3);
 }
 
 .cake-info h3 {
@@ -648,6 +655,7 @@ p {
     height: 300px;
     object-fit: cover;
     transition: var(--transition);
+    cursor: pointer;
 }
 
 .gallery-item:hover img {
@@ -667,6 +675,11 @@ p {
     z-index: 10;
     border-radius: 0 0 12px 12px;
     box-shadow: none;
+    cursor: pointer;
+}
+
+.gallery-caption:hover {
+    background: rgba(184, 230, 184, 0.9);
 }
 
 .gallery-caption h3,
@@ -1600,7 +1613,185 @@ p {
     pointer-events: auto;
 } 
 
-/* Lightbox Styles */
+/* Enhanced Image Modal Styles */
+.image-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.image-modal.active {
+    display: flex;
+    opacity: 1;
+}
+
+.image-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(44, 44, 44, 0.95);
+    backdrop-filter: blur(5px);
+}
+
+.image-modal-content {
+    position: relative;
+    margin: auto;
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-hover);
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow: hidden;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.image-modal.active .image-modal-content {
+    transform: scale(1);
+}
+
+.image-modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10001;
+    color: var(--text-dark);
+    font-size: 1.2rem;
+    transition: var(--transition);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.image-modal-close:hover {
+    background: var(--primary-pink);
+    color: white;
+    transform: scale(1.1);
+}
+
+.image-modal-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.image-modal-image-container {
+    position: relative;
+    background: var(--neutral-ivory);
+}
+
+.image-modal-image {
+    width: 100%;
+    height: auto;
+    max-height: 60vh;
+    object-fit: contain;
+    display: block;
+}
+
+.image-modal-info {
+    padding: 2rem;
+    background: white;
+    border-top: 4px solid var(--accent-mint);
+}
+
+.image-modal-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 1rem;
+    line-height: 1.3;
+}
+
+.image-modal-description {
+    font-size: 1.1rem;
+    color: var(--text-light);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Responsive adjustments for modal */
+@media (min-width: 768px) {
+    .image-modal-content {
+        max-width: 800px;
+        max-height: 85vh;
+    }
+    
+    .image-modal-body {
+        flex-direction: row;
+        align-items: stretch;
+    }
+    
+    .image-modal-image-container {
+        flex: 1.2;
+        min-height: 400px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .image-modal-image {
+        max-height: none;
+        height: 100%;
+        max-width: 100%;
+    }
+    
+    .image-modal-info {
+        flex: 0.8;
+        border-top: none;
+        border-left: 4px solid var(--accent-mint);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-width: 300px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .image-modal-content {
+        max-width: 1000px;
+    }
+    
+    .image-modal-title {
+        font-size: 2rem;
+    }
+    
+    .image-modal-description {
+        font-size: 1.2rem;
+    }
+}
+
+/* Animation for modal entrance */
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.image-modal.active .image-modal-content {
+    animation: modalFadeIn 0.3s ease;
+}
+
+/* Legacy Lightbox Styles (for backward compatibility) */
 .lightbox {
     position: fixed;
     top: 0;

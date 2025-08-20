@@ -486,57 +486,178 @@ document.addEventListener('DOMContentLoaded', () => {
     deliverySelect.addEventListener('change', updateDeliveryVisibility);
 });
 
-// Image lightbox functionality for gallery
-function createLightbox() {
-    const lightbox = document.createElement('div');
-    lightbox.className = 'lightbox';
-    lightbox.innerHTML = `
-        <div class="lightbox-content">
-            <img src="" alt="" class="lightbox-image">
-            <div class="lightbox-caption"></div>
-            <button class="lightbox-close">&times;</button>
-        </div>
-    `;
+// Enhanced Image Modal functionality
+function initializeImageModal() {
+    const modal = document.getElementById('image-modal');
+    const modalOverlay = document.getElementById('modal-overlay');
+    const modalClose = document.getElementById('modal-close');
+    const modalImage = document.getElementById('modal-image');
+    const modalTitle = document.getElementById('modal-title');
+    const modalDescription = document.getElementById('modal-description');
     
-    document.body.appendChild(lightbox);
+    if (!modal) return; // Modal not found on this page
     
-    // Close lightbox
-    lightbox.addEventListener('click', (e) => {
-        if (e.target === lightbox || e.target.classList.contains('lightbox-close')) {
-            lightbox.classList.remove('active');
-        }
-    });
+    // Function to open modal with image data
+    function openModal(imageSrc, title, description) {
+        modalImage.src = imageSrc;
+        modalImage.alt = title;
+        modalTitle.textContent = title;
+        modalDescription.textContent = description;
+        
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
+    
+    // Function to close modal
+    function closeModal() {
+        modal.classList.remove('active');
+        document.body.style.overflow = ''; // Restore scrolling
+        
+        // Clear modal content after animation
+        setTimeout(() => {
+            modalImage.src = '';
+            modalTitle.textContent = '';
+            modalDescription.textContent = '';
+        }, 300);
+    }
+    
+    // Close modal event listeners
+    modalClose.addEventListener('click', closeModal);
+    modalOverlay.addEventListener('click', closeModal);
     
     // Close on escape key
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && lightbox.classList.contains('active')) {
-            lightbox.classList.remove('active');
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeModal();
         }
     });
     
-    return lightbox;
+    // Return the openModal function for external use
+    window.openImageModal = openModal;
 }
 
-// Lightbox styles are now defined in styles.css
-
-// Initialize lightbox for gallery images
+// Initialize modal when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    const lightbox = createLightbox();
-    const galleryImages = document.querySelectorAll('.gallery-item img');
+    initializeImageModal();
     
-    galleryImages.forEach(img => {
-        img.addEventListener('click', () => {
-            const lightboxImg = lightbox.querySelector('.lightbox-image');
-            const lightboxCaption = lightbox.querySelector('.lightbox-caption');
+    // Setup click handlers for gallery items (for gallery page)
+    setTimeout(() => {
+        const galleryItems = document.querySelectorAll('.gallery-item');
+        galleryItems.forEach(item => {
+            const img = item.querySelector('img');
+            const caption = item.querySelector('.gallery-caption');
             
-            lightboxImg.src = img.src;
-            lightboxImg.alt = img.alt;
-            lightboxCaption.textContent = img.alt;
-            
-            lightbox.classList.add('active');
+            if (img) {
+                // Create a single click handler function
+                const openGalleryModal = () => {
+                    const title = caption ? caption.querySelector('h3')?.textContent || img.alt : img.alt;
+                    const description = caption ? caption.querySelector('p')?.textContent || '' : '';
+                    
+                    if (window.openImageModal) {
+                        window.openImageModal(img.src, title, description);
+                    }
+                };
+                
+                // Add click handlers to both image and caption
+                img.addEventListener('click', openGalleryModal);
+                if (caption) {
+                    caption.addEventListener('click', openGalleryModal);
+                }
+            }
         });
-    });
+    }, 100); // Small delay to ensure images are loaded
+    
+    // Setup click handlers for cake cards (for index page)
+    setTimeout(() => {
+        const cakeCards = document.querySelectorAll('.cake-card');
+        cakeCards.forEach(card => {
+            const img = card.querySelector('.cake-image img');
+            const cakeInfo = card.querySelector('.cake-info');
+            
+            if (img) {
+                // Create a single click handler function
+                const openCakeModal = () => {
+                    const title = cakeInfo ? cakeInfo.querySelector('h3')?.textContent || img.alt : img.alt;
+                    const description = cakeInfo ? cakeInfo.querySelector('p')?.textContent || '' : '';
+                    
+                    if (window.openImageModal) {
+                        window.openImageModal(img.src, title, description);
+                    }
+                };
+                
+                // Add click handlers to both image and cake info
+                img.addEventListener('click', openCakeModal);
+                if (cakeInfo) {
+                    cakeInfo.addEventListener('click', openCakeModal);
+                }
+            }
+        });
+    }, 100); // Small delay to ensure images are loaded
+    
+    // Make images and descriptions clickable by adding cursor pointer
+    const style = document.createElement('style');
+    style.textContent = `
+        .cake-card .cake-image img,
+        .gallery-item img,
+        .cake-info,
+        .gallery-caption {
+            cursor: pointer;
+        }
+        
+        .cake-card .cake-image img:hover,
+        .gallery-item img:hover {
+            opacity: 0.9;
+        }
+        
+        .cake-info:hover h3,
+        .cake-info:hover p {
+            color: var(--primary-pink) !important;
+        }
+    `;
+    document.head.appendChild(style);
 });
+
+// Global function to reinitialize modal for dynamically loaded content
+window.initializeLightbox = function() {
+    // Re-setup click handlers for dynamically loaded gallery items
+    const galleryItems = document.querySelectorAll('.gallery-item');
+    galleryItems.forEach(item => {
+        const img = item.querySelector('img');
+        const caption = item.querySelector('.gallery-caption');
+        
+        if (img) {
+            // Remove existing listeners to prevent duplicates
+            if (img._modalClickHandler) {
+                img.removeEventListener('click', img._modalClickHandler);
+            }
+            if (caption && caption._modalClickHandler) {
+                caption.removeEventListener('click', caption._modalClickHandler);
+            }
+            
+            // Create new handler
+            const openGalleryModal = () => {
+                const title = caption ? caption.querySelector('h3')?.textContent || img.alt : img.alt;
+                const description = caption ? caption.querySelector('p')?.textContent || '' : '';
+                
+                if (window.openImageModal) {
+                    window.openImageModal(img.src, title, description);
+                }
+            };
+            
+            // Store references for cleanup
+            img._modalClickHandler = openGalleryModal;
+            if (caption) {
+                caption._modalClickHandler = openGalleryModal;
+            }
+            
+            // Add event listeners
+            img.addEventListener('click', openGalleryModal);
+            if (caption) {
+                caption.addEventListener('click', openGalleryModal);
+            }
+        }
+    });
+};
 
 // Parallax effect for hero section
 window.addEventListener('scroll', () => {
