@@ -344,6 +344,36 @@
     </button>
 
     <!-- JavaScript -->
+    <script>
+        // Inline CONFIG to ensure it's always available
+        window.CONFIG = {
+            API_BASE_URL: (function() {
+                const isLocalhost = window.location.hostname === 'localhost' || 
+                                   window.location.hostname === '127.0.0.1' ||
+                                   window.location.hostname.includes('localhost');
+                
+                return isLocalhost ? 'http://localhost:3002' : window.location.origin;
+            })(),
+            SUPABASE_URL: 'https://pwvnrtkrnibaxzrduzmj.supabase.co',
+            SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3dm5ydGtyamlhYnhkcm1heXEiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTczNjgxNzE2NCwiZXhwIjoyMDUyMzkzMTY0fQ.YgqHPg0FGOddvFuApq8gd5Fy8YUrH6X0M-A6EADH2iU',
+            ENDPOINTS: {
+                SUBMIT_REQUEST: '/api/submit-request',
+                SUBMISSIONS: '/api/submissions',
+                GALLERY_IMAGES: '/api/gallery-images',
+                INDEX_CONTENT: '/api/index-content',
+                UPLOAD_IMAGE: '/api/upload-image',
+                TEST_SUPABASE: '/api/test-supabase'
+            }
+        };
+
+        window.getApiUrl = function(endpoint) {
+            return window.CONFIG.API_BASE_URL + endpoint;
+        };
+
+        // Debug logging
+        console.log('🔧 Inline CONFIG loaded:', window.CONFIG);
+        console.log('🌐 API Base URL:', window.CONFIG.API_BASE_URL);
+    </script>
     <script src="config.js"></script>
     <script src="script.js"></script>
 </body>

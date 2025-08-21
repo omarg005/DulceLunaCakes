@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Test</title>
+</head>
+<body>
+    <h1>API Test Page</h1>
+    <button onclick="testHello()">Test /api/hello</button>
+    <button onclick="testSubmit()">Test /api/submit-request</button>
+    <div id="results"></div>
+
+    <script>
+        function log(message) {
+            document.getElementById('results').innerHTML += '<p>' + message + '</p>';
+            console.log(message);
+        }
+
+        async function testHello() {
+            try {
+                log('Testing /api/hello...');
+                const response = await fetch('/api/hello');
+                const result = await response.json();
+                log('✅ Hello API works: ' + JSON.stringify(result));
+            } catch (error) {
+                log('❌ Hello API failed: ' + error.message);
+            }
+        }
+
+        async function testSubmit() {
+            try {
+                log('Testing /api/submit-request...');
+                const formData = new FormData();
+                formData.append('name', 'Test User');
+                formData.append('email', 'test@example.com');
+                formData.append('phone', '123-456-7890');
+                formData.append('eventDate', '2024-12-25');
+                formData.append('eventType', 'birthday');
+                formData.append('servingSize', '10-15');
+                formData.append('cakeDetails', 'Test cake request');
+                
+                const response = await fetch('/api/submit-request', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                log('✅ Submit API response: ' + JSON.stringify(result));
+            } catch (error) {
+                log('❌ Submit API failed: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

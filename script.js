@@ -543,8 +543,22 @@ document.addEventListener('DOMContentLoaded', () => {
                         console.log('🔧 CONFIG check:', typeof CONFIG !== 'undefined' ? CONFIG : 'CONFIG not defined');
                         console.log('🔧 getApiUrl check:', typeof getApiUrl !== 'undefined' ? 'Available' : 'Not available');
                         
-                        if (typeof CONFIG === 'undefined' || typeof getApiUrl === 'undefined') {
-                            throw new Error('CONFIG or getApiUrl not defined. Make sure config.js loaded properly.');
+                        // Fallback CONFIG definition if not loaded
+                        if (typeof CONFIG === 'undefined') {
+                            console.warn('⚠️ CONFIG not found, creating fallback...');
+                            window.CONFIG = {
+                                API_BASE_URL: window.location.origin,
+                                ENDPOINTS: {
+                                    SUBMIT_REQUEST: '/api/submit-request'
+                                }
+                            };
+                        }
+                        
+                        if (typeof getApiUrl === 'undefined') {
+                            console.warn('⚠️ getApiUrl not found, creating fallback...');
+                            window.getApiUrl = function(endpoint) {
+                                return (CONFIG.API_BASE_URL || window.location.origin) + endpoint;
+                            };
                         }
                         
                         const apiUrl = getApiUrl(CONFIG.ENDPOINTS.SUBMIT_REQUEST);
