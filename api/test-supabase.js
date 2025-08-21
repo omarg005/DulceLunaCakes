@@ -55,10 +55,9 @@ module.exports = async function handler(req, res) {
 
         // Test basic connection by trying to read from a table
         console.log('🧪 Testing database connection...');
-        const { data, error } = await supabase
+        const { data, error, count } = await supabase
             .from('cake_requests')
-            .select('count(*)')
-            .limit(1);
+            .select('*', { count: 'exact', head: true });
 
         if (error) {
             console.error('❌ Database test failed:', error);
@@ -75,7 +74,10 @@ module.exports = async function handler(req, res) {
             ...response,
             connected: true,
             message: 'Supabase connection working',
-            testResult: data
+            testResult: {
+                count: count,
+                tableExists: true
+            }
         });
 
     } catch (error) {
