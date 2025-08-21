@@ -1715,6 +1715,18 @@ function createRequestCard(request) {
                         <p>${request.design_description || request.description || request['design-description']}</p>
                     </div>
                 ` : ''}
+                ${request.additional_notes ? `
+                    <div class="request-notes">
+                        <h5>Additional Notes:</h5>
+                        <p style="white-space: pre-line;">${request.additional_notes}</p>
+                    </div>
+                ` : ''}
+                ${request.reference_image_url ? `
+                    <div class="request-image">
+                        <h5>Reference Image:</h5>
+                        <img src="${request.reference_image_url}" alt="Reference" style="max-width: 200px; max-height: 200px; border-radius: 8px; margin-top: 0.5rem;">
+                    </div>
+                ` : ''}
                 <div class="request-actions">
                     <select onchange="updateRequestStatus('${request.id}', this.value)" class="status-select">
                         <option value="pending" ${request.status === 'pending' ? 'selected' : ''}>Pending</option>

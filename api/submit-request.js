@@ -109,8 +109,12 @@ module.exports = async function handler(req, res) {
         
         console.log('🔄 Final form data:', formData);
 
-        // Skip file upload for now (will implement after basic form works)
+        // Handle file upload (for now, just log if file exists, implement upload later)
         let imageUrl = null;
+        if (formData['reference-image']) {
+            console.log('📎 Reference image uploaded but not processed yet:', formData['reference-image']);
+            // TODO: Implement actual file upload to Supabase Storage
+        }
 
         // Map form fields to correct database columns (using exact schema)
         const submissionData = {
@@ -130,7 +134,10 @@ module.exports = async function handler(req, res) {
             color_scheme: formData['color-scheme'] || null,
             special_requests: formData['special-requests'] || null,
             budget_range: formData['budget-range'] || null,
-            additional_notes: formData['additional-notes'] || null,
+            additional_notes: [
+                formData['additional-notes'] || null,
+                formData['inspiration-links'] ? `Inspiration Links: ${formData['inspiration-links']}` : null
+            ].filter(Boolean).join('\n\n') || null,
             reference_image_url: imageUrl,
             request_delivery: formData['request-delivery'] === 'delivery' ? true : false,
             status: 'pending'
