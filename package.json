@@ -6,8 +6,7 @@
   "scripts": {
     "start": "node admin-server.js",
     "dev": "nodemon admin-server.js",
-    "build": "echo 'No build step required'",
-    "vercel-build": "echo 'Vercel build complete'"
+    "build": "echo 'Static site - no build required'"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.55.0",
