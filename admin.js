@@ -116,9 +116,12 @@ async function getRequests() {
         if (typeof CONFIG === 'undefined' || typeof getApiUrl === 'undefined') {
             console.warn('⚠️ CONFIG or getApiUrl not available, creating fallback...');
             
-            // Create fallback CONFIG
+            // Create fallback CONFIG with environment detection
+            const isLocalhost = window.location.hostname === 'localhost' || 
+                               window.location.hostname === '127.0.0.1';
+            
             const fallbackConfig = {
-                API_BASE_URL: window.location.origin,
+                API_BASE_URL: isLocalhost ? 'http://localhost:3002' : window.location.origin,
                 ENDPOINTS: {
                     SUBMISSIONS: '/api/submissions'
                 }
@@ -126,6 +129,7 @@ async function getRequests() {
             
             const apiUrl = `${fallbackConfig.API_BASE_URL}${fallbackConfig.ENDPOINTS.SUBMISSIONS}`;
             console.log('🔍 Using fallback URL:', apiUrl);
+            console.log('🌍 Environment:', isLocalhost ? 'localhost' : 'production');
             
             const response = await fetch(apiUrl);
             
