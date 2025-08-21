@@ -1,0 +1,15 @@
+admin-server.js
+form-server.js
+uploads/
+.env
+.env.local
+node_modules/
+.git/
+README.md
+ADMIN_README.md
+FORM_SETUP.md
+VERCEL_DEPLOYMENT.md
+API_ENDPOINTS.md
+SUPABASE_SETUP.md
+apply_changes.bat
+apply_changes.py

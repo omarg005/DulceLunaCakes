@@ -5,8 +5,7 @@
   "main": "admin-server.js",
   "scripts": {
     "start": "node admin-server.js",
-    "dev": "nodemon admin-server.js",
-    "build": "echo 'Static site - no build required'"
+    "dev": "nodemon admin-server.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.55.0",
