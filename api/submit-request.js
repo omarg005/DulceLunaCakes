@@ -112,16 +112,29 @@ module.exports = async function handler(req, res) {
         // Skip file upload for now (will implement after basic form works)
         let imageUrl = null;
 
-        // Ultra-minimal submission to avoid schema issues - only use fields that definitely exist
+        // Map form fields to correct database columns (using exact schema)
         const submissionData = {
             name: formData.name || 'Not provided',
             email: formData.email || 'Not provided', 
-            phone: formData.phone || 'Not provided'
+            phone: formData.phone || 'Not provided',
+            event_date: formData['date-needed'] || null,
+            event_type: formData['event-type'] || null,
+            event_address: formData['event-address'] || null,
+            event_city: formData['event-city'] || null,
+            event_zip: formData['event-zip'] || null,
+            cake_size: formData['cake-size'] || null,
+            cake_flavor: formData['cake-flavor'] || null,
+            frosting_type: formData['frosting-type'] || null,
+            cake_filling: formData['cake-filling'] || null,
+            design_description: formData['design-description'] || null,
+            color_scheme: formData['color-scheme'] || null,
+            special_requests: formData['special-requests'] || null,
+            budget_range: formData['budget-range'] || null,
+            additional_notes: formData['additional-notes'] || null,
+            reference_image_url: imageUrl,
+            request_delivery: formData['request-delivery'] === 'delivery' ? true : false,
+            status: 'pending'
         };
-        
-        // Store all other form data as a comment for now until we know the schema
-        const allFormData = JSON.stringify(formData, null, 2);
-        console.log('📝 Complete form data (not saved yet):', allFormData);
 
         console.log('💾 Saving to database...');
         console.log('📊 Submission data:', JSON.stringify(submissionData, null, 2));

@@ -65,11 +65,19 @@ module.exports = async function handler(req, res) {
             });
         }
 
-        // Step 4: Try a minimal insert (only basic fields that should exist)
+        // Step 4: Try a comprehensive insert (using correct schema)
         const testSubmission = {
-            name: 'Debug Test',
+            name: 'Debug Test Full',
             email: 'debug@test.com',
-            phone: '555-0123'
+            phone: '555-0123',
+            event_date: new Date().toISOString().split('T')[0],
+            event_type: 'test',
+            cake_size: '8-inch',
+            cake_flavor: 'vanilla',
+            frosting_type: 'buttercream',
+            design_description: 'Debug test submission - full schema test',
+            request_delivery: false,
+            status: 'pending'
         };
 
         console.log('💾 Attempting insert with data:', testSubmission);
