@@ -65,17 +65,11 @@ module.exports = async function handler(req, res) {
             });
         }
 
-        // Step 4: Try a simple insert (using basic fields only)
+        // Step 4: Try a minimal insert (only basic fields that should exist)
         const testSubmission = {
             name: 'Debug Test',
             email: 'debug@test.com',
-            phone: '555-0123',
-            event_date: new Date().toISOString().split('T')[0],
-            event_type: 'test',
-            serving_size: '1-5',
-            cake_details: 'Debug test submission - testing API functionality',
-            reference_image: null,
-            status: 'pending'
+            phone: '555-0123'
         };
 
         console.log('💾 Attempting insert with data:', testSubmission);

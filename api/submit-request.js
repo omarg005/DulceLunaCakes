@@ -112,29 +112,16 @@ module.exports = async function handler(req, res) {
         // Skip file upload for now (will implement after basic form works)
         let imageUrl = null;
 
-        // Map form fields to database columns (basic fields only to avoid schema issues)
+        // Ultra-minimal submission to avoid schema issues - only use fields that definitely exist
         const submissionData = {
             name: formData.name || 'Not provided',
             email: formData.email || 'Not provided', 
-            phone: formData.phone || 'Not provided',
-            event_date: formData['date-needed'] || new Date().toISOString().split('T')[0],
-            event_type: formData['event-type'] || 'Not specified',
-            serving_size: formData['cake-size'] || 'Not specified',
-            cake_details: [
-                formData['design-description'] || 'No description provided',
-                formData['cake-flavor'] ? `Flavor: ${formData['cake-flavor']}` : null,
-                formData['frosting-type'] ? `Frosting: ${formData['frosting-type']}` : null,
-                formData['cake-filling'] ? `Filling: ${formData['cake-filling']}` : null,
-                formData['color-scheme'] ? `Colors: ${formData['color-scheme']}` : null,
-                formData['budget-range'] ? `Budget: ${formData['budget-range']}` : null,
-                formData['special-requests'] ? `Special requests: ${formData['special-requests']}` : null,
-                formData['additional-notes'] ? `Notes: ${formData['additional-notes']}` : null,
-                formData['inspiration-links'] ? `Inspiration: ${formData['inspiration-links']}` : null,
-                formData['request-delivery'] === 'delivery' ? `Delivery to: ${formData['event-address']}, ${formData['event-city']} ${formData['event-zip']}`.trim() : null
-            ].filter(Boolean).join('; '),
-            reference_image: imageUrl,
-            status: 'pending'
+            phone: formData.phone || 'Not provided'
         };
+        
+        // Store all other form data as a comment for now until we know the schema
+        const allFormData = JSON.stringify(formData, null, 2);
+        console.log('📝 Complete form data (not saved yet):', allFormData);
 
         console.log('💾 Saving to database...');
         console.log('📊 Submission data:', JSON.stringify(submissionData, null, 2));
