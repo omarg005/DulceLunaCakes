@@ -1680,6 +1680,8 @@ function createRequestCard(request) {
     const frosting = request.frosting_type || request.frosting || request['frosting-type'] || 'Not specified';
     const filling = request.cake_filling || request.filling || request['cake-filling'] || 'Not specified';
     const budget = request.budget_range || request.budget || request['budget-range'] || 'Not specified';
+    const colorScheme = request.color_scheme || request.colorScheme || request['color-scheme'] || 'Not specified';
+    const specialRequests = request.special_requests || request.specialRequests || request['special-requests'] || 'Not specified';
     const requestDelivery = request.request_delivery || request.requestDelivery || request['request-delivery'] || false;
     const eventAddress = request.event_address || request.eventAddress || request['event-address'] || '';
     const eventCity = request.event_city || request.eventCity || request['event-city'] || '';
@@ -1706,6 +1708,8 @@ function createRequestCard(request) {
                     <p><strong>Flavor:</strong> ${flavor}</p>
                     <p><strong>Frosting:</strong> ${frosting}</p>
                     <p><strong>Filling:</strong> ${filling}</p>
+                    ${colorScheme !== 'Not specified' ? `<p><strong>Color Scheme:</strong> ${colorScheme}</p>` : ''}
+                    ${specialRequests !== 'Not specified' ? `<p><strong>Special Requests:</strong> ${specialRequests}</p>` : ''}
                     <p><strong>Budget:</strong> ${budget}</p>
                     <p><strong>Submitted:</strong> ${submittedDate} at ${submittedTime}</p>
                 </div>
