@@ -186,20 +186,24 @@ app.post('/api/submit-request', upload.single('reference-image'), async (req, re
 // Get all submissions (for admin panel)
 app.get('/api/submissions', async (req, res) => {
     try {
-        const result = await cakeRequestsService.getAll();
+        console.log('📋 Getting all submissions from Supabase...');
         
-        if (result.success) {
-            res.json({
-                success: true,
-                submissions: result.requests
-            });
-        } else {
-            // Fallback to in-memory data
-            res.json({ 
-                success: true, 
-                submissions: submissions.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-            });
+        const { data, error } = await supabase
+            .from('cake_requests')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            console.error('❌ Supabase error:', error);
+            throw error;
         }
+
+        console.log(`✅ Retrieved ${data?.length || 0} submissions from Supabase`);
+        
+        res.json({
+            success: true,
+            submissions: data || []
+        });
     } catch (error) {
         console.error('Error fetching submissions:', error);
         res.json({ 
@@ -215,23 +219,31 @@ app.put('/api/submissions/:id/status', async (req, res) => {
         const { id } = req.params;
         const { status, notes } = req.body;
         
-        const result = await cakeRequestsService.updateStatus(id, status, notes);
+        console.log(`📝 Updating submission ${id} status to: ${status}`);
         
-        if (result.success) {
-            res.json(result);
-        } else {
-            // Fallback to in-memory update
-            const submission = submissions.find(s => s.id === parseInt(id) || s.id === id);
-            if (!submission) {
-                return res.status(404).json({ success: false, message: 'Submission not found' });
-            }
-            
-            submission.status = status;
-            submission.adminNotes = notes;
-            submission.updatedAt = new Date().toISOString();
-            
-            res.json({ success: true, submission });
+        const { data, error } = await supabase
+            .from('cake_requests')
+            .update({
+                status,
+                admin_notes: notes || null,
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', id)
+            .select()
+            .single();
+
+        if (error) {
+            console.error('❌ Supabase update error:', error);
+            throw error;
         }
+
+        console.log('✅ Status updated successfully');
+        
+        res.json({
+            success: true,
+            data,
+            message: 'Request status updated successfully'
+        });
         
     } catch (error) {
         console.error('Error updating submission status:', error);
@@ -244,27 +256,24 @@ app.delete('/api/submissions/:id', async (req, res) => {
     try {
         const { id } = req.params;
         
-        const result = await cakeRequestsService.delete(id);
+        console.log(`🗑️ Deleting submission: ${id}`);
         
-        if (result.success) {
-            res.json(result);
-        } else {
-            // Fallback to in-memory deletion
-            const index = submissions.findIndex(s => s.id === parseInt(id) || s.id === id);
-            
-            if (index === -1) {
-                return res.status(404).json({ success: false, message: 'Submission not found' });
-            }
-            
-            // Delete reference image if exists
-            const submission = submissions[index];
-            if (submission.referenceImage) {
-                fs.unlink(submission.referenceImage).catch(err => console.error('Error deleting file:', err));
-            }
-            
-            submissions.splice(index, 1);
-            res.json({ success: true, message: 'Submission deleted' });
+        const { error } = await supabase
+            .from('cake_requests')
+            .delete()
+            .eq('id', id);
+
+        if (error) {
+            console.error('❌ Supabase delete error:', error);
+            throw error;
         }
+
+        console.log('✅ Submission deleted successfully');
+        
+        res.json({
+            success: true,
+            message: 'Request deleted successfully'
+        });
         
     } catch (error) {
         console.error('Error deleting submission:', error);
