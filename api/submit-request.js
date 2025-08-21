@@ -1,5 +1,5 @@
-const { cakeRequestsService } = require('../services/database-server');
-const { storageService } = require('../services/storage-server');
+// Import Supabase directly for Vercel functions
+const { createClient } = require('@supabase/supabase-js');
 
 module.exports = async function handler(req, res) {
     // Set CORS headers
@@ -31,8 +31,7 @@ module.exports = async function handler(req, res) {
     try {
         console.log('📝 Parsing form data...');
         
-        // For Vercel, we'll use a simpler approach first - just get the basic form fields
-        // Handle multipart form data manually
+        // Handle form data
         const chunks = [];
         for await (const chunk of req) {
             chunks.push(chunk);
@@ -40,21 +39,37 @@ module.exports = async function handler(req, res) {
         const buffer = Buffer.concat(chunks);
         const body = buffer.toString();
         
-        console.log('📊 Raw body received (first 500 chars):', body.substring(0, 500));
+        console.log('📊 Raw body received (first 200 chars):', body.substring(0, 200));
         
-        // For now, let's create a minimal submission without file handling
-        const formData = {
-            name: 'Test User (from API)',
-            email: 'test@example.com',
-            phone: '123-456-7890',
-            eventDate: new Date().toISOString().split('T')[0],
-            eventType: 'birthday',
-            servingSize: '10-15',
-            cakeDetails: 'API test submission',
-            additionalInfo: 'Submitted via API test'
-        };
+        let formData;
         
-        console.log('🔄 Using test form data:', Object.keys(formData));
+        // Try to parse as JSON first
+        try {
+            formData = JSON.parse(body);
+            console.log('✅ Parsed as JSON:', Object.keys(formData));
+        } catch (jsonError) {
+            // Try to parse as URLSearchParams
+            try {
+                const params = new URLSearchParams(body);
+                formData = Object.fromEntries(params);
+                console.log('✅ Parsed as URL params:', Object.keys(formData));
+            } catch (urlError) {
+                console.warn('⚠️ Could not parse form data, using defaults');
+                // Use test data as fallback
+                formData = {
+                    name: 'Test User (from API)',
+                    email: 'test@example.com',
+                    phone: '123-456-7890',
+                    eventDate: new Date().toISOString().split('T')[0],
+                    eventType: 'birthday',
+                    servingSize: '10-15',
+                    cakeDetails: 'API test submission',
+                    additionalInfo: 'Form parsing fallback'
+                };
+            }
+        }
+        
+        console.log('🔄 Final form data:', formData);
 
         // Skip file upload for now (will implement after basic form works)
         let imageUrl = null;
@@ -79,21 +94,47 @@ module.exports = async function handler(req, res) {
             });
         }
         
-        const result = await cakeRequestsService.create(submissionData);
-        console.log('✅ Database save result:', result);
+        // Initialize Supabase client directly
+        const supabase = createClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL,
+            process.env.SUPABASE_SERVICE_ROLE_KEY,
+            {
+                auth: {
+                    autoRefreshToken: false,
+                    persistSession: false
+                }
+            }
+        );
 
-        if (result.success) {
-            res.status(200).json({
-                success: true,
-                message: 'Request submitted successfully!',
-                requestId: result.data.id
-            });
-        } else {
-            res.status(500).json({
+        console.log('🔌 Supabase client created');
+
+        // Save to Supabase directly
+        const { data, error } = await supabase
+            .from('cake_requests')
+            .insert([{
+                ...submissionData,
+                status: 'pending',
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            }])
+            .select()
+            .single();
+
+        console.log('✅ Database save result:', { data, error });
+
+        if (error) {
+            console.error('❌ Supabase error:', error);
+            return res.status(500).json({
                 success: false,
-                error: result.error || 'Failed to save request'
+                error: error.message || 'Failed to save request to database'
             });
         }
+
+        res.status(200).json({
+            success: true,
+            message: 'Request submitted successfully!',
+            requestId: data.id
+        });
 
     } catch (error) {
         console.error('❌ Error processing request:', error);
