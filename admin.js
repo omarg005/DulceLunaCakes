@@ -1594,20 +1594,21 @@ function createRequestCard(request) {
         cancelled: 'Cancelled'
     };
     
-    const submittedDate = new Date(request.submittedAt).toLocaleDateString();
-    const submittedTime = new Date(request.submittedAt).toLocaleTimeString();
+    const submittedDate = new Date(request.created_at || request.submittedAt).toLocaleDateString();
+    const submittedTime = new Date(request.created_at || request.submittedAt).toLocaleTimeString();
     
-    const eventDate = request.eventDate || request['date-needed'] || 'Not specified';
-    const eventType = request.eventType || request['event-type'] || 'Not specified';
-    const cakeSize = request.cakeSize || request['cake-size'] || 'Not specified';
-    const flavor = request.flavor || request['cake-flavor'] || 'Not specified';
-    const frosting = request.frosting || request['frosting-type'] || 'Not specified';
-    const filling = request.filling || request['cake-filling'] || 'Not specified';
-    const budget = request.budget || request['budget-range'] || 'Not specified';
-    const requestDelivery = (request.requestDelivery || request['request-delivery'] || 'no');
-    const eventAddress = request.eventAddress || request['event-address'] || '';
-    const eventCity = request.eventCity || request['event-city'] || '';
-    const eventZip = request.eventZip || request['event-zip'] || '';
+    // Use database column names (snake_case) as primary, with fallbacks
+    const eventDate = request.event_date || request.eventDate || request['date-needed'] || 'Not specified';
+    const eventType = request.event_type || request.eventType || request['event-type'] || 'Not specified';
+    const cakeSize = request.cake_size || request.cakeSize || request['cake-size'] || 'Not specified';
+    const flavor = request.cake_flavor || request.flavor || request['cake-flavor'] || 'Not specified';
+    const frosting = request.frosting_type || request.frosting || request['frosting-type'] || 'Not specified';
+    const filling = request.cake_filling || request.filling || request['cake-filling'] || 'Not specified';
+    const budget = request.budget_range || request.budget || request['budget-range'] || 'Not specified';
+    const requestDelivery = request.request_delivery || request.requestDelivery || request['request-delivery'] || false;
+    const eventAddress = request.event_address || request.eventAddress || request['event-address'] || '';
+    const eventCity = request.event_city || request.eventCity || request['event-city'] || '';
+    const eventZip = request.event_zip || request.eventZip || request['event-zip'] || '';
 
     return `
         <div class="request-card">
@@ -1624,8 +1625,8 @@ function createRequestCard(request) {
                     <p><strong>Phone:</strong> ${request.phone || 'Not provided'}</p>
                     <p><strong>Event Date:</strong> ${eventDate}</p>
                     <p><strong>Event Type:</strong> ${eventType}</p>
-                    <p><strong>Request Delivery:</strong> ${requestDelivery === 'yes' ? 'Yes' : 'No'}</p>
-                    ${requestDelivery === 'yes' ? `<p><strong>Delivery Address:</strong> ${[eventAddress, eventCity, eventZip].filter(Boolean).join(', ') || 'Not specified'}</p>` : ''}
+                    <p><strong>Request Delivery:</strong> ${requestDelivery === true || requestDelivery === 'delivery' || requestDelivery === 'yes' ? 'Yes' : 'No'}</p>
+                    ${(requestDelivery === true || requestDelivery === 'delivery' || requestDelivery === 'yes') ? `<p><strong>Delivery Address:</strong> ${[eventAddress, eventCity, eventZip].filter(Boolean).join(', ') || 'Not specified'}</p>` : ''}
                     <p><strong>Cake Size:</strong> ${cakeSize}</p>
                     <p><strong>Flavor:</strong> ${flavor}</p>
                     <p><strong>Frosting:</strong> ${frosting}</p>
@@ -1633,10 +1634,10 @@ function createRequestCard(request) {
                     <p><strong>Budget:</strong> ${budget}</p>
                     <p><strong>Submitted:</strong> ${submittedDate} at ${submittedTime}</p>
                 </div>
-                ${request.description ? `
+                ${(request.design_description || request.description || request['design-description']) ? `
                     <div class="request-description">
                         <h5>Description:</h5>
-                        <p>${request.description || request['design-description']}</p>
+                        <p>${request.design_description || request.description || request['design-description']}</p>
                     </div>
                 ` : ''}
                 <div class="request-actions">
