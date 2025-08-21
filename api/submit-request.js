@@ -13,8 +13,18 @@ module.exports = async function handler(req, res) {
     }
 
     if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Method not allowed' });
+        return res.status(405).json({ 
+            success: false, 
+            error: 'Method not allowed' 
+        });
     }
+
+    console.log('🚀 Submit request API called');
+    console.log('📋 Request method:', req.method);
+    console.log('🌍 Environment variables check:', {
+        supabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+        serviceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY
+    });
 
     try {
         // Parse form data
@@ -23,13 +33,18 @@ module.exports = async function handler(req, res) {
             keepExtensions: true,
         });
 
+        console.log('📝 Parsing form data...');
         const [fields, files] = await form.parse(req);
+        console.log('✅ Form parsed successfully');
+        console.log('📋 Fields received:', Object.keys(fields));
+        console.log('📎 Files received:', Object.keys(files));
 
         // Extract form data (formidable returns arrays)
         const formData = {};
         for (const [key, value] of Object.entries(fields)) {
             formData[key] = Array.isArray(value) ? value[0] : value;
         }
+        console.log('🔄 Processed form data:', Object.keys(formData));
 
         // Handle file upload
         let imageUrl = null;
@@ -55,7 +70,11 @@ module.exports = async function handler(req, res) {
             status: 'pending'
         };
 
+        console.log('💾 Saving to database...');
+        console.log('📊 Submission data:', JSON.stringify(submissionData, null, 2));
+        
         const result = await cakeRequestsService.create(submissionData);
+        console.log('✅ Database save result:', result);
 
         if (result.success) {
             res.status(200).json({
@@ -71,10 +90,17 @@ module.exports = async function handler(req, res) {
         }
 
     } catch (error) {
-        console.error('Error processing request:', error);
+        console.error('❌ Error processing request:', error);
+        console.error('📊 Error details:', {
+            message: error.message,
+            stack: error.stack,
+            name: error.name
+        });
+        
         res.status(500).json({
             success: false,
-            error: 'Internal server error'
+            error: error.message || 'Internal server error',
+            details: process.env.NODE_ENV === 'development' ? error.stack : undefined
         });
     }
 }
