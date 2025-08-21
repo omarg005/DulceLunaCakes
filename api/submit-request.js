@@ -30,6 +30,7 @@ module.exports = async function handler(req, res) {
 
     try {
         console.log('📝 Parsing form data...');
+        console.log('📋 Content-Type:', req.headers['content-type']);
         
         // Handle form data
         const chunks = [];
@@ -37,36 +38,73 @@ module.exports = async function handler(req, res) {
             chunks.push(chunk);
         }
         const buffer = Buffer.concat(chunks);
-        const body = buffer.toString();
         
-        console.log('📊 Raw body received (first 200 chars):', body.substring(0, 200));
+        console.log('📊 Raw body size:', buffer.length);
+        console.log('📊 Raw body start:', buffer.toString('utf8', 0, Math.min(200, buffer.length)));
         
-        let formData;
+        let formData = {};
         
-        // Try to parse as JSON first
-        try {
-            formData = JSON.parse(body);
-            console.log('✅ Parsed as JSON:', Object.keys(formData));
-        } catch (jsonError) {
-            // Try to parse as URLSearchParams
-            try {
-                const params = new URLSearchParams(body);
-                formData = Object.fromEntries(params);
-                console.log('✅ Parsed as URL params:', Object.keys(formData));
-            } catch (urlError) {
-                console.warn('⚠️ Could not parse form data, using defaults');
-                // Use test data as fallback
-                formData = {
-                    name: 'Test User (from API)',
-                    email: 'test@example.com',
-                    phone: '123-456-7890',
-                    eventDate: new Date().toISOString().split('T')[0],
-                    eventType: 'birthday',
-                    servingSize: '10-15',
-                    cakeDetails: 'API test submission',
-                    additionalInfo: 'Form parsing fallback'
-                };
+        // Parse multipart form data (FormData from frontend)
+        if (req.headers['content-type']?.includes('multipart/form-data')) {
+            console.log('🔄 Parsing multipart form data...');
+            
+            // Simple multipart parser for basic fields (no file handling yet)
+            const bodyStr = buffer.toString();
+            const boundary = req.headers['content-type'].split('boundary=')[1];
+            
+            if (boundary) {
+                const parts = bodyStr.split(`--${boundary}`);
+                console.log('📦 Found', parts.length - 2, 'form parts');
+                
+                for (const part of parts) {
+                    if (part.includes('Content-Disposition: form-data')) {
+                        const nameMatch = part.match(/name="([^"]+)"/);
+                        if (nameMatch) {
+                            const fieldName = nameMatch[1];
+                            const valueStart = part.indexOf('\r\n\r\n') + 4;
+                            const valueEnd = part.lastIndexOf('\r\n');
+                            if (valueStart > 3 && valueEnd > valueStart) {
+                                const fieldValue = part.substring(valueStart, valueEnd).trim();
+                                if (fieldValue && !fieldValue.includes('Content-Type:')) {
+                                    formData[fieldName] = fieldValue;
+                                    console.log('📝 Parsed field:', fieldName, '=', fieldValue.substring(0, 50) + (fieldValue.length > 50 ? '...' : ''));
+                                }
+                            }
+                        }
+                    }
+                }
             }
+        } else {
+            // Try other parsing methods
+            const bodyStr = buffer.toString();
+            
+            try {
+                formData = JSON.parse(bodyStr);
+                console.log('✅ Parsed as JSON:', Object.keys(formData));
+            } catch (jsonError) {
+                try {
+                    const params = new URLSearchParams(bodyStr);
+                    formData = Object.fromEntries(params);
+                    console.log('✅ Parsed as URL params:', Object.keys(formData));
+                } catch (urlError) {
+                    console.warn('⚠️ Could not parse form data');
+                }
+            }
+        }
+        
+        // Fallback if no fields were parsed
+        if (Object.keys(formData).length === 0) {
+            console.warn('⚠️ No form fields found, using test data');
+            formData = {
+                name: 'Test User (Parsing Failed)',
+                email: 'test@example.com',
+                phone: '123-456-7890',
+                eventDate: new Date().toISOString().split('T')[0],
+                eventType: 'birthday',
+                servingSize: '10-15',
+                cakeDetails: 'API test - form parsing failed',
+                additionalInfo: 'Form data could not be parsed properly'
+            };
         }
         
         console.log('🔄 Final form data:', formData);
@@ -74,12 +112,31 @@ module.exports = async function handler(req, res) {
         // Skip file upload for now (will implement after basic form works)
         let imageUrl = null;
 
-        // Save to database
+        // Map form fields to database columns
         const submissionData = {
-            ...formData,
-            referenceImage: imageUrl,
-            submittedAt: new Date().toISOString(),
-            status: 'pending'
+            name: formData.name || 'Not provided',
+            email: formData.email || 'Not provided',
+            phone: formData.phone || 'Not provided',
+            event_date: formData['date-needed'] || new Date().toISOString().split('T')[0],
+            event_type: formData['event-type'] || 'Not specified',
+            request_delivery: formData['request-delivery'] || 'pickup',
+            event_address: formData['event-address'] || null,
+            event_city: formData['event-city'] || null,
+            event_zip: formData['event-zip'] || null,
+            cake_size: formData['cake-size'] || 'Not specified',
+            cake_flavor: formData['cake-flavor'] || 'Not specified',
+            frosting_type: formData['frosting-type'] || 'Not specified',
+            cake_filling: formData['cake-filling'] || 'Not specified',
+            design_description: formData['design-description'] || 'No description provided',
+            color_scheme: formData['color-scheme'] || null,
+            special_requests: formData['special-requests'] || null,
+            inspiration_links: formData['inspiration-links'] || null,
+            budget_range: formData['budget-range'] || 'Not specified',
+            additional_notes: formData['additional-notes'] || null,
+            reference_image: imageUrl,
+            status: 'pending',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
         };
 
         console.log('💾 Saving to database...');
@@ -111,12 +168,7 @@ module.exports = async function handler(req, res) {
         // Save to Supabase directly
         const { data, error } = await supabase
             .from('cake_requests')
-            .insert([{
-                ...submissionData,
-                status: 'pending',
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
-            }])
+            .insert([submissionData])
             .select()
             .single();
 
