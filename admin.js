@@ -112,6 +112,38 @@ let PAGE_CONTENT = {};
 // Data fetching functions - Updated for Supabase
 async function getRequests() {
     try {
+        // Check if CONFIG and getApiUrl are available
+        if (typeof CONFIG === 'undefined' || typeof getApiUrl === 'undefined') {
+            console.warn('⚠️ CONFIG or getApiUrl not available, creating fallback...');
+            
+            // Create fallback CONFIG
+            const fallbackConfig = {
+                API_BASE_URL: window.location.origin,
+                ENDPOINTS: {
+                    SUBMISSIONS: '/api/submissions'
+                }
+            };
+            
+            const apiUrl = `${fallbackConfig.API_BASE_URL}${fallbackConfig.ENDPOINTS.SUBMISSIONS}`;
+            console.log('🔍 Using fallback URL:', apiUrl);
+            
+            const response = await fetch(apiUrl);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            console.log('📊 API Response (fallback):', data);
+            
+            if (data.success && Array.isArray(data.submissions)) {
+                console.log(`✅ Loaded ${data.submissions.length} requests from Supabase (fallback)`);
+                return data.submissions;
+            } else {
+                throw new Error('Invalid API response format');
+            }
+        }
+        
         const apiUrl = getApiUrl(CONFIG.ENDPOINTS.SUBMISSIONS);
         console.log('🔍 Fetching requests from:', apiUrl);
         
@@ -311,6 +343,11 @@ async function loadPageContentData() {
         // Try to load from Supabase API first
         try {
             console.log('Loading data from Supabase API...');
+            
+            // Check if CONFIG and getApiUrl are available
+            if (typeof CONFIG === 'undefined' || typeof getApiUrl === 'undefined') {
+                throw new Error('CONFIG or getApiUrl not available');
+            }
             
             // Load index content from Supabase
             const indexResponse = await fetch(getApiUrl(CONFIG.ENDPOINTS.INDEX_CONTENT));
