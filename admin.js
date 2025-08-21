@@ -112,22 +112,35 @@ let PAGE_CONTENT = {};
 // Data fetching functions - Updated for Supabase
 async function getRequests() {
     try {
+        const apiUrl = getApiUrl(CONFIG.ENDPOINTS.SUBMISSIONS);
+        console.log('🔍 Fetching requests from:', apiUrl);
+        
         // Try to fetch from Supabase API first
-        const response = await fetch(getApiUrl(CONFIG.ENDPOINTS.SUBMISSIONS));
+        const response = await fetch(apiUrl);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
         const data = await response.json();
+        console.log('📊 API Response:', data);
         
         if (data.success && Array.isArray(data.submissions)) {
-            console.log(`Loaded ${data.submissions.length} requests from Supabase`);
+            console.log(`✅ Loaded ${data.submissions.length} requests from Supabase`);
             return data.submissions;
         } else {
-            console.warn('Supabase API failed, falling back to localStorage');
+            console.warn('⚠️ Supabase API failed, falling back to localStorage:', data);
             // Fallback to localStorage (sandbox mode)
-            return JSON.parse(localStorage.getItem('sandboxRequests') || '[]');
+            const localRequests = JSON.parse(localStorage.getItem('sandboxRequests') || '[]');
+            console.log(`🏠 Loaded ${localRequests.length} requests from localStorage`);
+            return localRequests;
         }
     } catch (error) {
-        console.error('Error fetching requests:', error);
+        console.error('❌ Error fetching requests:', error);
         // Fallback to localStorage
-        return JSON.parse(localStorage.getItem('sandboxRequests') || '[]');
+        const localRequests = JSON.parse(localStorage.getItem('sandboxRequests') || '[]');
+        console.log(`🏠 Fallback: Loaded ${localRequests.length} requests from localStorage`);
+        return localRequests;
     }
 }
 

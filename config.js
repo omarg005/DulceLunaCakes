@@ -8,7 +8,13 @@ const CONFIG = {
                                window.location.hostname === '127.0.0.1' ||
                                window.location.hostname.includes('localhost');
             
-            return isLocalhost ? 'http://localhost:3002' : window.location.origin;
+            if (isLocalhost) {
+                // For local development, API endpoints are served by form-server on port 3002
+                return 'http://localhost:3002';
+            } else {
+                // For production, API endpoints are Vercel serverless functions on same domain
+                return window.location.origin;
+            }
         }
         // Fallback for server-side
         return '';
