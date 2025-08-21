@@ -112,31 +112,28 @@ module.exports = async function handler(req, res) {
         // Skip file upload for now (will implement after basic form works)
         let imageUrl = null;
 
-        // Map form fields to database columns
+        // Map form fields to database columns (basic fields only to avoid schema issues)
         const submissionData = {
             name: formData.name || 'Not provided',
-            email: formData.email || 'Not provided',
+            email: formData.email || 'Not provided', 
             phone: formData.phone || 'Not provided',
             event_date: formData['date-needed'] || new Date().toISOString().split('T')[0],
             event_type: formData['event-type'] || 'Not specified',
-            request_delivery: formData['request-delivery'] || 'pickup',
-            event_address: formData['event-address'] || null,
-            event_city: formData['event-city'] || null,
-            event_zip: formData['event-zip'] || null,
-            cake_size: formData['cake-size'] || 'Not specified',
-            cake_flavor: formData['cake-flavor'] || 'Not specified',
-            frosting_type: formData['frosting-type'] || 'Not specified',
-            cake_filling: formData['cake-filling'] || 'Not specified',
-            design_description: formData['design-description'] || 'No description provided',
-            color_scheme: formData['color-scheme'] || null,
-            special_requests: formData['special-requests'] || null,
-            inspiration_links: formData['inspiration-links'] || null,
-            budget_range: formData['budget-range'] || 'Not specified',
-            additional_notes: formData['additional-notes'] || null,
+            serving_size: formData['cake-size'] || 'Not specified',
+            cake_details: [
+                formData['design-description'] || 'No description provided',
+                formData['cake-flavor'] ? `Flavor: ${formData['cake-flavor']}` : null,
+                formData['frosting-type'] ? `Frosting: ${formData['frosting-type']}` : null,
+                formData['cake-filling'] ? `Filling: ${formData['cake-filling']}` : null,
+                formData['color-scheme'] ? `Colors: ${formData['color-scheme']}` : null,
+                formData['budget-range'] ? `Budget: ${formData['budget-range']}` : null,
+                formData['special-requests'] ? `Special requests: ${formData['special-requests']}` : null,
+                formData['additional-notes'] ? `Notes: ${formData['additional-notes']}` : null,
+                formData['inspiration-links'] ? `Inspiration: ${formData['inspiration-links']}` : null,
+                formData['request-delivery'] === 'delivery' ? `Delivery to: ${formData['event-address']}, ${formData['event-city']} ${formData['event-zip']}`.trim() : null
+            ].filter(Boolean).join('; '),
             reference_image: imageUrl,
-            status: 'pending',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
+            status: 'pending'
         };
 
         console.log('💾 Saving to database...');
