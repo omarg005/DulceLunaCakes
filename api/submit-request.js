@@ -67,6 +67,15 @@ module.exports = async function handler(req, res) {
         console.log('💾 Saving to database...');
         console.log('📊 Submission data:', JSON.stringify(submissionData, null, 2));
         
+        // Check if environment variables are configured
+        if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+            console.warn('⚠️ Supabase environment variables not configured');
+            return res.status(500).json({
+                success: false,
+                error: 'Server configuration error: Environment variables not set. Please configure NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in Vercel dashboard.'
+            });
+        }
+        
         const result = await cakeRequestsService.create(submissionData);
         console.log('✅ Database save result:', result);
 
