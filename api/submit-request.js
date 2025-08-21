@@ -22,7 +22,10 @@ module.exports = async function handler(req, res) {
     console.log('📋 Request method:', req.method);
     console.log('🌍 Environment variables check:', {
         supabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-        serviceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY
+        serviceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+        supabaseUrlValue: process.env.NEXT_PUBLIC_SUPABASE_URL,
+        serviceKeyLength: process.env.SUPABASE_SERVICE_ROLE_KEY ? process.env.SUPABASE_SERVICE_ROLE_KEY.length : 0,
+        serviceKeyStart: process.env.SUPABASE_SERVICE_ROLE_KEY ? process.env.SUPABASE_SERVICE_ROLE_KEY.substring(0, 50) + '...' : 'missing'
     });
 
     try {
