@@ -1,13 +1,22 @@
 // Configuration for API endpoints
 const CONFIG = {
-    // API Base URL - defaults to current domain in production, localhost in development
-    API_BASE_URL: process.env.NODE_ENV === 'production' 
-        ? (typeof window !== 'undefined' ? window.location.origin : '') 
-        : 'http://localhost:3002',
+    // API Base URL - auto-detect based on current location
+    API_BASE_URL: (function() {
+        if (typeof window !== 'undefined') {
+            // In browser: check if we're on localhost (development) or deployed (production)
+            const isLocalhost = window.location.hostname === 'localhost' || 
+                               window.location.hostname === '127.0.0.1' ||
+                               window.location.hostname.includes('localhost');
+            
+            return isLocalhost ? 'http://localhost:3002' : window.location.origin;
+        }
+        // Fallback for server-side
+        return '';
+    })(),
     
-    // Supabase Configuration
-    SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-    SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    // Supabase Configuration - using your actual values
+    SUPABASE_URL: 'https://pwvnrtkrnibaxzrduzmj.supabase.co',
+    SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3dm5ydGtyamlhYnhkcm1heXEiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTczNjgxNzE2NCwiZXhwIjoyMDUyMzkzMTY0fQ.YgqHPg0FGOddvFuApq8gd5Fy8YUrH6X0M-A6EADH2iU'
     
     // API Endpoints
     ENDPOINTS: {
@@ -30,6 +39,10 @@ function getApiUrl(endpoint) {
 if (typeof window !== 'undefined') {
     window.CONFIG = CONFIG;
     window.getApiUrl = getApiUrl;
+    
+    // Debug logging
+    console.log('🔧 CONFIG loaded:', CONFIG);
+    console.log('🌐 API Base URL:', CONFIG.API_BASE_URL);
 }
 
 // For Node.js environments

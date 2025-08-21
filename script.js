@@ -539,9 +539,20 @@ document.addEventListener('DOMContentLoaded', () => {
                         console.log('Sandbox result:', result);
                     } else {
                         // Production mode - submit to server
+                        console.log('🚀 Production mode - submitting to server');
+                        console.log('🔧 CONFIG check:', typeof CONFIG !== 'undefined' ? CONFIG : 'CONFIG not defined');
+                        console.log('🔧 getApiUrl check:', typeof getApiUrl !== 'undefined' ? 'Available' : 'Not available');
+                        
+                        if (typeof CONFIG === 'undefined' || typeof getApiUrl === 'undefined') {
+                            throw new Error('CONFIG or getApiUrl not defined. Make sure config.js loaded properly.');
+                        }
+                        
+                        const apiUrl = getApiUrl(CONFIG.ENDPOINTS.SUBMIT_REQUEST);
+                        console.log('📡 API URL:', apiUrl);
+                        
                         const formData = new FormData(form);
                         
-                        const response = await fetch(getApiUrl(CONFIG.ENDPOINTS.SUBMIT_REQUEST), {
+                        const response = await fetch(apiUrl, {
                             method: 'POST',
                             body: formData
                         });
