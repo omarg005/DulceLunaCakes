@@ -187,6 +187,47 @@ function getSandboxRequests() {
 
 async function updateRequestStatus(requestId, newStatus, notes = '') {
     try {
+        // Check if CONFIG and getApiUrl are available
+        if (typeof CONFIG === 'undefined' || typeof getApiUrl === 'undefined') {
+            console.warn('⚠️ CONFIG or getApiUrl not available for status update, creating fallback...');
+            
+            // Create fallback CONFIG with environment detection
+            const isLocalhost = window.location.hostname === 'localhost' || 
+                               window.location.hostname === '127.0.0.1';
+            
+            const fallbackConfig = {
+                API_BASE_URL: isLocalhost ? 'http://localhost:3002' : window.location.origin,
+                ENDPOINTS: {
+                    SUBMISSIONS: '/api/submissions'
+                }
+            };
+            
+            const apiUrl = `${fallbackConfig.API_BASE_URL}${fallbackConfig.ENDPOINTS.SUBMISSIONS}/${requestId}/status`;
+            console.log('🔄 Using fallback URL for status update:', apiUrl);
+            
+            const response = await fetch(apiUrl, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    status: newStatus,
+                    notes: notes
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                console.log('✅ Status updated via Supabase API (fallback)');
+                loadRequests(); // Refresh the display
+                showMessage(`Request status updated to ${newStatus}`, 'success');
+                return true;
+            } else {
+                throw new Error(result.error || 'Failed to update status');
+            }
+        }
+        
         // Try to update via Supabase API first
         const response = await fetch(getApiUrl(`${CONFIG.ENDPOINTS.SUBMISSIONS}/${requestId}/status`), {
             method: 'PUT',
@@ -236,6 +277,40 @@ function updateSandboxRequestStatus(requestId, newStatus) {
 
 async function deleteRequest(requestId) {
     try {
+        // Check if CONFIG and getApiUrl are available
+        if (typeof CONFIG === 'undefined' || typeof getApiUrl === 'undefined') {
+            console.warn('⚠️ CONFIG or getApiUrl not available for delete, creating fallback...');
+            
+            // Create fallback CONFIG with environment detection
+            const isLocalhost = window.location.hostname === 'localhost' || 
+                               window.location.hostname === '127.0.0.1';
+            
+            const fallbackConfig = {
+                API_BASE_URL: isLocalhost ? 'http://localhost:3002' : window.location.origin,
+                ENDPOINTS: {
+                    SUBMISSIONS: '/api/submissions'
+                }
+            };
+            
+            const apiUrl = `${fallbackConfig.API_BASE_URL}${fallbackConfig.ENDPOINTS.SUBMISSIONS}/${requestId}`;
+            console.log('🗑️ Using fallback URL for delete:', apiUrl);
+            
+            const response = await fetch(apiUrl, {
+                method: 'DELETE'
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                console.log('✅ Request deleted via Supabase API (fallback)');
+                loadRequests(); // Refresh the display
+                showMessage('Request deleted successfully', 'success');
+                return true;
+            } else {
+                throw new Error(result.error || 'Failed to delete request');
+            }
+        }
+        
         // Try to delete via Supabase API first
         const response = await fetch(getApiUrl(`${CONFIG.ENDPOINTS.SUBMISSIONS}/${requestId}`), {
             method: 'DELETE'
