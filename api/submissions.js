@@ -1,4 +1,4 @@
-const { cakeRequestsService } = require('../services/database-server');
+const { createClient } = require('@supabase/supabase-js');
 
 module.exports = async function handler(req, res) {
     // Set CORS headers
@@ -13,16 +13,59 @@ module.exports = async function handler(req, res) {
     const { id } = req.query;
 
     try {
+        // Initialize Supabase client
+        const supabase = createClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL,
+            process.env.SUPABASE_SERVICE_ROLE_KEY,
+            {
+                auth: {
+                    autoRefreshToken: false,
+                    persistSession: false
+                }
+            }
+        );
+
         switch (req.method) {
             case 'GET':
                 if (id) {
                     // Get specific submission
-                    const result = await cakeRequestsService.getById(id);
-                    res.json(result);
+                    const { data, error } = await supabase
+                        .from('cake_requests')
+                        .select('*')
+                        .eq('id', id)
+                        .single();
+
+                    if (error) {
+                        return res.status(500).json({
+                            success: false,
+                            error: error.message
+                        });
+                    }
+
+                    res.json({
+                        success: true,
+                        data
+                    });
                 } else {
                     // Get all submissions
-                    const result = await cakeRequestsService.getAll();
-                    res.json(result);
+                    const { data, error } = await supabase
+                        .from('cake_requests')
+                        .select('*')
+                        .order('created_at', { ascending: false });
+
+                    if (error) {
+                        return res.status(500).json({
+                            success: false,
+                            error: error.message,
+                            submissions: []
+                        });
+                    }
+
+                    console.log(`✅ Retrieved ${data?.length || 0} submissions from Supabase`);
+                    res.json({
+                        success: true,
+                        submissions: data || []
+                    });
                 }
                 break;
 
@@ -31,9 +74,37 @@ module.exports = async function handler(req, res) {
                     return res.status(400).json({ success: false, error: 'ID required for update' });
                 }
                 
-                const { status, notes } = req.body;
-                const updateResult = await cakeRequestsService.updateStatus(id, status, notes);
-                res.json(updateResult);
+                // Parse request body for status update
+                const chunks = [];
+                for await (const chunk of req) {
+                    chunks.push(chunk);
+                }
+                const body = Buffer.concat(chunks).toString();
+                const { status, notes } = JSON.parse(body);
+
+                const { data, error } = await supabase
+                    .from('cake_requests')
+                    .update({
+                        status,
+                        admin_notes: notes || null,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', id)
+                    .select()
+                    .single();
+
+                if (error) {
+                    return res.status(500).json({
+                        success: false,
+                        error: error.message
+                    });
+                }
+
+                res.json({
+                    success: true,
+                    data,
+                    message: 'Request status updated successfully'
+                });
                 break;
 
             case 'DELETE':
@@ -41,8 +112,22 @@ module.exports = async function handler(req, res) {
                     return res.status(400).json({ success: false, error: 'ID required for deletion' });
                 }
                 
-                const deleteResult = await cakeRequestsService.delete(id);
-                res.json(deleteResult);
+                const { error: deleteError } = await supabase
+                    .from('cake_requests')
+                    .delete()
+                    .eq('id', id);
+
+                if (deleteError) {
+                    return res.status(500).json({
+                        success: false,
+                        error: deleteError.message
+                    });
+                }
+
+                res.json({
+                    success: true,
+                    message: 'Request deleted successfully'
+                });
                 break;
 
             default:
@@ -52,7 +137,7 @@ module.exports = async function handler(req, res) {
         console.error('Error in submissions API:', error);
         res.status(500).json({ 
             success: false, 
-            error: 'Internal server error' 
+            error: error.message || 'Internal server error' 
         });
     }
-}
+};
