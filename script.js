@@ -229,33 +229,22 @@ async function loadIndexContent() {
         const response = await fetch(getApiUrl(CONFIG.ENDPOINTS.INDEX_CONTENT));
         const result = await response.json();
         
-        if (result.success && result.content) {
-            // Load hero content
-            const heroContent = result.content.find(item => item.type === 'hero');
-            if (heroContent) {
-                updateHeroContent(heroContent);
-            }
-            
-            // Load featured cakes
-            const featuredContent = result.content.filter(item => item.type === 'featured');
-            if (featuredContent.length > 0) {
-                updateFeaturedCakes(featuredContent);
-            }
-            
-            // Load about preview
-            const aboutContent = result.content.find(item => item.type === 'about');
-            if (aboutContent) {
-                updateAboutPreview(aboutContent);
-            }
-            
-            console.log('✅ Index content loaded from Supabase');
-        } else {
-            console.warn('Failed to load from Supabase, using fallback');
-            loadFallbackContent();
+        const content = (result.success && result.content) ? result.content : [];
+
+        const heroContent = content.find(item => item.type === 'hero');
+        const featuredContent = content.filter(item => item.type === 'featured');
+        const aboutContent = content.find(item => item.type === 'about');
+
+        if (heroContent) updateHeroContent(heroContent);
+        if (featuredContent.length > 0) updateFeaturedCakes(featuredContent);
+        if (aboutContent) updateAboutPreview(aboutContent);
+
+        // Fall back for any section that Supabase didn't provide data for
+        if (!heroContent || !featuredContent.length || !aboutContent) {
+            loadFallbackContent({ needsHero: !heroContent, needsFeatured: !featuredContent.length, needsAbout: !aboutContent });
         }
     } catch (error) {
-        console.error('Error loading index content:', error);
-        loadFallbackContent();
+        loadFallbackContent({ needsHero: true, needsFeatured: true, needsAbout: true });
     }
 }
 
@@ -308,9 +297,7 @@ function updateAboutPreview(aboutContent) {
     }
 }
 
-function loadFallbackContent() {
-    // Fallback content when Supabase fails - load from local JSON
-    console.log('Loading fallback content from local JSON...');
+function loadFallbackContent({ needsHero = true, needsFeatured = true, needsAbout = true } = {}) {
     
     fetch('images/index/index_data.json')
         .then(response => response.json())
@@ -320,37 +307,36 @@ function loadFallbackContent() {
             const featuredItems = data.filter(d => d.type === 'featured');
             const aboutItems = data.filter(d => d.type === 'about');
             
-            // Update hero section
-            if (heroItems.length > 0) {
+            if (needsHero && heroItems.length > 0) {
                 const heroTitle = document.querySelector('.hero-title');
                 const heroSubtitle = document.querySelector('.hero-subtitle');
                 if (heroTitle) heroTitle.textContent = heroItems[0].title;
                 if (heroSubtitle) heroSubtitle.textContent = heroItems[0].description;
             }
-            
-            // Update featured cakes
-            const cakesGrid = document.querySelector('.cakes-grid');
-            if (cakesGrid && featuredItems.length > 0) {
-                cakesGrid.innerHTML = '';
-                featuredItems.forEach((item, index) => {
-                    const cakeCard = document.createElement('div');
-                    cakeCard.className = 'cake-card fade-in';
-                    cakeCard.style.animationDelay = `${index * 0.2}s`;
-                    cakeCard.innerHTML = `
-                        <div class="cake-image">
-                            <img src="${item.path}" alt="${item.title}" loading="lazy">
-                        </div>
-                        <div class="cake-info">
-                            <h3>${item.title}</h3>
-                            <p>${item.description}</p>
-                        </div>
-                    `;
-                    cakesGrid.appendChild(cakeCard);
-                });
+
+            if (needsFeatured) {
+                const cakesGrid = document.querySelector('.cakes-grid');
+                if (cakesGrid && featuredItems.length > 0) {
+                    cakesGrid.innerHTML = '';
+                    featuredItems.forEach((item, index) => {
+                        const cakeCard = document.createElement('div');
+                        cakeCard.className = 'cake-card fade-in';
+                        cakeCard.style.animationDelay = `${index * 0.2}s`;
+                        cakeCard.innerHTML = `
+                            <div class="cake-image">
+                                <img src="${item.path}" alt="${item.title}" loading="lazy">
+                            </div>
+                            <div class="cake-info">
+                                <h3>${item.title}</h3>
+                                <p>${item.description}</p>
+                            </div>
+                        `;
+                        cakesGrid.appendChild(cakeCard);
+                    });
+                }
             }
-            
-            // Update about section
-            if (aboutItems.length > 0) {
+
+            if (needsAbout && aboutItems.length > 0) {
                 const aboutImageContainer = document.querySelector('.about-preview .about-image');
                 const aboutLoading = aboutImageContainer?.querySelector('.loading');
                 if (aboutLoading) {
@@ -358,34 +344,24 @@ function loadFallbackContent() {
                     img.src = aboutItems[0].path;
                     img.alt = aboutItems[0].title;
                     img.className = 'fade-in';
-                    img.onload = () => {
-                        aboutLoading.remove();
-                        aboutImageContainer.appendChild(img);
-                    };
+                    img.onload = () => { aboutLoading.remove(); aboutImageContainer.appendChild(img); };
                 }
-                
                 const aboutTitle = document.querySelector('.about-preview .about-text h2');
                 const aboutDesc = document.querySelector('.about-preview .about-text p');
                 if (aboutTitle) aboutTitle.textContent = aboutItems[0].title;
                 if (aboutDesc) aboutDesc.textContent = aboutItems[0].description;
             }
-            
-            console.log('✅ Fallback content loaded from local JSON');
         })
-        .catch(error => {
-            console.error('Error loading fallback content:', error);
-            // Last resort fallback
-            const heroTitle = document.querySelector('.hero-title');
-            const heroSubtitle = document.querySelector('.hero-subtitle');
-            const cakesGrid = document.querySelector('.cakes-grid');
-            const aboutText = document.querySelector('.about-preview .about-text h2');
-            const aboutDesc = document.querySelector('.about-preview .about-text p');
-            
-            if (heroTitle) heroTitle.textContent = "Custom Cakes That Capture Your Sweetest Moments";
-            if (heroSubtitle) heroSubtitle.textContent = "Creatively Delicious";
-            
-            if (cakesGrid) {
-                cakesGrid.innerHTML = `
+        .catch(() => {
+            if (needsHero) {
+                const heroTitle = document.querySelector('.hero-title');
+                const heroSubtitle = document.querySelector('.hero-subtitle');
+                if (heroTitle) heroTitle.textContent = "Custom Cakes That Capture Your Sweetest Moments";
+                if (heroSubtitle) heroSubtitle.textContent = "Creatively Delicious";
+            }
+            if (needsFeatured) {
+                const cakesGrid = document.querySelector('.cakes-grid');
+                if (cakesGrid) cakesGrid.innerHTML = `
                     <div class="cake-card">
                         <div class="cake-image">
                             <img src="images/gallery/ChocolateFloralTier.jpg" alt="Featured Cake" loading="lazy">
@@ -394,12 +370,14 @@ function loadFallbackContent() {
                             <h3>Custom Cakes</h3>
                             <p>Beautiful custom cakes for your special occasions</p>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             }
-            
-            if (aboutText) aboutText.textContent = "Meet the Baker";
-            if (aboutDesc) aboutDesc.textContent = "Creating sweet moments with every cake.";
+            if (needsAbout) {
+                const aboutText = document.querySelector('.about-preview .about-text h2');
+                const aboutDesc = document.querySelector('.about-preview .about-text p');
+                if (aboutText) aboutText.textContent = "Meet the Baker";
+                if (aboutDesc) aboutDesc.textContent = "Creating sweet moments with every cake.";
+            }
         });
 }
 
@@ -414,8 +392,10 @@ async function loadGalleryContent() {
         const response = await fetch(getApiUrl(CONFIG.ENDPOINTS.GALLERY_IMAGES));
         const result = await response.json();
         
-        if (result.success && result.images) {
-            galleryGrid.innerHTML = result.images.map(image => `
+        const images = (result.success && result.images?.length) ? result.images : null;
+
+        if (images) {
+            galleryGrid.innerHTML = images.map(image => `
                 <div class="gallery-item" data-title="${image.title}" data-description="${image.description}">
                     <img src="${image.image_url}" alt="${image.title}" loading="lazy">
                     <div class="gallery-caption">
@@ -466,26 +446,16 @@ async function loadAboutContent() {
         const response = await fetch(getApiUrl(CONFIG.ENDPOINTS.INDEX_CONTENT));
         const result = await response.json();
         
-        if (result.success && result.content) {
-            const aboutContent = result.content.find(item => item.type === 'about');
-            if (aboutContent) {
-                // Update image
-                aboutImage.innerHTML = `
-                    <img src="${aboutContent.image_url}" alt="${aboutContent.title}" loading="lazy">
-                `;
-                
-                // Update title (only if it's still "Loading...")
-                if (aboutTitle && aboutTitle.textContent === 'Loading...') {
-                    aboutTitle.textContent = aboutContent.title;
-                }
-                
-                // Update first paragraph (only if it's still "Loading...")
-                if (aboutDesc && aboutDesc.textContent === 'Loading...') {
-                    aboutDesc.textContent = aboutContent.description;
-                }
-                
-                console.log('✅ About content loaded from Supabase');
-            }
+        const aboutContent = (result.success && result.content)
+            ? result.content.find(item => item.type === 'about')
+            : null;
+
+        if (aboutContent) {
+            aboutImage.innerHTML = `<img src="${aboutContent.image_url}" alt="${aboutContent.title}" loading="lazy">`;
+            if (aboutTitle && aboutTitle.textContent === 'Loading...') aboutTitle.textContent = aboutContent.title;
+            if (aboutDesc && aboutDesc.textContent === 'Loading...') aboutDesc.textContent = aboutContent.description;
+        } else {
+            await loadAboutFallback(aboutImage, aboutTitle, aboutDesc);
         }
     } catch (error) {
         await loadAboutFallback(aboutImage, aboutTitle, aboutDesc);
