@@ -218,202 +218,65 @@ function showInfoModal(title, messages) {
     modal.style.display = 'flex';
 }
 
-// Configuration - Set to true for sandbox mode (testing)
-const SANDBOX_MODE = false; // Change to false for production
-
-// Dynamic content loading from Supabase
+// Load index page content from local JSON
 async function loadIndexContent() {
     try {
-        console.log('Loading index content from Supabase...');
         
-        const response = await fetch(getApiUrl(CONFIG.ENDPOINTS.INDEX_CONTENT));
-        const result = await response.json();
-        
-        const content = (result.success && result.content) ? result.content : [];
+        const response = await fetch('images/index/index_data.json');
+        const data = await response.json();
+        const heroItem = data.find(d => d.type === 'hero');
+        const featuredItems = data.filter(d => d.type === 'featured');
+        const aboutItem = data.find(d => d.type === 'about');
 
-        const heroContent = content.find(item => item.type === 'hero');
-        const featuredContent = content.filter(item => item.type === 'featured');
-        const aboutContent = content.find(item => item.type === 'about');
-
-        if (heroContent) updateHeroContent(heroContent);
-        if (featuredContent.length > 0) updateFeaturedCakes(featuredContent);
-        if (aboutContent) updateAboutPreview(aboutContent);
-
-        // Fall back for any section that Supabase didn't provide data for
-        if (!heroContent || !featuredContent.length || !aboutContent) {
-            loadFallbackContent({ needsHero: !heroContent, needsFeatured: !featuredContent.length, needsAbout: !aboutContent });
+        if (heroItem) {
+            const heroTitle = document.querySelector('.hero-title');
+            const heroSubtitle = document.querySelector('.hero-subtitle');
+            if (heroTitle) heroTitle.textContent = heroItem.title;
+            if (heroSubtitle) heroSubtitle.textContent = heroItem.description;
         }
-    } catch (error) {
-        loadFallbackContent({ needsHero: true, needsFeatured: true, needsAbout: true });
-    }
-}
 
-function updateHeroContent(heroContent) {
-    const heroSection = document.querySelector('.hero');
-    if (heroSection) {
-        // Update background image
-        heroSection.style.backgroundImage = `url('${heroContent.image_url}')`;
-        
-        // Update title and subtitle
-        const title = heroSection.querySelector('.hero-title');
-        const subtitle = heroSection.querySelector('.hero-subtitle');
-        
-        if (title) title.textContent = heroContent.title;
-        if (subtitle) subtitle.textContent = heroContent.description;
-    }
-}
-
-function updateFeaturedCakes(featuredContent) {
-    const cakesGrid = document.querySelector('.cakes-grid');
-    if (cakesGrid) {
-        cakesGrid.innerHTML = featuredContent.map(cake => `
-            <div class="cake-card" data-title="${cake.title}" data-description="${cake.description}">
-                <div class="cake-image">
-                    <img src="${cake.image_url}" alt="${cake.title}" loading="lazy">
-                </div>
-                <div class="cake-info">
-                    <h3>${cake.title}</h3>
-                    <p>${cake.description}</p>
-                </div>
-            </div>
-        `).join('');
-        
-        window.initializeLightbox();
-    }
-}
-
-function updateAboutPreview(aboutContent) {
-    const aboutText = document.querySelector('.about-preview .about-text h2');
-    const aboutDesc = document.querySelector('.about-preview .about-text p');
-    const aboutImageContainer = document.querySelector('.about-preview .about-image');
-    
-    if (aboutText) aboutText.textContent = aboutContent.title;
-    if (aboutDesc) aboutDesc.textContent = aboutContent.description;
-    
-    if (aboutImageContainer) {
-        aboutImageContainer.innerHTML = `
-            <img src="${aboutContent.image_url}" alt="${aboutContent.title}" loading="lazy">
-        `;
-    }
-}
-
-function loadFallbackContent({ needsHero = true, needsFeatured = true, needsAbout = true } = {}) {
-    
-    fetch('images/index/index_data.json')
-        .then(response => response.json())
-        .then(data => {
-            // Process data
-            const heroItems = data.filter(d => d.type === 'hero');
-            const featuredItems = data.filter(d => d.type === 'featured');
-            const aboutItems = data.filter(d => d.type === 'about');
-            
-            if (needsHero && heroItems.length > 0) {
-                const heroTitle = document.querySelector('.hero-title');
-                const heroSubtitle = document.querySelector('.hero-subtitle');
-                if (heroTitle) heroTitle.textContent = heroItems[0].title;
-                if (heroSubtitle) heroSubtitle.textContent = heroItems[0].description;
-            }
-
-            if (needsFeatured) {
-                const cakesGrid = document.querySelector('.cakes-grid');
-                if (cakesGrid && featuredItems.length > 0) {
-                    cakesGrid.innerHTML = '';
-                    featuredItems.forEach((item, index) => {
-                        const cakeCard = document.createElement('div');
-                        cakeCard.className = 'cake-card fade-in';
-                        cakeCard.style.animationDelay = `${index * 0.2}s`;
-                        cakeCard.innerHTML = `
-                            <div class="cake-image">
-                                <img src="${item.path}" alt="${item.title}" loading="lazy">
-                            </div>
-                            <div class="cake-info">
-                                <h3>${item.title}</h3>
-                                <p>${item.description}</p>
-                            </div>
-                        `;
-                        cakesGrid.appendChild(cakeCard);
-                    });
-                }
-            }
-
-            if (needsAbout && aboutItems.length > 0) {
-                const aboutImageContainer = document.querySelector('.about-preview .about-image');
-                const aboutLoading = aboutImageContainer?.querySelector('.loading');
-                if (aboutLoading) {
-                    const img = document.createElement('img');
-                    img.src = aboutItems[0].path;
-                    img.alt = aboutItems[0].title;
-                    img.className = 'fade-in';
-                    img.onload = () => { aboutLoading.remove(); aboutImageContainer.appendChild(img); };
-                }
-                const aboutTitle = document.querySelector('.about-preview .about-text h2');
-                const aboutDesc = document.querySelector('.about-preview .about-text p');
-                if (aboutTitle) aboutTitle.textContent = aboutItems[0].title;
-                if (aboutDesc) aboutDesc.textContent = aboutItems[0].description;
-            }
-        })
-        .catch(() => {
-            if (needsHero) {
-                const heroTitle = document.querySelector('.hero-title');
-                const heroSubtitle = document.querySelector('.hero-subtitle');
-                if (heroTitle) heroTitle.textContent = "Custom Cakes That Capture Your Sweetest Moments";
-                if (heroSubtitle) heroSubtitle.textContent = "Creatively Delicious";
-            }
-            if (needsFeatured) {
-                const cakesGrid = document.querySelector('.cakes-grid');
-                if (cakesGrid) cakesGrid.innerHTML = `
-                    <div class="cake-card">
-                        <div class="cake-image">
-                            <img src="images/gallery/ChocolateFloralTier.jpg" alt="Featured Cake" loading="lazy">
-                        </div>
-                        <div class="cake-info">
-                            <h3>Custom Cakes</h3>
-                            <p>Beautiful custom cakes for your special occasions</p>
-                        </div>
-                    </div>`;
-            }
-            if (needsAbout) {
-                const aboutText = document.querySelector('.about-preview .about-text h2');
-                const aboutDesc = document.querySelector('.about-preview .about-text p');
-                if (aboutText) aboutText.textContent = "Meet the Baker";
-                if (aboutDesc) aboutDesc.textContent = "Creating sweet moments with every cake.";
-            }
-        });
-}
-
-// Gallery content loading
-async function loadGalleryContent() {
-    const galleryGrid = document.querySelector('.gallery-grid');
-    if (!galleryGrid) return; // Not on gallery page
-    
-    try {
-        console.log('Loading gallery content from Supabase...');
-        
-        const response = await fetch(getApiUrl(CONFIG.ENDPOINTS.GALLERY_IMAGES));
-        const result = await response.json();
-        
-        const images = (result.success && result.images?.length) ? result.images : null;
-
-        if (images) {
-            galleryGrid.innerHTML = images.map(image => `
-                <div class="gallery-item" data-title="${image.title}" data-description="${image.description}">
-                    <img src="${image.image_url}" alt="${image.title}" loading="lazy">
-                    <div class="gallery-caption">
-                        <h3>${image.title}</h3>
-                        <p>${image.description}</p>
+        const cakesGrid = document.querySelector('.cakes-grid');
+        if (cakesGrid && featuredItems.length > 0) {
+            cakesGrid.innerHTML = featuredItems.map((item, i) => `
+                <div class="cake-card fade-in" style="animation-delay:${i * 0.2}s">
+                    <div class="cake-image">
+                        <img src="${item.path}" alt="${item.title}" loading="lazy">
+                    </div>
+                    <div class="cake-info">
+                        <h3>${item.title}</h3>
+                        <p>${item.description}</p>
                     </div>
                 </div>
             `).join('');
             window.initializeLightbox();
-        } else {
-            await loadGalleryFallback(galleryGrid);
         }
-    } catch (error) {
-        await loadGalleryFallback(galleryGrid);
+
+        if (aboutItem) {
+            const aboutTitle = document.querySelector('.about-preview .about-text h2');
+            const aboutDesc = document.querySelector('.about-preview .about-text p');
+            const aboutImg = document.querySelector('.about-preview .about-image');
+            if (aboutTitle) aboutTitle.textContent = aboutItem.title;
+            if (aboutDesc) aboutDesc.textContent = aboutItem.description;
+            if (aboutImg) {
+                const loading = aboutImg.querySelector('.loading');
+                const img = document.createElement('img');
+                img.src = aboutItem.path;
+                img.alt = aboutItem.title;
+                img.onload = () => { if (loading) loading.remove(); aboutImg.appendChild(img); };
+            }
+        }
+    } catch (err) {
+        const heroTitle = document.querySelector('.hero-title');
+        const heroSubtitle = document.querySelector('.hero-subtitle');
+        if (heroTitle) heroTitle.textContent = 'Custom Cakes That Capture Your Sweetest Moments';
+        if (heroSubtitle) heroSubtitle.textContent = 'Creatively Delicious';
     }
 }
 
-async function loadGalleryFallback(galleryGrid) {
+// Load gallery from local JSON
+async function loadGalleryContent() {
+    const galleryGrid = document.querySelector('.gallery-grid');
+    if (!galleryGrid) return;
     try {
         const response = await fetch('images/gallery/gallery_data.json');
         const data = await response.json();
@@ -432,318 +295,85 @@ async function loadGalleryFallback(galleryGrid) {
     }
 }
 
-// About page content loading
+// Load about page content from local JSON
 async function loadAboutContent() {
     const aboutImage = document.querySelector('.about-section .about-image');
     const aboutTitle = document.querySelector('.about-section .about-text h2');
     const aboutDesc = document.querySelector('.about-section .about-text p');
-
-    if (!aboutImage) return; // Not on about page
-    
-    try {
-        console.log('Loading about content from Supabase...');
-        
-        const response = await fetch(getApiUrl(CONFIG.ENDPOINTS.INDEX_CONTENT));
-        const result = await response.json();
-        
-        const aboutContent = (result.success && result.content)
-            ? result.content.find(item => item.type === 'about')
-            : null;
-
-        if (aboutContent) {
-            aboutImage.innerHTML = `<img src="${aboutContent.image_url}" alt="${aboutContent.title}" loading="lazy">`;
-            if (aboutTitle && aboutTitle.textContent === 'Loading...') aboutTitle.textContent = aboutContent.title;
-            if (aboutDesc && aboutDesc.textContent === 'Loading...') aboutDesc.textContent = aboutContent.description;
-        } else {
-            await loadAboutFallback(aboutImage, aboutTitle, aboutDesc);
-        }
-    } catch (error) {
-        await loadAboutFallback(aboutImage, aboutTitle, aboutDesc);
-    }
-}
-
-async function loadAboutFallback(aboutImage, aboutTitle, aboutDesc) {
+    if (!aboutImage) return;
     try {
         const response = await fetch('images/about/about_data.json');
         const data = await response.json();
         const item = data.find(d => d.type === 'profile') || data[0];
         if (!item) throw new Error('No data');
-
-        if (aboutImage) {
-            const loading = aboutImage.querySelector('.loading');
-            const img = document.createElement('img');
-            img.src = item.path;
-            img.alt = item.title;
-            img.className = 'fade-in';
-            img.onload = () => { if (loading) loading.remove(); aboutImage.appendChild(img); };
-            img.onerror = () => { if (loading) loading.innerHTML = '<i class="fas fa-exclamation-triangle"></i><p>Unable to load image</p>'; };
-        }
+        const loading = aboutImage.querySelector('.loading');
+        const img = document.createElement('img');
+        img.src = item.path;
+        img.alt = item.title;
+        img.className = 'fade-in';
+        img.onload = () => { if (loading) loading.remove(); aboutImage.appendChild(img); };
+        img.onerror = () => { if (loading) loading.innerHTML = '<i class="fas fa-exclamation-triangle"></i><p>Unable to load image</p>'; };
         if (aboutTitle && aboutTitle.textContent === 'Loading...') aboutTitle.textContent = item.title;
         if (aboutDesc && aboutDesc.textContent === 'Loading...') aboutDesc.textContent = item.description;
     } catch (err) {
-        if (aboutImage) aboutImage.innerHTML = '<img src="images/about/Nomi.jpg" alt="About the Baker" loading="lazy">';
+        aboutImage.innerHTML = '<img src="images/about/Nomi.jpg" alt="About the Baker" loading="lazy">';
         if (aboutTitle && aboutTitle.textContent === 'Loading...') aboutTitle.textContent = "Hi, I'm Nomi!";
         if (aboutDesc && aboutDesc.textContent === 'Loading...') aboutDesc.textContent = "Baking has always been my love language.";
     }
 }
 
-// Make SANDBOX_MODE available globally for admin panel
-window.SANDBOX_MODE = SANDBOX_MODE;
-
-// Sandbox storage functions
-function saveSandboxRequest(requestData) {
-    try {
-        const requests = JSON.parse(localStorage.getItem('sandboxRequests') || '[]');
-        const requestId = 'REQ-' + Date.now();
-        const fullRequest = {
-            id: requestId,
-            ...requestData,
-            status: 'pending',
-            submittedAt: new Date().toISOString(),
-            lastUpdated: new Date().toISOString()
-        };
-        requests.push(fullRequest);
-        localStorage.setItem('sandboxRequests', JSON.stringify(requests));
-        console.log('Successfully saved request to localStorage');
-        return requestId;
-    } catch (error) {
-        console.error('Error saving to localStorage:', error);
-        throw new Error('Failed to save request locally: ' + error.message);
-    }
-}
-
-function getSandboxRequests() {
-    return JSON.parse(localStorage.getItem('sandboxRequests') || '[]');
-}
-
-// Handle form submissions
+// Contact form — sends email via /api/send-contact
 document.addEventListener('DOMContentLoaded', () => {
-    const forms = document.querySelectorAll('.cake-request-form, .contact-form');
-    console.log('Found forms:', forms.length);
-    
-    forms.forEach((form, index) => {
-        console.log(`Setting up form ${index}:`, form.className);
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            console.log('Form submitted:', form.className);
-            
-            try {
-                const isValid = validateForm(form);
-                if (isValid) {
-                    console.log('Form validation passed');
-                    // Show loading state
-                    const submitBtn = form.querySelector('.submit-button');
-                    const originalText = submitBtn.innerHTML;
-                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
-                    submitBtn.disabled = true;
-                    
-                    try {
-                    let result;
-                    
-                    console.log('SANDBOX_MODE:', SANDBOX_MODE);
-                    
-                    if (SANDBOX_MODE) {
-                        console.log('Entering sandbox mode');
-                        // Sandbox mode - store locally and simulate success
-                        const formData = new FormData(form);
-                        const requestData = {};
-                        
-                        console.log('Converting FormData to object');
-                        // Convert FormData to object (normalize keys to camelCase-like names too)
-                        for (let [key, value] of formData.entries()) {
-                            if (requestData[key]) {
-                                // Handle multiple values (like checkboxes)
-                                if (Array.isArray(requestData[key])) {
-                                    requestData[key].push(value);
-                                } else {
-                                    requestData[key] = [requestData[key], value];
-                                }
-                            } else {
-                                requestData[key] = value;
-                            }
+    const form = document.querySelector('.contact-form');
+    if (!form) return;
 
-                            // Also mirror some fields with friendlier keys for admin display
-                            const map = {
-                                'date-needed': 'eventDate',
-                                'event-type': 'eventType',
-                                'event-address': 'eventAddress',
-                                'event-city': 'eventCity',
-                                'event-zip': 'eventZip',
-                                'cake-size': 'cakeSize',
-                                'cake-flavor': 'flavor',
-                                'frosting-type': 'frosting',
-                                'cake-filling': 'filling',
-                                'budget-range': 'budget',
-                                'design-description': 'description',
-                                'request-delivery': 'requestDelivery'
-                            };
-                            if (map[key]) {
-                                requestData[map[key]] = value;
-                            }
-                        }
-                        
-                        console.log('RequestData:', requestData);
-                        
-                        // Save to local storage
-                        console.log('Saving to localStorage');
-                        const requestId = saveSandboxRequest(requestData);
-                        console.log('Saved with ID:', requestId);
-                        
-                        // Simulate success
-                        result = {
-                            success: true,
-                            submissionId: requestId,
-                            mode: 'sandbox'
-                        };
-                        console.log('Sandbox result:', result);
-                    } else {
-                        // Production mode - submit to server
-                        console.log('🚀 Production mode - submitting to server');
-                        console.log('🔧 CONFIG check:', typeof CONFIG !== 'undefined' ? CONFIG : 'CONFIG not defined');
-                        console.log('🔧 getApiUrl check:', typeof getApiUrl !== 'undefined' ? 'Available' : 'Not available');
-                        
-                        // Fallback CONFIG definition if not loaded
-                        if (typeof CONFIG === 'undefined') {
-                            console.warn('⚠️ CONFIG not found, creating fallback...');
-                            window.CONFIG = {
-                                API_BASE_URL: window.location.origin,
-                                ENDPOINTS: {
-                                    SUBMIT_REQUEST: '/api/submit-request'
-                                }
-                            };
-                        }
-                        
-                        if (typeof getApiUrl === 'undefined') {
-                            console.warn('⚠️ getApiUrl not found, creating fallback...');
-                            window.getApiUrl = function(endpoint) {
-                                return (CONFIG.API_BASE_URL || window.location.origin) + endpoint;
-                            };
-                        }
-                        
-                        const apiUrl = getApiUrl(CONFIG.ENDPOINTS.SUBMIT_REQUEST);
-                        console.log('📡 API URL:', apiUrl);
-                        
-                        const formData = new FormData(form);
-                        
-                        const response = await fetch(apiUrl, {
-                            method: 'POST',
-                            body: formData
-                        });
-                        
-                        result = await response.json();
-                    }
-                    
-                    if (result.success) {
-                        // Show success message
-                        const successMsg = document.createElement('div');
-                        successMsg.className = 'success-message';
-                        successMsg.innerHTML = `
-                            <i class="fas fa-check-circle"></i>
-                            <div>
-                                <strong>Thank you! Your request has been submitted successfully!</strong><br>
-                                Request ID: ${result.submissionId}<br>
-                                ${result.mode === 'sandbox' ? 
-                                    '<em>Note: Running in sandbox mode - no emails sent</em><br>' : 
-                                    'We\'ll review your request and contact you within 24 hours.'
-                                }
-                            </div>
-                        `;
-                        
-                        form.appendChild(successMsg);
-                        form.reset();
-                        
-                        // Remove success message after 8 seconds
-                        setTimeout(() => {
-                            successMsg.remove();
-                        }, 8000);
-                    } else {
-                        throw new Error(result.message || 'Submission failed');
-                    }
-                    
-                } catch (error) {
-                    console.error('Error submitting form:', error);
-                    console.error('Error details:', {
-                        message: error.message,
-                        name: error.name,
-                        stack: error.stack
-                    });
-                    
-                    // Show user-friendly error message
-                    const errorMsg = document.createElement('div');
-                    errorMsg.className = 'error-message';
-                    errorMsg.style.cssText = `
-                        background: #fee;
-                        color: #c33;
-                        padding: 1rem;
-                        border-radius: var(--border-radius);
-                        margin-top: 1rem;
-                        text-align: center;
-                        border: 1px solid #fcc;
-                    `;
-                    
-                    // Check if it's a network error (server not available)
-                    if (error.message.includes('fetch') || error.name === 'TypeError') {
-                        errorMsg.innerHTML = `
-                            <i class="fas fa-exclamation-circle"></i>
-                            <strong>Server temporarily unavailable</strong><br>
-                            Please contact us directly at <a href="mailto:hello@dulcelunacakes.com">hello@dulcelunacakes.com</a> or call <a href="tel:+15551234567">(555) 123-4567</a>.
-                        `;
-                    } else {
-                        errorMsg.innerHTML = `
-                            <i class="fas fa-exclamation-circle"></i>
-                            <strong>Error submitting request:</strong> ${error.message}<br>
-                            Please try again or contact us directly.
-                        `;
-                    }
-                    
-                    form.appendChild(errorMsg);
-                    
-                    // Remove error message after 8 seconds
-                    setTimeout(() => {
-                        errorMsg.remove();
-                    }, 8000);
-                } finally {
-                    // Reset button
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
-                }
-            } else {
-                const errors = form.__validationErrors || ['Please fill out all required fields.'];
-                showInfoModal('Please fix the highlighted fields', errors);
-                const firstInvalid = form.__firstInvalidField;
-                if (firstInvalid && typeof firstInvalid.scrollIntoView === 'function') {
-                    firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    try { firstInvalid.focus({ preventScroll: true }); } catch (_) {}
-                }
-                return;
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const isValid = validateForm(form);
+        if (!isValid) {
+            const errors = form.__validationErrors || ['Please fill out all required fields.'];
+            showInfoModal('Please fix the highlighted fields', errors);
+            const firstInvalid = form.__firstInvalidField;
+            if (firstInvalid) {
+                firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                try { firstInvalid.focus({ preventScroll: true }); } catch (_) {}
             }
-            } catch (outerError) {
-                console.error('Outer form submission error:', outerError);
-                // Show a generic error message
-                const errorMsg = document.createElement('div');
-                errorMsg.className = 'error-message';
-                errorMsg.style.cssText = `
-                    background: #fee;
-                    color: #c33;
-                    padding: 1rem;
-                    border-radius: var(--border-radius);
-                    margin-top: 1rem;
-                    text-align: center;
-                    border: 1px solid #fcc;
-                `;
-                errorMsg.innerHTML = `
-                    <i class="fas fa-exclamation-circle"></i>
-                    <strong>Unexpected error:</strong> ${outerError.message}<br>
-                    Please try again or contact us directly.
-                `;
-                form.appendChild(errorMsg);
-                
-                // Remove error message after 8 seconds
-                setTimeout(() => {
-                    errorMsg.remove();
-                }, 8000);
-            }
-        });
+            return;
+        }
+
+        const submitBtn = form.querySelector('.submit-button');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+        submitBtn.disabled = true;
+
+        try {
+            const formData = new FormData(form);
+            const body = Object.fromEntries(formData.entries());
+            const response = await fetch('/api/send-contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            const result = await response.json();
+            if (!result.success) throw new Error(result.error || 'Send failed');
+
+            const msg = document.createElement('div');
+            msg.className = 'success-message';
+            msg.innerHTML = '<i class="fas fa-check-circle"></i> <strong>Message sent!</strong> We\'ll be in touch within 24 hours.';
+            form.appendChild(msg);
+            form.reset();
+            setTimeout(() => msg.remove(), 8000);
+        } catch (err) {
+            const msg = document.createElement('div');
+            msg.className = 'error-message';
+            msg.style.cssText = 'background:#fee;color:#c33;padding:1rem;border-radius:var(--border-radius);margin-top:1rem;text-align:center;border:1px solid #fcc;';
+            msg.innerHTML = `<i class="fas fa-exclamation-circle"></i> <strong>Couldn't send message.</strong> ${err.message} — Please email us directly at <a href="mailto:hello@dulcelunacakes.com">hello@dulcelunacakes.com</a>.`;
+            form.appendChild(msg);
+            setTimeout(() => msg.remove(), 8000);
+        } finally {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
     });
 });
 
