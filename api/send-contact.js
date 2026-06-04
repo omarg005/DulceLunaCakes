@@ -16,7 +16,7 @@ module.exports = async function handler(req, res) {
     const TO_EMAIL = process.env.CONTACT_EMAIL || 'omarg005@gmail.com';
 
     if (!RESEND_API_KEY) {
-        return res.status(500).json({ success: false, error: 'Email service not configured.' });
+        return res.status(500).json({ success: false, error: 'RESEND_API_KEY environment variable is not set.' });
     }
 
     const subjectLine = subject ? `[Dulce Luna Cakes] ${subject} — from ${name}` : `[Dulce Luna Cakes] New message from ${name}`;
@@ -54,12 +54,12 @@ module.exports = async function handler(req, res) {
 
         if (!response.ok) {
             console.error('Resend error:', data);
-            return res.status(500).json({ success: false, error: data.message || 'Failed to send email.' });
+            return res.status(500).json({ success: false, error: `Resend: ${data.message || data.name || JSON.stringify(data)}` });
         }
 
         res.json({ success: true });
     } catch (err) {
         console.error('send-contact error:', err);
-        res.status(500).json({ success: false, error: 'Internal server error.' });
+        res.status(500).json({ success: false, error: `Server error: ${err.message}` });
     }
 };
