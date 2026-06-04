@@ -22,8 +22,8 @@ const CONFIG = {
     
     // Supabase Configuration - using your actual values
     SUPABASE_URL: 'https://pwvnrtkrnibaxzrduzmj.supabase.co',
-    SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3dm5ydGtyamlhYnhkcm1heXEiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTczNjgxNzE2NCwiZXhwIjoyMDUyMzkzMTY0fQ.YgqHPg0FGOddvFuApq8gd5Fy8YUrH6X0M-A6EADH2iU'
-    
+    SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3dm5ydGtyamlhYnhkcm1heXEiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTczNjgxNzE2NCwiZXhwIjoyMDUyMzkzMTY0fQ.YgqHPg0FGOddvFuApq8gd5Fy8YUrH6X0M-A6EADH2iU',
+
     // API Endpoints
     ENDPOINTS: {
         SUBMIT_REQUEST: '/api/submit-request',

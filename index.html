@@ -56,7 +56,35 @@
             <a href="request.html" class="cta-button">Request a Cake</a>
         </div>
         <div class="hero-overlay"></div>
+
+        <!-- As Seen On TV thumbnail -->
+        <button class="tv-badge" id="tv-badge" aria-label="Watch our NBC interview">
+            <div class="tv-badge-label">As Seen On NBC</div>
+            <div class="tv-badge-thumb">
+                <img src="images/videos/NBC_InterviewThumbnail.png" alt="NBC Interview thumbnail">
+                <div class="tv-badge-play">
+                    <i class="fas fa-play"></i>
+                </div>
+            </div>
+        </button>
     </section>
+
+    <!-- Video Modal -->
+    <div class="video-modal" id="video-modal" role="dialog" aria-modal="true" aria-label="NBC Interview video">
+        <div class="video-modal-overlay" id="video-modal-overlay"></div>
+        <div class="video-modal-content">
+            <button class="video-modal-close" id="video-modal-close" aria-label="Close video">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="video-wrapper">
+                <video id="nbc-video" controls preload="none">
+                    <source src="images/videos/NBC_Interview.mp4" type="video/mp4">
+                    Your browser does not support video playback.
+                </video>
+            </div>
+            <p class="video-modal-label">Dulce Luna Cakes &mdash; NBC Interview</p>
+        </div>
+    </div>
 
     <!-- Intro Section -->
     <section class="intro">
@@ -194,82 +222,5 @@
     <!-- JavaScript -->
     <script src="config.js"></script>
     <script src="script.js"></script>
-    <script>
-        // Load and populate content from JSON
-        async function loadIndexContent() {
-            try {
-                const response = await fetch('images/index/index_data.json');
-                const data = await response.json();
-                
-                // Get containers
-                const cakesGrid = document.querySelector('.cakes-grid');
-                const aboutImageContainer = document.querySelector('.about-preview .about-image');
-                
-                // Process data
-                const heroItems = data.filter(d => d.type === 'hero');
-                const featuredItems = data.filter(d => d.type === 'featured');
-                const aboutItems = data.filter(d => d.type === 'about');
-                
-                // Update hero section
-                if (heroItems.length > 0) {
-                    const heroTitle = document.querySelector('.hero-title');
-                    const heroSubtitle = document.querySelector('.hero-subtitle');
-                    if (heroTitle) heroTitle.textContent = heroItems[0].title;
-                    if (heroSubtitle) heroSubtitle.textContent = heroItems[0].description;
-                }
-                
-                // Update featured cakes
-                if (featuredItems.length > 0) {
-                    cakesGrid.innerHTML = '';
-                    featuredItems.forEach((item, index) => {
-                        const cakeCard = document.createElement('div');
-                        cakeCard.className = 'cake-card fade-in';
-                        cakeCard.style.animationDelay = `${index * 0.2}s`;
-                        cakeCard.innerHTML = `
-                            <div class="cake-image">
-                                <img src="${item.path}" alt="${item.title}" loading="lazy">
-                            </div>
-                            <div class="cake-info">
-                                <h3>${item.title}</h3>
-                                <p>${item.description}</p>
-                            </div>
-                        `;
-                        cakesGrid.appendChild(cakeCard);
-                    });
-                }
-                
-                // Update about section
-                if (aboutItems.length > 0) {
-                    const aboutLoading = aboutImageContainer.querySelector('.loading');
-                    if (aboutLoading) {
-                        const img = document.createElement('img');
-                        img.src = aboutItems[0].path;
-                        img.alt = aboutItems[0].title;
-                        img.className = 'fade-in';
-                        img.onload = () => {
-                            aboutLoading.remove();
-                            aboutImageContainer.appendChild(img);
-                        };
-                    }
-                    
-                    const aboutTitle = document.querySelector('.about-preview .about-text h2');
-                    const aboutDesc = document.querySelector('.about-preview .about-text p');
-                    if (aboutTitle) aboutTitle.textContent = aboutItems[0].title;
-                    if (aboutDesc) aboutDesc.textContent = aboutItems[0].description;
-                }
-                
-            } catch (error) {
-                console.error('Error loading index content:', error);
-                // Show error states
-                const cakesGrid = document.querySelector('.cakes-grid');
-                if (cakesGrid) {
-                    cakesGrid.innerHTML = '<p style="text-align: center; color: var(--text-light);">Unable to load content. Please refresh the page.</p>';
-                }
-            }
-        }
-        
-        // Load content when page loads
-        document.addEventListener('DOMContentLoaded', loadIndexContent);
-    </script>
 </body>
 </html> 

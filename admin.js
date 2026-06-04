@@ -344,6 +344,224 @@ function deleteSandboxRequest(requestId) {
     deleteRequest(requestId);
 }
 
+// Global variable to store the request ID to be deleted
+let requestToDelete = null;
+
+// Show delete confirmation modal
+function showDeleteConfirmation(requestId) {
+    console.log('🔍 showDeleteConfirmation called with ID:', requestId);
+    requestToDelete = requestId;
+    
+    // Find the request details
+    const requests = getAllRequests();
+    console.log('📋 Available requests:', requests);
+    console.log('📋 Looking for request ID:', requestId);
+    console.log('📋 Available request IDs:', requests.map(r => r.id));
+    const request = requests.find(r => r.id === requestId);
+    console.log('🎯 Found request:', request);
+    
+    if (!request) {
+        console.error('❌ Request not found for deletion confirmation');
+        return;
+    }
+    
+    // Populate the modal with request details
+    const previewContainer = document.getElementById('delete-request-preview');
+    if (previewContainer) {
+        previewContainer.innerHTML = `
+            <h4>${request.name || 'Unknown Customer'}</h4>
+            <p><strong>Email:</strong> ${request.email || 'N/A'}</p>
+            <p><strong>Phone:</strong> ${request.phone || 'N/A'}</p>
+            <p><strong>Event Date:</strong> ${request.event_date || 'N/A'}</p>
+            <p><strong>Cake Size:</strong> ${request.cake_size || 'N/A'}</p>
+            <p><strong>Status:</strong> <span style="color: var(--primary-pink); font-weight: bold;">${request.status || 'pending'}</span></p>
+            <p><strong>Submitted:</strong> ${request.created_at ? new Date(request.created_at).toLocaleDateString() : 'N/A'}</p>
+        `;
+    }
+    
+    // Show the modal
+    const modal = document.getElementById('delete-confirmation-modal');
+    console.log('🎭 Modal element found:', !!modal);
+    if (modal) {
+        console.log('✅ Showing modal...');
+        modal.style.display = 'flex';
+        
+        // Add event listeners for modal buttons if not already added
+        setupModalEventListeners();
+        console.log('✅ Modal should now be visible');
+    } else {
+        console.error('❌ Modal element not found in DOM');
+    }
+}
+
+// Hide delete confirmation modal
+function hideDeleteConfirmation() {
+    const modal = document.getElementById('delete-confirmation-modal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+    requestToDelete = null;
+}
+
+// Confirm and execute deletion
+function confirmDelete() {
+    console.log('🗑️ confirmDelete called, requestToDelete:', requestToDelete);
+    if (requestToDelete) {
+        console.log('✅ Proceeding with deletion...');
+        deleteRequest(requestToDelete);
+        hideDeleteConfirmation();
+    } else {
+        console.error('❌ No request ID to delete');
+    }
+}
+
+// Setup modal event listeners (only once)
+let modalListenersSetup = false;
+function setupModalEventListeners() {
+    if (modalListenersSetup) {
+        console.log('🔄 Modal listeners already set up');
+        return;
+    }
+    
+    console.log('🎛️ Setting up modal event listeners...');
+    
+    const cancelBtn = document.getElementById('cancel-delete-btn');
+    const confirmBtn = document.getElementById('confirm-delete-btn');
+    const modal = document.getElementById('delete-confirmation-modal');
+    
+    console.log('🔍 Modal elements found:', {
+        cancelBtn: !!cancelBtn,
+        confirmBtn: !!confirmBtn,
+        modal: !!modal
+    });
+    
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', hideDeleteConfirmation);
+        console.log('✅ Cancel button listener added');
+    }
+    
+    if (confirmBtn) {
+        confirmBtn.addEventListener('click', confirmDelete);
+        console.log('✅ Confirm button listener added');
+    }
+    
+    // Close modal when clicking outside
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                hideDeleteConfirmation();
+            }
+        });
+    }
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal && modal.style.display === 'flex') {
+            hideDeleteConfirmation();
+        }
+    });
+    
+    modalListenersSetup = true;
+}
+
+// Helper function to get all requests (both sandbox and production)
+function getAllRequests() {
+    console.log('🔍 getAllRequests called');
+    console.log('📋 window.currentRequests:', window.currentRequests);
+    console.log('📋 window.currentRequests length:', window.currentRequests?.length);
+    
+    // Try to get from the current loaded requests first
+    const requestsContainer = document.querySelector('.requests-container');
+    if (requestsContainer && window.currentRequests) {
+        console.log('✅ Using window.currentRequests');
+        return window.currentRequests;
+    }
+    
+    // Fallback to sandbox requests
+    const sandboxRequests = getSandboxRequests();
+    console.log('📋 Fallback to sandbox requests:', sandboxRequests);
+    console.log('📋 Sandbox requests length:', sandboxRequests?.length);
+    return sandboxRequests;
+}
+
+// Test function for debugging - call this from browser console
+function testDeleteModal() {
+    console.log('🧪 Testing delete modal...');
+    
+    // Check if modal exists
+    const modal = document.getElementById('delete-confirmation-modal');
+    console.log('Modal found:', !!modal);
+    
+    if (modal) {
+        // Show modal with test data
+        const previewContainer = document.getElementById('delete-request-preview');
+        if (previewContainer) {
+            previewContainer.innerHTML = `
+                <h4>Test Customer</h4>
+                <p><strong>Email:</strong> test@example.com</p>
+                <p><strong>Phone:</strong> 555-1234</p>
+                <p><strong>Status:</strong> <span style="color: var(--primary-pink); font-weight: bold;">pending</span></p>
+            `;
+        }
+        
+        modal.style.display = 'flex';
+        setupModalEventListeners();
+        console.log('✅ Test modal should be visible now');
+    } else {
+        console.error('❌ Modal not found - check HTML');
+    }
+}
+
+// Make test function available globally
+window.testDeleteModal = testDeleteModal;
+
+// Make sure showDeleteConfirmation is available globally
+window.showDeleteConfirmation = showDeleteConfirmation;
+
+// Set up event delegation for delete buttons
+function setupDeleteButtonListeners() {
+    console.log('🎯 Setting up delete button event delegation...');
+    
+    // Remove any existing listeners
+    document.removeEventListener('click', handleDeleteButtonClick);
+    
+    // Add event delegation for delete buttons
+    document.addEventListener('click', handleDeleteButtonClick);
+    
+    console.log('✅ Delete button event delegation set up');
+}
+
+// Handle delete button clicks via event delegation
+function handleDeleteButtonClick(event) {
+    // Check if the clicked element is a delete button
+    const deleteBtn = event.target.closest('.delete-btn');
+    if (!deleteBtn) return;
+    
+    event.preventDefault();
+    event.stopPropagation();
+    
+    // Extract request ID from the onclick attribute or data attribute
+    const onclickAttr = deleteBtn.getAttribute('onclick');
+    console.log('🔍 Delete button onclick attribute:', onclickAttr);
+    if (onclickAttr) {
+        const match = onclickAttr.match(/showDeleteConfirmation\(['"]([^'"]+)['"]\)/);
+        console.log('🔍 Regex match result:', match);
+        if (match) {
+            const requestId = match[1];
+            console.log('🎯 Delete button clicked for request:', requestId);
+            console.log('🎯 Request ID type:', typeof requestId);
+            showDeleteConfirmation(requestId);
+        } else {
+            console.error('❌ Could not extract request ID from onclick attribute');
+        }
+    } else {
+        console.error('❌ No onclick attribute found on delete button');
+    }
+}
+
+// Initialize delete button listeners when DOM is ready
+document.addEventListener('DOMContentLoaded', setupDeleteButtonListeners);
+
 function updateModeIndicator() {
     const modeIndicator = document.getElementById('current-mode');
     if (modeIndicator) {
@@ -569,12 +787,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const imageTitleInput = document.getElementById('image-title');
     const imageDescriptionInput = document.getElementById('image-description');
     const messageContainer = document.getElementById('message-container');
-    console.log('Admin panel loaded');
-    
-    // Debug: Check if elements exist
-    console.log('Login form:', loginForm);
-    console.log('Admin dashboard:', adminDashboard);
-    console.log('Image grid:', imageGrid);
+    document.body.classList.add('loaded');
     
     // Initialize authentication and load page content
     initSupabaseAuth().then(() => {
@@ -1571,6 +1784,15 @@ async function loadRequests() {
     
     const requests = await getRequests();
     
+    // Store requests globally for the confirmation modal
+    window.currentRequests = requests;
+    console.log('💾 Stored requests globally:', requests);
+    console.log('💾 Stored request IDs:', requests.map(r => r.id));
+    console.log('💾 First request structure:', requests[0]);
+    
+    // Set up delete button listeners after requests are loaded
+    setupDeleteButtonListeners();
+    
     if (requests.length === 0) {
         imageGrid.innerHTML = `
             <div class="no-requests">
@@ -1738,7 +1960,7 @@ function createRequestCard(request) {
                         <option value="completed" ${request.status === 'completed' ? 'selected' : ''}>Completed</option>
                         <option value="cancelled" ${request.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
                     </select>
-                    <button onclick="deleteRequest('${request.id}')" class="delete-btn">
+                    <button onclick="showDeleteConfirmation('${request.id}')" class="delete-btn">
                         <i class="fas fa-trash"></i> Delete
                     </button>
                 </div>

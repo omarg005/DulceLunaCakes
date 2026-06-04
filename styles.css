@@ -199,6 +199,192 @@ p {
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
+/* As Seen On TV Badge */
+.tv-badge {
+    position: absolute;
+    bottom: 2.5rem;
+    right: 2.5rem;
+    z-index: 3;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    transition: var(--transition);
+}
+
+.tv-badge:hover {
+    transform: translateY(-3px);
+}
+
+.tv-badge-label {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: white;
+    background: rgba(0, 0, 0, 0.45);
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    backdrop-filter: blur(4px);
+}
+
+.tv-badge-thumb {
+    position: relative;
+    width: 180px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    transition: var(--transition);
+}
+
+.tv-badge:hover .tv-badge-thumb {
+    border-color: white;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+}
+
+.tv-badge-thumb img {
+    width: 100%;
+    display: block;
+}
+
+.tv-badge-play {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.3);
+    transition: var(--transition);
+}
+
+.tv-badge-play i {
+    background: white;
+    color: var(--primary-pink);
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    padding-left: 3px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    transition: var(--transition);
+}
+
+.tv-badge:hover .tv-badge-play {
+    background: rgba(0, 0, 0, 0.15);
+}
+
+.tv-badge:hover .tv-badge-play i {
+    background: var(--primary-pink);
+    color: white;
+    transform: scale(1.1);
+}
+
+/* Video Modal */
+.video-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.video-modal.active {
+    display: flex;
+    opacity: 1;
+}
+
+.video-modal-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.88);
+    backdrop-filter: blur(4px);
+}
+
+.video-modal-content {
+    position: relative;
+    z-index: 1;
+    width: 90vw;
+    max-width: 900px;
+    transform: scale(0.92);
+    transition: transform 0.3s ease;
+}
+
+.video-modal.active .video-modal-content {
+    transform: scale(1);
+}
+
+.video-modal-close {
+    position: absolute;
+    top: -2.5rem;
+    right: 0;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.8;
+    transition: var(--transition);
+}
+
+.video-modal-close:hover {
+    opacity: 1;
+    transform: scale(1.15);
+}
+
+.video-wrapper {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: black;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.video-wrapper video {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.video-modal-label {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.85rem;
+    margin-top: 0.75rem;
+    margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+    .tv-badge {
+        bottom: 1.5rem;
+        right: 1rem;
+    }
+
+    .tv-badge-thumb {
+        width: 130px;
+    }
+
+    .video-modal-content {
+        width: 95vw;
+    }
+}
+
 /* Button Base Styles */
 .cta-button,
 .secondary-button {
@@ -687,7 +873,7 @@ p {
 .gallery-caption p {
     color: #fff !important;
     background: none !important;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5) !important; /* Added text shadow for better readability */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5) !important;
     margin: 0 0 0.5rem 0;
     padding: 0;
     border: none;
@@ -701,24 +887,10 @@ p {
 
 .gallery-caption p {
     font-size: 0.95rem;
-    font-weight: 400;
+    font-weight: 500;
     margin-bottom: 0;
     line-height: 1.5;
-}
-
-/* Consolidated gallery caption styles */
-.gallery-caption h3 {
-    margin-bottom: 0.5rem;
-    font-size: 1.2rem;
-    font-weight: 700;
-}
-
-.gallery-caption p {
-    font-size: 0.9rem;
     opacity: 1;
-    margin-bottom: 0;
-    line-height: 1.4;
-    font-weight: 500;
 }
 
 /* CTA Section */
@@ -1500,6 +1672,58 @@ p {
     }
 }
 
+/* Form Validation */
+.form-group input.error,
+.form-group textarea.error,
+.form-group select.error {
+    border-color: #ff6b6b;
+    box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
+}
+
+.error-message {
+    color: #ff6b6b;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.success-message {
+    background: var(--accent-mint);
+    color: var(--text-dark);
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    margin-top: 1rem;
+    text-align: center;
+    font-weight: 500;
+}
+
+/* Interactive card/image cursors */
+.cake-card .cake-image img,
+.gallery-item img,
+.cake-info,
+.gallery-caption {
+    cursor: pointer;
+}
+
+.cake-card .cake-image img:hover,
+.gallery-item img:hover {
+    opacity: 0.9;
+}
+
+.cake-info:hover h3,
+.cake-info:hover p {
+    color: var(--primary-pink) !important;
+}
+
+/* Page load fade-in */
+body {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+body.loaded {
+    opacity: 1;
+}
+
 /* Utility Classes */
 .text-center { text-align: center; }
 .mb-2 { margin-bottom: 2rem; }
@@ -1792,60 +2016,4 @@ p {
     animation: modalFadeIn 0.3s ease;
 }
 
-/* Legacy Lightbox Styles (for backward compatibility) */
-.lightbox {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.9);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 10000;
-}
-
-.lightbox.active {
-    display: flex;
-}
-
-.lightbox-content {
-    position: relative;
-    max-width: 90%;
-    max-height: 90%;
-}
-
-.lightbox-image {
-    width: 100%;
-    height: auto;
-    border-radius: var(--border-radius);
-}
-
-.lightbox-caption {
-    color: white;
-    text-align: center;
-    margin-top: 1rem;
-    font-size: 1.1rem;
-}
-
-.lightbox-close {
-    position: absolute;
-    top: -40px;
-    right: 0;
-    background: none;
-    border: none;
-    color: white;
-    font-size: 2rem;
-    cursor: pointer;
-    padding: 0;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.lightbox-close:hover {
-    color: var(--primary-pink);
-} 
+ 

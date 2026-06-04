@@ -1,3 +1,36 @@
+// NBC Video Modal
+(function () {
+    const badge = document.getElementById('tv-badge');
+    const modal = document.getElementById('video-modal');
+    const overlay = document.getElementById('video-modal-overlay');
+    const closeBtn = document.getElementById('video-modal-close');
+    const video = document.getElementById('nbc-video');
+
+    if (!badge || !modal) return;
+
+    function openVideoModal() {
+        modal.style.display = 'flex';
+        requestAnimationFrame(() => modal.classList.add('active'));
+        document.body.style.overflow = 'hidden';
+        video.play();
+    }
+
+    function closeVideoModal() {
+        modal.classList.remove('active');
+        video.pause();
+        video.currentTime = 0;
+        document.body.style.overflow = '';
+        setTimeout(() => { modal.style.display = 'none'; }, 300);
+    }
+
+    badge.addEventListener('click', openVideoModal);
+    closeBtn.addEventListener('click', closeVideoModal);
+    overlay.addEventListener('click', closeVideoModal);
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) closeVideoModal();
+    });
+})();
+
 // Mobile Navigation Toggle
 const navToggle = document.getElementById('nav-toggle');
 const navMenu = document.getElementById('nav-menu');
@@ -134,34 +167,6 @@ function validateForm(form) {
     return isValid;
 }
 
-// Add form validation styles
-const style = document.createElement('style');
-style.textContent = `
-    .form-group input.error,
-    .form-group textarea.error,
-    .form-group select.error {
-        border-color: #ff6b6b;
-        box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
-    }
-    
-    .error-message {
-        color: #ff6b6b;
-        font-size: 0.875rem;
-        margin-top: 0.25rem;
-    }
-    
-    .success-message {
-        background: var(--accent-mint);
-        color: var(--text-dark);
-        padding: 1rem;
-        border-radius: var(--border-radius);
-        margin-top: 1rem;
-        text-align: center;
-        font-weight: 500;
-    }
-`;
-document.head.appendChild(style);
-
 // Simple informational modal for validation errors
 function showInfoModal(title, messages) {
     const existing = document.getElementById('info-modal');
@@ -284,8 +289,7 @@ function updateFeaturedCakes(featuredContent) {
             </div>
         `).join('');
         
-        // Re-initialize image modal for new content
-        initializeImageModal();
+        window.initializeLightbox();
     }
 }
 
@@ -305,27 +309,98 @@ function updateAboutPreview(aboutContent) {
 }
 
 function loadFallbackContent() {
-    // Fallback content when Supabase fails
-    const cakesGrid = document.querySelector('.cakes-grid');
-    const aboutText = document.querySelector('.about-preview .about-text h2');
-    const aboutDesc = document.querySelector('.about-preview .about-text p');
+    // Fallback content when Supabase fails - load from local JSON
+    console.log('Loading fallback content from local JSON...');
     
-    if (cakesGrid) {
-        cakesGrid.innerHTML = `
-            <div class="cake-card">
-                <div class="cake-image">
-                    <img src="images/gallery/ChocolateFloralTier.jpg" alt="Featured Cake" loading="lazy">
-                </div>
-                <div class="cake-info">
-                    <h3>Custom Cakes</h3>
-                    <p>Beautiful custom cakes for your special occasions</p>
-                </div>
-            </div>
-        `;
-    }
-    
-    if (aboutText) aboutText.textContent = "Meet the Baker";
-    if (aboutDesc) aboutDesc.textContent = "Creating sweet moments with every cake.";
+    fetch('images/index/index_data.json')
+        .then(response => response.json())
+        .then(data => {
+            // Process data
+            const heroItems = data.filter(d => d.type === 'hero');
+            const featuredItems = data.filter(d => d.type === 'featured');
+            const aboutItems = data.filter(d => d.type === 'about');
+            
+            // Update hero section
+            if (heroItems.length > 0) {
+                const heroTitle = document.querySelector('.hero-title');
+                const heroSubtitle = document.querySelector('.hero-subtitle');
+                if (heroTitle) heroTitle.textContent = heroItems[0].title;
+                if (heroSubtitle) heroSubtitle.textContent = heroItems[0].description;
+            }
+            
+            // Update featured cakes
+            const cakesGrid = document.querySelector('.cakes-grid');
+            if (cakesGrid && featuredItems.length > 0) {
+                cakesGrid.innerHTML = '';
+                featuredItems.forEach((item, index) => {
+                    const cakeCard = document.createElement('div');
+                    cakeCard.className = 'cake-card fade-in';
+                    cakeCard.style.animationDelay = `${index * 0.2}s`;
+                    cakeCard.innerHTML = `
+                        <div class="cake-image">
+                            <img src="${item.path}" alt="${item.title}" loading="lazy">
+                        </div>
+                        <div class="cake-info">
+                            <h3>${item.title}</h3>
+                            <p>${item.description}</p>
+                        </div>
+                    `;
+                    cakesGrid.appendChild(cakeCard);
+                });
+            }
+            
+            // Update about section
+            if (aboutItems.length > 0) {
+                const aboutImageContainer = document.querySelector('.about-preview .about-image');
+                const aboutLoading = aboutImageContainer?.querySelector('.loading');
+                if (aboutLoading) {
+                    const img = document.createElement('img');
+                    img.src = aboutItems[0].path;
+                    img.alt = aboutItems[0].title;
+                    img.className = 'fade-in';
+                    img.onload = () => {
+                        aboutLoading.remove();
+                        aboutImageContainer.appendChild(img);
+                    };
+                }
+                
+                const aboutTitle = document.querySelector('.about-preview .about-text h2');
+                const aboutDesc = document.querySelector('.about-preview .about-text p');
+                if (aboutTitle) aboutTitle.textContent = aboutItems[0].title;
+                if (aboutDesc) aboutDesc.textContent = aboutItems[0].description;
+            }
+            
+            console.log('✅ Fallback content loaded from local JSON');
+        })
+        .catch(error => {
+            console.error('Error loading fallback content:', error);
+            // Last resort fallback
+            const heroTitle = document.querySelector('.hero-title');
+            const heroSubtitle = document.querySelector('.hero-subtitle');
+            const cakesGrid = document.querySelector('.cakes-grid');
+            const aboutText = document.querySelector('.about-preview .about-text h2');
+            const aboutDesc = document.querySelector('.about-preview .about-text p');
+            
+            if (heroTitle) heroTitle.textContent = "Custom Cakes That Capture Your Sweetest Moments";
+            if (heroSubtitle) heroSubtitle.textContent = "Creatively Delicious";
+            
+            if (cakesGrid) {
+                cakesGrid.innerHTML = `
+                    <div class="cake-card">
+                        <div class="cake-image">
+                            <img src="images/gallery/ChocolateFloralTier.jpg" alt="Featured Cake" loading="lazy">
+                        </div>
+                        <div class="cake-info">
+                            <h3>Custom Cakes</h3>
+                            <p>Beautiful custom cakes for your special occasions</p>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            if (aboutText) aboutText.textContent = "Meet the Baker";
+            if (aboutDesc) aboutDesc.textContent = "Creating sweet moments with every cake.";
+        });
 }
 
 // Gallery content loading
@@ -349,25 +424,40 @@ async function loadGalleryContent() {
                     </div>
                 </div>
             `).join('');
-            
-            // Re-initialize image modal for gallery
-            initializeImageModal();
-            
-            console.log('✅ Gallery content loaded from Supabase');
+            window.initializeLightbox();
         } else {
-            console.warn('Failed to load gallery from Supabase');
+            await loadGalleryFallback(galleryGrid);
         }
     } catch (error) {
-        console.error('Error loading gallery content:', error);
+        await loadGalleryFallback(galleryGrid);
+    }
+}
+
+async function loadGalleryFallback(galleryGrid) {
+    try {
+        const response = await fetch('images/gallery/gallery_data.json');
+        const data = await response.json();
+        galleryGrid.innerHTML = data.map(item => `
+            <div class="gallery-item" data-title="${item.title}" data-description="${item.description}">
+                <img src="${item.path}" alt="${item.title}" loading="lazy">
+                <div class="gallery-caption">
+                    <h3>${item.title}</h3>
+                    <p>${item.description}</p>
+                </div>
+            </div>
+        `).join('');
+        window.initializeLightbox();
+    } catch (err) {
+        galleryGrid.innerHTML = '<p>Unable to load gallery images. Please try again later.</p>';
     }
 }
 
 // About page content loading
 async function loadAboutContent() {
-    const aboutImage = document.querySelector('.about-image');
-    const aboutTitle = document.querySelector('.about-text h2');
-    const aboutDesc = document.querySelector('.about-text p');
-    
+    const aboutImage = document.querySelector('.about-section .about-image');
+    const aboutTitle = document.querySelector('.about-section .about-text h2');
+    const aboutDesc = document.querySelector('.about-section .about-text p');
+
     if (!aboutImage) return; // Not on about page
     
     try {
@@ -398,38 +488,37 @@ async function loadAboutContent() {
             }
         }
     } catch (error) {
-        console.error('Error loading about content:', error);
-        
-        // Fallback content
+        await loadAboutFallback(aboutImage, aboutTitle, aboutDesc);
+    }
+}
+
+async function loadAboutFallback(aboutImage, aboutTitle, aboutDesc) {
+    try {
+        const response = await fetch('images/about/about_data.json');
+        const data = await response.json();
+        const item = data.find(d => d.type === 'profile') || data[0];
+        if (!item) throw new Error('No data');
+
         if (aboutImage) {
-            aboutImage.innerHTML = `
-                <img src="images/about/Nomi.jpg" alt="About the Baker" loading="lazy">
-            `;
+            const loading = aboutImage.querySelector('.loading');
+            const img = document.createElement('img');
+            img.src = item.path;
+            img.alt = item.title;
+            img.className = 'fade-in';
+            img.onload = () => { if (loading) loading.remove(); aboutImage.appendChild(img); };
+            img.onerror = () => { if (loading) loading.innerHTML = '<i class="fas fa-exclamation-triangle"></i><p>Unable to load image</p>'; };
         }
-        if (aboutTitle && aboutTitle.textContent === 'Loading...') {
-            aboutTitle.textContent = "Hi, I'm Nomi!";
-        }
-        if (aboutDesc && aboutDesc.textContent === 'Loading...') {
-            aboutDesc.textContent = "Baking has always been my love language.";
-        }
+        if (aboutTitle && aboutTitle.textContent === 'Loading...') aboutTitle.textContent = item.title;
+        if (aboutDesc && aboutDesc.textContent === 'Loading...') aboutDesc.textContent = item.description;
+    } catch (err) {
+        if (aboutImage) aboutImage.innerHTML = '<img src="images/about/Nomi.jpg" alt="About the Baker" loading="lazy">';
+        if (aboutTitle && aboutTitle.textContent === 'Loading...') aboutTitle.textContent = "Hi, I'm Nomi!";
+        if (aboutDesc && aboutDesc.textContent === 'Loading...') aboutDesc.textContent = "Baking has always been my love language.";
     }
 }
 
 // Make SANDBOX_MODE available globally for admin panel
 window.SANDBOX_MODE = SANDBOX_MODE;
-
-// Debug: Log sandbox mode on page load
-console.log('Script loaded. SANDBOX_MODE:', SANDBOX_MODE);
-console.log('Current timestamp:', new Date().toISOString());
-console.log('Script version: 2025-07-13-17:12');
-
-// Test if script is running
-window.testSandboxMode = function() {
-    console.log('Manual test - SANDBOX_MODE:', SANDBOX_MODE);
-    console.log('Manual test - localStorage test:', localStorage.getItem('test') || 'undefined');
-    localStorage.setItem('test', 'working');
-    console.log('Manual test - localStorage after set:', localStorage.getItem('test'));
-};
 
 // Sandbox storage functions
 function saveSandboxRequest(requestData) {
@@ -769,123 +858,43 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Initialize modal after content is loaded
     initializeImageModal();
-    
-    // Setup click handlers for gallery items (for gallery page)
-    setTimeout(() => {
-        const galleryItems = document.querySelectorAll('.gallery-item');
-        galleryItems.forEach(item => {
-            const img = item.querySelector('img');
-            const caption = item.querySelector('.gallery-caption');
-            
-            if (img) {
-                // Create a single click handler function
-                const openGalleryModal = () => {
-                    const title = caption ? caption.querySelector('h3')?.textContent || img.alt : img.alt;
-                    const description = caption ? caption.querySelector('p')?.textContent || '' : '';
-                    
-                    if (window.openImageModal) {
-                        window.openImageModal(img.src, title, description);
-                    }
-                };
-                
-                // Add click handlers to both image and caption
-                img.addEventListener('click', openGalleryModal);
-                if (caption) {
-                    caption.addEventListener('click', openGalleryModal);
-                }
-            }
-        });
-    }, 100); // Small delay to ensure images are loaded
-    
-    // Setup click handlers for cake cards (for index page)
-    setTimeout(() => {
-        const cakeCards = document.querySelectorAll('.cake-card');
-        cakeCards.forEach(card => {
-            const img = card.querySelector('.cake-image img');
-            const cakeInfo = card.querySelector('.cake-info');
-            
-            if (img) {
-                // Create a single click handler function
-                const openCakeModal = () => {
-                    const title = cakeInfo ? cakeInfo.querySelector('h3')?.textContent || img.alt : img.alt;
-                    const description = cakeInfo ? cakeInfo.querySelector('p')?.textContent || '' : '';
-                    
-                    if (window.openImageModal) {
-                        window.openImageModal(img.src, title, description);
-                    }
-                };
-                
-                // Add click handlers to both image and cake info
-                img.addEventListener('click', openCakeModal);
-                if (cakeInfo) {
-                    cakeInfo.addEventListener('click', openCakeModal);
-                }
-            }
-        });
-    }, 100); // Small delay to ensure images are loaded
-    
-    // Make images and descriptions clickable by adding cursor pointer
-    const style = document.createElement('style');
-    style.textContent = `
-        .cake-card .cake-image img,
-        .gallery-item img,
-        .cake-info,
-        .gallery-caption {
-            cursor: pointer;
-        }
-        
-        .cake-card .cake-image img:hover,
-        .gallery-item img:hover {
-            opacity: 0.9;
-        }
-        
-        .cake-info:hover h3,
-        .cake-info:hover p {
-            color: var(--primary-pink) !important;
-        }
-    `;
-    document.head.appendChild(style);
+    window.initializeLightbox();
 });
 
-// Global function to reinitialize modal for dynamically loaded content
+// Reinitialize click handlers for dynamically loaded gallery items and cake cards
 window.initializeLightbox = function() {
-    // Re-setup click handlers for dynamically loaded gallery items
-    const galleryItems = document.querySelectorAll('.gallery-item');
-    galleryItems.forEach(item => {
+    function bindModalClick(trigger, getTitle, getDescription) {
+        if (!trigger) return;
+        if (trigger._modalClickHandler) {
+            trigger.removeEventListener('click', trigger._modalClickHandler);
+        }
+        const handler = () => {
+            if (window.openImageModal) {
+                window.openImageModal(getTitle(), getDescription());
+            }
+        };
+        trigger._modalClickHandler = handler;
+        trigger.addEventListener('click', handler);
+    }
+
+    document.querySelectorAll('.gallery-item').forEach(item => {
         const img = item.querySelector('img');
         const caption = item.querySelector('.gallery-caption');
-        
-        if (img) {
-            // Remove existing listeners to prevent duplicates
-            if (img._modalClickHandler) {
-                img.removeEventListener('click', img._modalClickHandler);
-            }
-            if (caption && caption._modalClickHandler) {
-                caption.removeEventListener('click', caption._modalClickHandler);
-            }
-            
-            // Create new handler
-            const openGalleryModal = () => {
-                const title = caption ? caption.querySelector('h3')?.textContent || img.alt : img.alt;
-                const description = caption ? caption.querySelector('p')?.textContent || '' : '';
-                
-                if (window.openImageModal) {
-                    window.openImageModal(img.src, title, description);
-                }
-            };
-            
-            // Store references for cleanup
-            img._modalClickHandler = openGalleryModal;
-            if (caption) {
-                caption._modalClickHandler = openGalleryModal;
-            }
-            
-            // Add event listeners
-            img.addEventListener('click', openGalleryModal);
-            if (caption) {
-                caption.addEventListener('click', openGalleryModal);
-            }
-        }
+        if (!img) return;
+        const getTitle = () => caption?.querySelector('h3')?.textContent || img.alt;
+        const getDescription = () => caption?.querySelector('p')?.textContent || '';
+        bindModalClick(img, getTitle, getDescription);
+        bindModalClick(caption, getTitle, getDescription);
+    });
+
+    document.querySelectorAll('.cake-card').forEach(card => {
+        const img = card.querySelector('.cake-image img');
+        const info = card.querySelector('.cake-info');
+        if (!img) return;
+        const getTitle = () => info?.querySelector('h3')?.textContent || img.alt;
+        const getDescription = () => info?.querySelector('p')?.textContent || '';
+        bindModalClick(img, getTitle, getDescription);
+        bindModalClick(info, getTitle, getDescription);
     });
 };
 
@@ -900,21 +909,7 @@ window.addEventListener('scroll', () => {
     }
 });
 
-// Add loading animation
+// Fade in page on load
 window.addEventListener('load', () => {
     document.body.classList.add('loaded');
-});
-
-// Add loading styles
-const loadingStyle = document.createElement('style');
-loadingStyle.textContent = `
-    body {
-        opacity: 0;
-        transition: opacity 0.5s ease;
-    }
-    
-    body.loaded {
-        opacity: 1;
-    }
-`;
-document.head.appendChild(loadingStyle); 
+}); 

@@ -145,50 +145,6 @@
         </div>
     </div>
 
-    <!-- Gallery Loading Script -->
-    <script>
-        // Load gallery images from local files
-        async function loadGalleryImages() {
-            const galleryContainer = document.getElementById('gallery-container');
-            
-            try {
-                // Load gallery data from JSON file
-                const response = await fetch('images/gallery/gallery_data.json');
-                const galleryData = await response.json();
-                
-                // Clear loading message
-                galleryContainer.innerHTML = '';
-                
-                // Create gallery items for each image
-                galleryData.forEach(item => {
-                    const galleryItem = document.createElement('div');
-                    galleryItem.className = 'gallery-item';
-                    galleryItem.innerHTML = `
-                        <img src="${item.path}" alt="${item.title}" loading="lazy">
-                        <div class="gallery-caption">
-                            <h3>${item.title}</h3>
-                            <p>${item.description}</p>
-                        </div>
-                    `;
-                    
-                    galleryContainer.appendChild(galleryItem);
-                });
-                
-                // Reinitialize lightbox for new images
-                if (window.initializeLightbox) {
-                    window.initializeLightbox();
-                }
-                
-            } catch (error) {
-                console.error('Error loading gallery images:', error);
-                galleryContainer.innerHTML = '<p>Unable to load gallery images. Please try again later.</p>';
-            }
-        }
-        
-        // Load gallery when page loads
-        document.addEventListener('DOMContentLoaded', loadGalleryImages);
-    </script>
-
     <!-- JavaScript -->
     <script src="config.js"></script>
     <script src="script.js"></script>

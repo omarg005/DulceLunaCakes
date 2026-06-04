@@ -236,55 +236,5 @@
     <!-- JavaScript -->
     <script src="config.js"></script>
     <script src="script.js"></script>
-    <script>
-        // Load and populate content from JSON
-        async function loadAboutContent() {
-            try {
-                const response = await fetch('images/about/about_data.json');
-                const data = await response.json();
-                
-                const profileItems = data.filter(d => d.type === 'profile');
-                
-                if (profileItems.length > 0) {
-                    const item = profileItems[0];
-                    
-                    // Update about image with loading state
-                    const aboutImageContainer = document.querySelector('.about-section .about-image');
-                    const aboutLoading = aboutImageContainer.querySelector('.loading');
-                    if (aboutLoading) {
-                        const img = document.createElement('img');
-                        img.src = item.path;
-                        img.alt = item.title;
-                        img.className = 'fade-in';
-                        img.onload = () => {
-                            aboutLoading.remove();
-                            aboutImageContainer.appendChild(img);
-                        };
-                        img.onerror = () => {
-                            aboutLoading.innerHTML = '<i class="fas fa-exclamation-triangle"></i><p>Unable to load image</p>';
-                        };
-                    }
-                    
-                    // Update text content
-                    const aboutTitle = document.querySelector('.about-section .about-text h2');
-                    const aboutDesc = document.querySelector('.about-section .about-text p');
-                    if (aboutTitle) aboutTitle.textContent = item.title;
-                    if (aboutDesc) aboutDesc.textContent = item.description;
-                }
-                
-            } catch (error) {
-                console.error('Error loading about content:', error);
-                // Show error state
-                const aboutImageContainer = document.querySelector('.about-section .about-image');
-                const aboutLoading = aboutImageContainer.querySelector('.loading');
-                if (aboutLoading) {
-                    aboutLoading.innerHTML = '<i class="fas fa-exclamation-triangle"></i><p>Unable to load content</p>';
-                }
-            }
-        }
-        
-        // Load content when page loads
-        document.addEventListener('DOMContentLoaded', loadAboutContent);
-    </script>
 </body>
 </html> 
