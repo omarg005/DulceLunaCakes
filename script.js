@@ -833,14 +833,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // Reinitialize click handlers for dynamically loaded gallery items and cake cards
 window.initializeLightbox = function() {
-    function bindModalClick(trigger, getTitle, getDescription) {
+    function bindModalClick(trigger, getSrc, getTitle, getDescription) {
         if (!trigger) return;
         if (trigger._modalClickHandler) {
             trigger.removeEventListener('click', trigger._modalClickHandler);
         }
         const handler = () => {
             if (window.openImageModal) {
-                window.openImageModal(getTitle(), getDescription());
+                window.openImageModal(getSrc(), getTitle(), getDescription());
             }
         };
         trigger._modalClickHandler = handler;
@@ -851,20 +851,22 @@ window.initializeLightbox = function() {
         const img = item.querySelector('img');
         const caption = item.querySelector('.gallery-caption');
         if (!img) return;
+        const getSrc = () => img.src;
         const getTitle = () => caption?.querySelector('h3')?.textContent || img.alt;
         const getDescription = () => caption?.querySelector('p')?.textContent || '';
-        bindModalClick(img, getTitle, getDescription);
-        bindModalClick(caption, getTitle, getDescription);
+        bindModalClick(img, getSrc, getTitle, getDescription);
+        bindModalClick(caption, getSrc, getTitle, getDescription);
     });
 
     document.querySelectorAll('.cake-card').forEach(card => {
         const img = card.querySelector('.cake-image img');
         const info = card.querySelector('.cake-info');
         if (!img) return;
+        const getSrc = () => img.src;
         const getTitle = () => info?.querySelector('h3')?.textContent || img.alt;
         const getDescription = () => info?.querySelector('p')?.textContent || '';
-        bindModalClick(img, getTitle, getDescription);
-        bindModalClick(info, getTitle, getDescription);
+        bindModalClick(img, getSrc, getTitle, getDescription);
+        bindModalClick(info, getSrc, getTitle, getDescription);
     });
 };
 
