@@ -121,12 +121,6 @@ p {
     padding: 6px 0;
 }
 
-@media (max-width: 600px) {
-    .nav-title {
-        display: none;
-    }
-}
-
 .nav-menu {
     display: flex;
     list-style: none;
