@@ -1,8 +1,10 @@
 /* CSS Variables for Color Palette */
 :root {
-    --primary-pink: #8b5f82;
-    --secondary-lavender: #e6d7ff;
-    --accent-mint: #b8e6b8;
+    --primary-pink: #E8175D;
+    --secondary-lavender: #FFE0EC;
+    --accent-mint: #FFF0E6;
+    --accent-orange: #F26522;
+    --accent-gold: #C9952A;
     --neutral-ivory: #fefefe;
     --text-dark: #2c2c2c;
     --text-light: #666666;
@@ -87,10 +89,11 @@ p {
     font-size: 1.5rem;
 }
 
-.logo i {
-    color: #8b5f82;
-    margin-right: 0.5rem;
-    font-size: 1.8rem;
+.logo-img {
+    height: 56px;
+    width: auto;
+    border-radius: 8px;
+    display: block;
 }
 
 .nav-menu {
@@ -674,8 +677,8 @@ p {
 }
 
 .scroll-top:hover {
-    background: var(--secondary-lavender);
-    color: var(--text-dark);
+    background: var(--accent-orange);
+    color: white;
     transform: translateY(-3px);
 }
 
@@ -854,7 +857,7 @@ p {
     bottom: 0;
     left: 0;
     right: 0;
-    background: rgba(184, 230, 184, 0.75); /* Changed from rgba(0,0,0,0.55) to semi-transparent accent-mint */
+    background: rgba(232, 23, 93, 0.82);
     color: #fff;
     padding: 1.5rem 1.2rem 1.2rem;
     transform: translateY(100%);
@@ -866,7 +869,7 @@ p {
 }
 
 .gallery-caption:hover {
-    background: rgba(184, 230, 184, 0.9);
+    background: rgba(232, 23, 93, 0.95);
 }
 
 .gallery-caption h3,
@@ -1003,8 +1006,8 @@ p {
 }
 
 .submit-button:hover {
-    background: var(--secondary-lavender);
-    color: var(--text-dark);
+    background: var(--accent-orange);
+    color: white;
     transform: translateY(-2px);
 }
 
@@ -1509,8 +1512,8 @@ p {
 }
 
 .action-button:hover {
-    background: var(--secondary-lavender);
-    color: var(--text-dark);
+    background: var(--accent-orange);
+    color: white;
 }
 
 .action-button.small {
