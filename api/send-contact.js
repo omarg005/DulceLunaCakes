@@ -13,7 +13,7 @@ module.exports = async function handler(req, res) {
     }
 
     const RESEND_API_KEY = process.env.RESEND_API_KEY;
-    const TO_EMAIL = process.env.CONTACT_EMAIL || 'omarg005@gmail.com';
+    const TO_EMAIL = process.env.CONTACT_EMAIL || 'nomi@dulcelunacakes.com';
 
     if (!RESEND_API_KEY) {
         return res.status(500).json({ success: false, error: 'RESEND_API_KEY environment variable is not set.' });
@@ -42,7 +42,7 @@ module.exports = async function handler(req, res) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                from: 'Dulce Luna Cakes <onboarding@resend.dev>',
+                from: 'Dulce Luna Cakes <nomi@dulcelunacakes.com>',
                 to: [TO_EMAIL],
                 reply_to: email,
                 subject: subjectLine,

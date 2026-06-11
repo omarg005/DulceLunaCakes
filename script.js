@@ -367,7 +367,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const msg = document.createElement('div');
             msg.className = 'error-message';
             msg.style.cssText = 'background:#fee;color:#c33;padding:1rem;border-radius:var(--border-radius);margin-top:1rem;text-align:center;border:1px solid #fcc;';
-            msg.innerHTML = `<i class="fas fa-exclamation-circle"></i> <strong>Couldn't send message.</strong> ${err.message} — Please email us directly at <a href="mailto:hello@dulcelunacakes.com">hello@dulcelunacakes.com</a>.`;
+            msg.innerHTML = `<i class="fas fa-exclamation-circle"></i> <strong>Couldn't send message.</strong> ${err.message} — Please email us directly at <a href="mailto:nomi@dulcelunacakes.com">nomi@dulcelunacakes.com</a>.`;
             form.appendChild(msg);
             setTimeout(() => msg.remove(), 8000);
         } finally {
