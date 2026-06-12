@@ -1,6 +1,28 @@
 // Prevent Instagram/in-app browser text scaling
 document.documentElement.style.webkitTextSizeAdjust = 'none';
 
+// Force correct hero font size using actual pixel width — bypasses Instagram IAB CSS overrides
+(function fixHeroSize() {
+    function apply() {
+        const title = document.querySelector('.hero-title');
+        const sub = document.querySelector('.hero-subtitle');
+        if (!title) return;
+        const w = window.innerWidth;
+        if (w <= 768) {
+            const titlePx = Math.max(20, Math.min(36, Math.round(w * 0.075)));
+            const subPx = Math.max(14, Math.min(20, Math.round(w * 0.042)));
+            title.style.setProperty('font-size', titlePx + 'px', 'important');
+            if (sub) sub.style.setProperty('font-size', subPx + 'px', 'important');
+        }
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', apply);
+    } else {
+        apply();
+    }
+    window.addEventListener('resize', apply);
+}());
+
 // NBC Video Modal
 (function () {
     const badge = document.getElementById('tv-badge');
