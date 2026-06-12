@@ -27,6 +27,12 @@ html {
     text-size-adjust: none;
 }
 
+/* Disable Android WebView font boosting (Instagram in-app browser).
+   The boosting algorithm skips blocks with a max-height set. */
+body * {
+    max-height: 999999px;
+}
+
 body {
     font-family: 'Poppins', sans-serif;
     line-height: 1.6;
