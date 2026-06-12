@@ -20,6 +20,8 @@ document.documentElement.style.webkitTextSizeAdjust = 'none';
     } else {
         apply();
     }
+    // Re-apply after dynamic content loads (hero text set via JS)
+    document.addEventListener('DOMContentLoaded', () => setTimeout(apply, 300));
     window.addEventListener('resize', apply);
 }());
 
