@@ -1,3 +1,6 @@
+// Prevent Instagram/in-app browser text scaling
+document.documentElement.style.webkitTextSizeAdjust = 'none';
+
 // NBC Video Modal
 (function () {
     const badge = document.getElementById('tv-badge');
