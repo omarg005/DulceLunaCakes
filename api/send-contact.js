@@ -13,7 +13,7 @@ module.exports = async function handler(req, res) {
     }
 
     const RESEND_API_KEY = process.env.RESEND_API_KEY;
-    const TO_EMAIL = process.env.CONTACT_EMAIL || 'nomi@dulcelunacakes.com';
+    const TO_EMAIL = process.env.CONTACT_EMAIL || 'nomi@dulcelunacakes.com'; // override in Vercel env vars if needed
 
     if (!RESEND_API_KEY) {
         return res.status(500).json({ success: false, error: 'RESEND_API_KEY environment variable is not set.' });
