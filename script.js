@@ -1,22 +1,67 @@
 // Prevent Instagram/in-app browser text scaling
 document.documentElement.style.webkitTextSizeAdjust = 'none';
 
-// Force correct hero font size — works around Instagram Android WebView viewport misreporting
-(function fixHeroSize() {
+// Counteract in-app browser text zoom (Instagram Android WebView scales all text
+// by the system font-size setting; CSS cannot override it). We measure the real
+// zoom factor by comparing DOM-rendered text width against canvas-drawn text width
+// (canvas ignores textZoom), then shrink font sizes to compensate.
+(function fixTextZoom() {
+    function measureZoom() {
+        try {
+            const sample = 'abcdefghijklmnopqrstuvwxyz0123456789';
+            const probe = document.createElement('span');
+            probe.style.cssText = 'position:absolute;left:-9999px;top:0;visibility:hidden;font:32px monospace;letter-spacing:normal;white-space:nowrap;';
+            probe.textContent = sample;
+            document.body.appendChild(probe);
+            const domWidth = probe.getBoundingClientRect().width;
+            document.body.removeChild(probe);
+            const ctx = document.createElement('canvas').getContext('2d');
+            ctx.font = '32px monospace';
+            const canvasWidth = ctx.measureText(sample).width;
+            if (!domWidth || !canvasWidth) return 1;
+            const zoom = domWidth / canvasWidth;
+            return (zoom > 1.05 && zoom < 4) ? zoom : 1;
+        } catch (e) {
+            return 1;
+        }
+    }
+
     function apply() {
+        const zoom = measureZoom();
+        // Shrink the rem base so all rem-sized text renders at intended size
+        document.documentElement.style.fontSize = zoom === 1 ? '' : (16 / zoom) + 'px';
+
+        // Hero text uses vw-based clamp; set explicit px (divided by zoom) instead
+        const w = document.documentElement.clientWidth || window.innerWidth;
         const title = document.querySelector('.hero-title');
         const sub = document.querySelector('.hero-subtitle');
-        if (!title) return;
-        // Use clientWidth as it's most reliable in Android WebView
-        const w = document.documentElement.clientWidth || window.innerWidth;
-        // Apply at all sizes — clamp keeps desktop looking correct
-        const titlePx = Math.max(18, Math.min(56, Math.round(w * 0.075)));
-        const subPx = Math.max(13, Math.min(22, Math.round(w * 0.042)));
-        title.style.setProperty('font-size', titlePx + 'px', 'important');
-        if (sub) sub.style.setProperty('font-size', subPx + 'px', 'important');
+        if (title) {
+            const titlePx = Math.max(18, Math.min(56, Math.round(w * 0.075)));
+            title.style.setProperty('font-size', Math.round(titlePx / zoom) + 'px', 'important');
+        }
+        if (sub) {
+            const subPx = Math.max(13, Math.min(22, Math.round(w * 0.042)));
+            sub.style.setProperty('font-size', Math.round(subPx / zoom) + 'px', 'important');
+        }
+
+        // Debug overlay: open the site with #fontdebug to see measured values
+        if (location.hash === '#fontdebug') {
+            let dbg = document.getElementById('font-debug');
+            if (!dbg) {
+                dbg = document.createElement('div');
+                dbg.id = 'font-debug';
+                dbg.style.cssText = 'position:fixed;bottom:0;left:0;z-index:99999;background:#000;color:#0f0;font:12px monospace;padding:6px;';
+                document.body.appendChild(dbg);
+            }
+            dbg.textContent = 'zoom=' + zoom.toFixed(2) + ' innerW=' + window.innerWidth + ' clientW=' + document.documentElement.clientWidth + ' dpr=' + window.devicePixelRatio;
+        }
     }
-    apply();
-    document.addEventListener('DOMContentLoaded', apply);
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', apply);
+    } else {
+        apply();
+    }
     document.addEventListener('DOMContentLoaded', () => {
         setTimeout(apply, 200);
         setTimeout(apply, 800);
