@@ -1,27 +1,26 @@
 // Prevent Instagram/in-app browser text scaling
 document.documentElement.style.webkitTextSizeAdjust = 'none';
 
-// Force correct hero font size using actual pixel width — bypasses Instagram IAB CSS overrides
+// Force correct hero font size — works around Instagram Android WebView viewport misreporting
 (function fixHeroSize() {
     function apply() {
         const title = document.querySelector('.hero-title');
         const sub = document.querySelector('.hero-subtitle');
         if (!title) return;
-        const w = window.innerWidth;
-        if (w <= 768) {
-            const titlePx = Math.max(20, Math.min(36, Math.round(w * 0.075)));
-            const subPx = Math.max(14, Math.min(20, Math.round(w * 0.042)));
-            title.style.setProperty('font-size', titlePx + 'px', 'important');
-            if (sub) sub.style.setProperty('font-size', subPx + 'px', 'important');
-        }
+        // Use clientWidth as it's most reliable in Android WebView
+        const w = document.documentElement.clientWidth || window.innerWidth;
+        // Apply at all sizes — clamp keeps desktop looking correct
+        const titlePx = Math.max(18, Math.min(56, Math.round(w * 0.075)));
+        const subPx = Math.max(13, Math.min(22, Math.round(w * 0.042)));
+        title.style.setProperty('font-size', titlePx + 'px', 'important');
+        if (sub) sub.style.setProperty('font-size', subPx + 'px', 'important');
     }
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', apply);
-    } else {
-        apply();
-    }
-    // Re-apply after dynamic content loads (hero text set via JS)
-    document.addEventListener('DOMContentLoaded', () => setTimeout(apply, 300));
+    apply();
+    document.addEventListener('DOMContentLoaded', apply);
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(apply, 200);
+        setTimeout(apply, 800);
+    });
     window.addEventListener('resize', apply);
 }());
 
