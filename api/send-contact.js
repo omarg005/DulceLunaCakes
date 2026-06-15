@@ -6,7 +6,7 @@ module.exports = async function handler(req, res) {
     if (req.method === 'OPTIONS') return res.status(200).end();
     if (req.method !== 'POST') return res.status(405).json({ success: false, error: 'Method not allowed' });
 
-    const { 'contact-name': name, 'contact-email': email, 'contact-subject': subject, 'contact-message': message, 'contact-phone': phone, 'preferred-contact': preferredContact } = req.body || {};
+    const { 'contact-name': name, 'contact-email': email, 'contact-subject': subject, 'contact-flavor': flavor, 'contact-message': message, 'contact-phone': phone, 'preferred-contact': preferredContact } = req.body || {};
 
     if (!name || !email || !message) {
         return res.status(400).json({ success: false, error: 'Name, email, and message are required.' });
@@ -28,6 +28,7 @@ module.exports = async function handler(req, res) {
             <tr><td style="padding:6px 12px;font-weight:bold;">Email</td><td style="padding:6px 12px;"><a href="mailto:${email}">${email}</a></td></tr>
             ${phone ? `<tr><td style="padding:6px 12px;font-weight:bold;">Phone</td><td style="padding:6px 12px;">${phone}</td></tr>` : ''}
             ${subject ? `<tr><td style="padding:6px 12px;font-weight:bold;">Subject</td><td style="padding:6px 12px;">${subject}</td></tr>` : ''}
+            ${flavor ? `<tr><td style="padding:6px 12px;font-weight:bold;">Cake Flavor</td><td style="padding:6px 12px;">${flavor}</td></tr>` : ''}
             ${preferredContact ? `<tr><td style="padding:6px 12px;font-weight:bold;">Preferred Contact</td><td style="padding:6px 12px;">${preferredContact}</td></tr>` : ''}
         </table>
         <h3 style="margin-top:24px;">Message</h3>
