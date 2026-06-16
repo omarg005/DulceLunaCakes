@@ -215,7 +215,7 @@ p {
 @media (max-width: 768px) {
     .hero-cta-overlay {
         top: auto;
-        bottom: calc(5rem + 155px);
+        bottom: calc(5rem + 95px);
         left: 50%;
         transform: translateX(-50%);
         width: auto;
