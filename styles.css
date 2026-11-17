@@ -178,112 +178,234 @@ p {
     transition: var(--transition);
 }
 
-/* Hero Section — full image, fits above the fold */
+/* Hero Section — cream text column on the left, photo on the right.
+   The text never sits on the photo, so nothing gets cropped away. */
 .hero {
-    position: relative;
-    overflow: hidden;
-    height: 100dvh;
+    --hero-cream: #F5E5DB;   /* matches the photo's left-edge background */
+    --hero-rose: #C2506E;    /* dusty rose used for heading + buttons */
+    --hero-rose-dark: #A63F5A;
+    --header-offset: 92px;   /* fixed header height */
+
+    display: grid;
+    grid-template-columns: minmax(300px, 25%) 1fr;
     height: 100vh; /* fallback */
+    height: 100dvh;
+    min-height: 600px;
+    max-height: 1000px; /* avoid over-zooming the photo on very tall screens */
+    padding-top: var(--header-offset);
+    background: var(--hero-cream);
+    overflow: hidden;
 }
 
-.hero-bg-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: top center;
-    display: block;
+/* Rows: [space down to the shelf line] [headline+heart] [paragraph]
+         [flexible row — button centered in it] [NBC badge] */
+.hero-text {
+    display: grid;
+    grid-template-rows: 12.5% auto auto auto 1fr auto;
+    justify-items: start;
+    padding: 0 1rem 2.5rem clamp(1.25rem, 3vw, 3.5rem);
+    position: relative;
+    z-index: 2;
 }
 
-.hero-overlay {
-    display: none;
-}
+/* 12.5% ≈ where the top of the wooden shelf sits in the photo */
+.hero-title-block { grid-row: 2; }
+.hero-tagline     { grid-row: 3; }
+/* button gap matches the headline-to-paragraph gap */
+.hero-text > .hero-cta { grid-row: 4; margin-top: 4rem; }
+.hero-text > .tv-badge { grid-row: 6; }
 
-/* Transparent clickable overlay on the image's "ORDER YOUR CAKE" button.
-   Button sits at ~4% from left, ~78% from top, ~18% wide, ~9% tall. */
-.hero-cta-overlay {
-    position: absolute;
-    top: 78%;
-    left: 4%;
-    width: 18%;
-    height: 9%;
-    z-index: 4;
-    opacity: 0;
-    cursor: pointer;
-    display: block;
-}
-
-@media (max-width: 768px) {
-    .hero-cta-overlay {
-        top: auto;
-        bottom: calc(5rem + 120px);
-        left: 50%;
-        transform: translateX(-50%);
-        width: auto;
-        height: auto;
-        padding: 0.85rem 2rem;
-        opacity: 1;
-        background-color: var(--primary-pink);
-        color: white;
-        font-family: 'Montserrat', sans-serif;
-        font-size: 0.85rem;
-        font-weight: 700;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        text-decoration: none;
-        border-radius: 4px;
-        text-align: center;
-        white-space: nowrap;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    }
-}
-
-/* As Seen On TV Badge */
-.tv-badge {
-    position: absolute;
-    bottom: 2.5rem;
-    right: 2.5rem;
-    z-index: 3;
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
+/* shrink-wraps the headline so the heart centers under it */
+.hero-title-block {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.4rem;
+}
+
+.hero-heading {
+    font-family: 'Allura', cursive;
+    font-weight: 400;
+    font-size: clamp(2.3rem, 3.3vw, 4.4rem);
+    line-height: 1.1;
+    color: var(--hero-rose);
+    margin-bottom: 0.75rem;
+}
+
+/* each phrase stays on its own unbroken line */
+.hero-heading span {
+    display: block;
+    white-space: nowrap;
+}
+
+.hero-heart {
+    color: var(--hero-rose);
+    font-size: 1.4rem;
+    margin-bottom: 1.5rem;
+}
+
+.hero-tagline {
+    font-family: 'Lora', Georgia, serif;
+    font-size: clamp(1rem, 1.15vw, 1.15rem);
+    line-height: 1.75;
+    color: #3d302c;
+    max-width: 30ch;
+    margin-bottom: 0;
+}
+
+.hero-cta {
+    display: inline-block;
+    background: var(--hero-rose, #C2506E);
+    color: #fff;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 1rem 2.2rem;
+    border-radius: 6px;
+    box-shadow: 0 4px 14px rgba(194, 80, 110, 0.3);
+    transition: var(--transition);
+}
+
+.hero-cta:hover,
+.hero-cta:focus-visible {
+    background: var(--hero-rose-dark, #A63F5A);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(194, 80, 110, 0.35);
+}
+
+.hero-photo {
+    position: relative;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.hero-photo > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 42% center; /* keeps Nomi + cakes centered as it crops */
+    display: block;
+    /* soft fade on the left edge so the photo blends into the cream column */
+    -webkit-mask-image: linear-gradient(to right, transparent 0, rgba(0,0,0,0.6) 7%, #000 16%);
+    mask-image: linear-gradient(to right, transparent 0, rgba(0,0,0,0.6) 7%, #000 16%);
+}
+
+@media (max-width: 1024px) {
+    .hero {
+        grid-template-columns: minmax(280px, 32%) 1fr;
+    }
+}
+
+/* Phones / small tablets: photo on top, text below */
+@media (max-width: 768px) {
+    .hero {
+        display: flex;
+        flex-direction: column;
+        height: auto;
+        min-height: 0;
+    }
+
+    .hero-photo {
+        order: 1;
+        aspect-ratio: 4 / 3;
+    }
+
+    .hero-photo > img {
+        object-position: 45% center;
+        -webkit-mask-image: linear-gradient(to bottom, #000 82%, transparent 100%);
+        mask-image: linear-gradient(to bottom, #000 82%, transparent 100%);
+    }
+
+    .hero-text {
+        display: flex;
+        flex-direction: column;
+        order: 2;
+        align-items: center;
+        text-align: center;
+        padding: 1.5rem 1.5rem 3rem;
+    }
+
+    .hero-heart {
+        margin-bottom: 1rem;
+    }
+
+    .hero-tagline {
+        margin-bottom: 1.5rem;
+    }
+
+    .hero-text > .hero-cta {
+        margin-top: 0;
+    }
+}
+
+/* As Seen On NBC — sits in the hero text column under the CTA */
+.tv-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    font: inherit;
     transition: var(--transition);
 }
 
 .tv-badge:hover {
-    transform: translateY(-3px);
+    transform: translateY(-2px);
+}
+
+.tv-badge-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
 }
 
 .tv-badge-label {
     font-family: 'Montserrat', sans-serif;
     font-size: 0.7rem;
     font-weight: 700;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: white;
-    background: rgba(0, 0, 0, 0.45);
-    padding: 0.2rem 0.6rem;
-    border-radius: 4px;
-    backdrop-filter: blur(4px);
+    color: #3d302c;
+}
+
+.tv-badge-link {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.95rem;
+    color: #C2506E;
+    text-decoration: underline;
+    text-decoration-color: rgba(194, 80, 110, 0.35);
+    text-underline-offset: 3px;
+    white-space: nowrap;
+    transition: var(--transition);
+}
+
+@media (max-width: 1200px) and (min-width: 769px) {
+    .tv-badge .tv-badge-thumb { width: 92px; }
+    .tv-badge-link { font-size: 0.9rem; }
+}
+
+.tv-badge:hover .tv-badge-link {
+    text-decoration-color: #C2506E;
 }
 
 .tv-badge-thumb {
     position: relative;
-    width: 180px;
-    border-radius: 10px;
+    flex-shrink: 0;
+    width: 112px;
+    border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-    border: 2px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 14px rgba(120, 60, 50, 0.22);
+    border: 2px solid #fff;
     transition: var(--transition);
 }
 
 .tv-badge:hover .tv-badge-thumb {
-    border-color: white;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 8px 22px rgba(120, 60, 50, 0.3);
 }
 
 .tv-badge-thumb img {
@@ -305,13 +427,13 @@ p {
     background: white;
     color: var(--primary-pink);
     border-radius: 50%;
-    width: 38px;
-    height: 38px;
+    width: 30px;
+    height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.9rem;
-    padding-left: 3px;
+    font-size: 0.7rem;
+    padding-left: 2px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     transition: var(--transition);
 }
@@ -410,12 +532,11 @@ p {
 
 @media (max-width: 768px) {
     .tv-badge {
-        bottom: 5rem;
-        right: 1rem;
+        margin-top: 1.75rem;
     }
 
     .tv-badge-thumb {
-        width: 130px;
+        width: 96px;
     }
 
     .video-modal-content {
@@ -461,21 +582,106 @@ p {
     color: white;
 }
 
-/* Intro Section */
-.intro {
+/* How It Works Section */
+.how-it-works {
     padding: 5rem 0;
-    background: white;
-}
-
-.intro-content {
+    background: linear-gradient(180deg, #F5E5DB 0%, #FBF4EF 100%);
     text-align: center;
-    max-width: 800px;
-    margin: 0 auto;
 }
 
-.intro h2 {
+.section-eyebrow {
+    font-family: 'Allura', cursive;
+    font-size: 2rem;
+    color: #C2506E;
+    margin-bottom: 0.25rem;
+}
+
+.how-it-works h2 {
     color: var(--text-dark);
-    margin-bottom: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.steps-grid {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    max-width: 1050px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.step-card {
+    position: relative;
+    background: #fff;
+    border-radius: var(--border-radius);
+    padding: 2.75rem 1.75rem 2rem;
+    box-shadow: 0 6px 24px rgba(150, 90, 80, 0.1);
+    transition: var(--transition);
+}
+
+.step-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(150, 90, 80, 0.16);
+}
+
+.step-number {
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #C2506E;
+    color: #fff;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 10px rgba(194, 80, 110, 0.35);
+}
+
+.how-step-icon {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 1.25rem;
+    border-radius: 50%;
+    background: var(--secondary-lavender);
+    color: #C2506E;
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.step-card h3 {
+    font-size: 1.25rem;
+    color: var(--text-dark);
+    margin-bottom: 0.6rem;
+}
+
+.step-card p {
+    margin-bottom: 0;
+    line-height: 1.65;
+}
+
+.steps-cta-wrap {
+    margin-top: 3rem;
+}
+
+@media (max-width: 768px) {
+    .how-it-works {
+        padding: 3.5rem 0;
+    }
+
+    .steps-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+        max-width: 420px;
+    }
 }
 
 /* Featured Cakes Section */

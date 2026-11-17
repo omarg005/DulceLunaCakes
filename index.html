@@ -15,13 +15,14 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Allura&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="preload" as="image" href="images/index/NomiHeroPhoto.webp">
     
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="styles.css?v=20260616i">
+    <link rel="stylesheet" href="styles.css?v=20261117i">
 </head>
 <body>
     <!-- Header -->
@@ -56,25 +57,32 @@
         </nav>
     </header>
 
-    <!-- Hero Section -->
+    <!-- Hero Section: text column (left) + photo column (right) -->
     <section class="hero">
-        <img src="images/index/NomiHero.png" alt="Dulce Luna Cakes - Made with love, shared with joy" class="hero-bg-img">
-
-        <!-- Invisible real CTA button overlaid on the image's button -->
-        <a href="contact.html" class="hero-cta-overlay" aria-label="Order your cake">Order Your Cake</a>
-
-        <!-- As Seen On NBC thumbnail -->
-        <button class="tv-badge" id="tv-badge" aria-label="Watch our NBC interview">
-            <div class="tv-badge-label">As Seen On NBC</div>
-            <div class="tv-badge-thumb">
-                <img src="images/videos/NBC_InterviewThumbnail.png" alt="NBC Interview thumbnail">
-                <div class="tv-badge-play">
-                    <i class="fas fa-play"></i>
-                </div>
+        <div class="hero-text">
+            <div class="hero-title-block">
+                <h1 class="hero-heading"><span>Made with love.</span> <span>Shared with joy.</span></h1>
+                <i class="fas fa-heart hero-heart" aria-hidden="true"></i>
             </div>
-        </button>
+            <p class="hero-tagline">Delicious cakes for life&rsquo;s sweetest moments. From classic favorites to custom creations, we bake happiness into every bite.</p>
+            <a href="contact.html" class="hero-cta">Order Your Cake</a>
 
-        <div class="hero-overlay"></div>
+            <!-- As Seen On NBC -->
+            <button class="tv-badge" id="tv-badge" aria-label="Watch our NBC interview">
+                <span class="tv-badge-thumb">
+                    <img src="images/videos/NBC_InterviewThumbnail.png" alt="">
+                    <span class="tv-badge-play"><i class="fas fa-play" aria-hidden="true"></i></span>
+                </span>
+                <span class="tv-badge-text">
+                    <span class="tv-badge-label">As Seen On NBC</span>
+                    <span class="tv-badge-link">Watch the interview</span>
+                </span>
+            </button>
+        </div>
+
+        <div class="hero-photo">
+            <img src="images/index/NomiHeroPhoto.webp" alt="Nomi decorating bundt cakes in the Dulce Luna Cakes kitchen" fetchpriority="high">
+        </div>
     </section>
 
     <!-- Video Modal -->
@@ -94,12 +102,33 @@
         </div>
     </div>
 
-    <!-- Intro Section -->
-    <section class="intro">
+    <!-- How It Works Section -->
+    <section class="how-it-works">
         <div class="container">
-            <div class="intro-content">
-                <h2>Welcome to Dulce Luna Cakes</h2>
-                <p>Welcome to Dulce Luna Cakes, where edible art meets your celebration. Every cake is crafted with love, detail, and delicious flavor.</p>
+            <p class="section-eyebrow">Custom cakes, made simple</p>
+            <h2>How It Works</h2>
+            <ol class="steps-grid">
+                <li class="step-card">
+                    <span class="step-number">1</span>
+                    <div class="how-step-icon"><i class="fas fa-comment-dots" aria-hidden="true"></i></div>
+                    <h3>Tell Us Your Idea</h3>
+                    <p>Send us your date, theme, and guest count. Inspiration photos are always welcome!</p>
+                </li>
+                <li class="step-card">
+                    <span class="step-number">2</span>
+                    <div class="how-step-icon"><i class="fas fa-palette" aria-hidden="true"></i></div>
+                    <h3>We Design It Together</h3>
+                    <p>We&rsquo;ll talk through flavors, colors, and details, then send you a custom quote.</p>
+                </li>
+                <li class="step-card">
+                    <span class="step-number">3</span>
+                    <div class="how-step-icon"><i class="fas fa-cake-candles" aria-hidden="true"></i></div>
+                    <h3>Pick Up &amp; Celebrate</h3>
+                    <p>Pick up from our kitchen or have it delivered anywhere in South Florida.</p>
+                </li>
+            </ol>
+            <div class="steps-cta-wrap">
+                <a href="contact.html" class="hero-cta">Start Your Order</a>
             </div>
         </div>
     </section>
